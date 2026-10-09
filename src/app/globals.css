@@ -1,0 +1,25 @@
+@import "tailwindcss";
+
+/* Brand colours from brand/logo/. Which deep blue is canonical is still open (see WEBSITE.md). */
+@theme {
+  --color-sentrix-accent: #0077b6;
+  --color-sentrix-deep: #023e8a;
+  --color-sentrix-deep-alt: #034078;
+}
+
+:root {
+  --background: #ffffff;
+  --foreground: #0b1b2b;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+}
