@@ -1,0 +1,76 @@
+"use client";
+
+import { motion } from "motion/react";
+import { useState } from "react";
+import type { Dictionary } from "@/content/types";
+import { ease, spring } from "@/lib/motion";
+import { Button } from "@/components/ui/Button";
+import { Mosaic } from "@/components/ui/Mosaic";
+import { PixelRocket } from "@/components/brand/PixelCharacters";
+
+export function ContactCta({ dict, title, text }: { dict: Dictionary; title?: string; text?: string }) {
+  const [launch, setLaunch] = useState(false);
+  const email = dict.contact.email;
+
+  return (
+    <section id={dict.anchors.contact} className="border-b border-line">
+      <div className="mx-auto max-w-[1280px] px-6 py-24 md:py-32">
+        <motion.div
+          initial={{ opacity: 0, y: 32 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "0px 0px -10% 0px" }}
+          transition={{ duration: 0.9, ease: ease.outExpo }}
+          className="relative isolate overflow-hidden rounded-[var(--radius-card)] border border-line"
+        >
+          <Mosaic className="absolute inset-0 -z-20" columns={18} rows={8} from={1} to={6} seed={11} />
+          <div aria-hidden="true" className="absolute inset-0 -z-10 bg-gradient-to-r from-base via-base/90 to-base/0" />
+
+          <div className="grid items-center gap-8 p-8 md:grid-cols-[1.4fr_1fr] md:p-14">
+            <div>
+              <h2 className="text-h2-xl max-w-xl">{title ?? dict.contact.title}</h2>
+              <p className="text-body-lg mt-5 max-w-lg text-muted">{text ?? dict.contact.text}</p>
+              <p className="mt-8 text-sm">
+                <span className="text-muted">{dict.contact.emailLabel}: </span>
+                {email ? (
+                  <a href={`mailto:${email}`} className="text-ocean-400 underline-offset-4 hover:underline">
+                    {email}
+                  </a>
+                ) : (
+                  <span className="font-mono text-ocean-300">{dict.contact.missingEmail}</span>
+                )}
+              </p>
+              <div className="mt-6 flex flex-wrap items-center gap-4">
+                {email ? (
+                  <Button href={`mailto:${email}`} onHoverChange={setLaunch}>
+                    {dict.contact.button}
+                  </Button>
+                ) : (
+                  <span
+                    aria-disabled="true"
+                    onPointerEnter={() => setLaunch(true)}
+                    onPointerLeave={() => setLaunch(false)}
+                    className="inline-flex h-11 cursor-not-allowed items-center rounded-[var(--radius-control)] border border-line-strong px-5 text-[15px] text-muted"
+                  >
+                    {dict.contact.button}
+                  </span>
+                )}
+                <span className="flex items-center gap-2 text-sm text-muted">
+                  <span className="size-2 rounded-full bg-ocean-400" />
+                  {dict.contact.promise.text}
+                </span>
+              </div>
+            </div>
+            <motion.div
+              aria-hidden="true"
+              className="mx-auto w-28 md:w-36"
+              animate={launch ? { y: -22, rotate: -4 } : { y: 0, rotate: 0 }}
+              transition={spring.playful}
+            >
+              <PixelRocket launching={launch} className="ambient w-full animate-bob" />
+            </motion.div>
+          </div>
+        </motion.div>
+      </div>
+    </section>
+  );
+}

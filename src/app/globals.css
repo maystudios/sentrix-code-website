@@ -1,25 +1,250 @@
 @import "tailwindcss";
 
-/* Brand colours from brand/logo/. Which deep blue is canonical is still open (see WEBSITE.md). */
+/* Design tokens. Source of truth for values: WEBSITE.md, "Design-System" and "Bewegung". */
 @theme {
-  --color-sentrix-accent: #0077b6;
-  --color-sentrix-deep: #023e8a;
-  --color-sentrix-deep-alt: #034078;
-}
+  --color-base: #0b0f17;
+  --color-surface: #121824;
+  --color-raised: #1a2231;
+  --color-line: #1e2737;
+  --color-line-strong: #2b364a;
+  --color-fg: #f3f6fa;
+  --color-muted: #8691a6;
 
-:root {
-  --background: #ffffff;
-  --foreground: #0b1b2b;
+  --color-ocean-950: #03045e;
+  --color-ocean-900: #023e8a;
+  --color-ocean-700: #0077b6;
+  --color-ocean-600: #0096c7;
+  --color-ocean-500: #00b4d8;
+  --color-ocean-400: #48cae4;
+  --color-ocean-300: #90e0ef;
+  --color-ocean-100: #caf0f8;
+
+  --color-success: #34d399;
+  --color-danger: #f87171;
+
+  --radius-control: 6px;
+  --radius-card: 10px;
+  --radius-device: 18px;
+
+  --ease-standard: cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+
+  --animate-marquee: marquee 48s linear infinite;
+  --animate-bob: bob 6s ease-in-out infinite;
+  --animate-walk: walk 38s linear infinite;
+  --animate-twinkle: twinkle 5s ease-in-out infinite;
+
+  @keyframes marquee {
+    to {
+      transform: translateX(-50%);
+    }
+  }
+  @keyframes bob {
+    0%,
+    100% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(-5px);
+    }
+  }
+  @keyframes walk {
+    from {
+      transform: translateX(-10vw);
+    }
+    to {
+      transform: translateX(110vw);
+    }
+  }
+  --animate-flame: flame 0.24s steps(2) infinite alternate;
+  --animate-flame-roar: flame-roar 0.12s steps(2) infinite alternate;
+  --animate-blink: blink 4.2s ease-in-out infinite;
+  --animate-scroll-cue: scroll-cue 1.8s steps(1) infinite;
+
+  @keyframes scroll-cue {
+    0%,
+    100% {
+      opacity: 0.25;
+    }
+    33% {
+      opacity: 1;
+    }
+  }
+  --animate-glow: glow 1.6s ease-in-out infinite;
+
+  @keyframes flame {
+    from {
+      transform: scaleY(0.82) scaleX(1.05);
+    }
+    to {
+      transform: scaleY(1.12) scaleX(0.95);
+    }
+  }
+  @keyframes flame-roar {
+    from {
+      transform: scaleY(1.5) scaleX(1.1);
+    }
+    to {
+      transform: scaleY(2) scaleX(0.9);
+    }
+  }
+  @keyframes blink {
+    0%,
+    92%,
+    100% {
+      transform: scaleY(1);
+    }
+    95% {
+      transform: scaleY(0.1);
+    }
+  }
+  @keyframes glow {
+    0%,
+    100% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0.35;
+    }
+  }
+  @keyframes cloud {
+    from {
+      transform: translateX(-20vw);
+    }
+    to {
+      transform: translateX(115vw);
+    }
+  }
+  @keyframes satellite {
+    0% {
+      transform: translate(-15vw, 0) rotate(-8deg);
+    }
+    35%,
+    100% {
+      transform: translate(115vw, -6vh) rotate(8deg);
+    }
+  }
+  @keyframes app-scroll {
+    to {
+      transform: translateY(-50%);
+    }
+  }
+  @keyframes twinkle {
+    0%,
+    100% {
+      opacity: 0.35;
+    }
+    50% {
+      opacity: 1;
+    }
+  }
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
 
+/* Type scale, fluid between 360 px and 1440 px. */
+@utility text-display {
+  font-size: clamp(2.75rem, 1.6rem + 3.4vw, 4.75rem);
+  line-height: 1.05;
+  letter-spacing: -0.02em;
+  font-weight: 500;
+}
+@utility text-h2-xl {
+  font-size: clamp(2.25rem, 1.6rem + 1.9vw, 3.5rem);
+  line-height: 1.08;
+  letter-spacing: -0.015em;
+  font-weight: 500;
+}
+@utility text-h2 {
+  font-size: clamp(1.875rem, 1.4rem + 1.4vw, 2.75rem);
+  line-height: 1.18;
+  letter-spacing: -0.01em;
+  font-weight: 500;
+}
+@utility text-h3 {
+  font-size: clamp(1.5rem, 1.3rem + 0.6vw, 1.875rem);
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+  font-weight: 500;
+}
+@utility text-body-lg {
+  font-size: clamp(1.0625rem, 1rem + 0.2vw, 1.125rem);
+  line-height: 1.6;
+}
+@utility text-label {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  line-height: 1rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-weight: 500;
+}
+
+html {
+  background: var(--color-base);
+  color: var(--color-fg);
+  scroll-padding-top: 5rem;
+}
+
 body {
-  background: var(--background);
-  color: var(--foreground);
+  background: var(--color-base);
+  color: var(--color-fg);
+}
+
+::selection {
+  background: var(--color-ocean-700);
+  color: #ffffff;
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-ocean-400);
+  outline-offset: 2px;
+}
+
+/* Lenis */
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+.lenis:not(.lenis-autoToggle).lenis-stopped {
+  overflow: clip;
+}
+
+/* Ambient motion stops for people who ask for less motion. */
+/* Before hydration the system setting decides; afterwards the site's motion policy. */
+@media (prefers-reduced-motion: reduce) {
+  html:not([data-motion]) .ambient,
+  html:not([data-motion]) .ambient * {
+    animation: none !important;
+  }
+}
+html[data-motion="reduced"] .ambient,
+html[data-motion="reduced"] .ambient * {
+  animation: none !important;
+}
+
+/* Pixel page transition (PixelTransition.tsx). */
+.pixel-transition-cell {
+  animation: pixel-clear 360ms cubic-bezier(0.7, 0, 0.84, 0) both;
+}
+@keyframes pixel-clear {
+  from {
+    transform: scale(1.02);
+    opacity: 1;
+  }
+  to {
+    transform: scale(0);
+    opacity: 0;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  html:not([data-motion="full"]) .pixel-transition {
+    display: none;
+  }
+}
+html[data-motion="reduced"] .pixel-transition {
+  display: none;
 }

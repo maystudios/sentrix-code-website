@@ -1,0 +1,4 @@
+A wide 16:9 brand illustration in isometric voxel art (small 3D cubes, like a clean MagicaVoxel render) with soft global illumination and gentle ambient-occlusion shadows, playful and premium, like the illustrations on a modern tech company website.
+Background: a mosaic of large square tiles in varying shades of blue, forming a gentle diagonal gradient from light at the top left to deep at the bottom right.
+In the center right sits a dark voxel board with a thin blue frame holding a playful cluster of voxel objects about video game development: a gamepad, a heart, a treasure chest, a tiny level map with a path, a joystick, a star, a sword, a small hero character, a die and a play button, arranged with slightly varied rotation.
+Use a limited palette strictly from these blues: #03045E, #023E8A, #0077B6, #0096C7, #00B4D8, #48CAE4, #90E0EF, #CAF0F8, plus white #FFFFFF and near-black #101013. No text, no letters, no numbers, no logos, no watermarks, no signatures.

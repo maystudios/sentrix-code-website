@@ -5,6 +5,11 @@ import nextTs from "eslint-config-next/typescript";
 const eslintConfig = defineConfig([
   ...nextVitals,
   ...nextTs,
+  {
+    // Static export: images are pre-built WebP files with srcset (scripts/optimize-images.py);
+    // next/image would render a plain <img> here as well.
+    rules: { "@next/next/no-img-element": "off" },
+  },
   // Override default ignores of eslint-config-next.
   globalIgnores([
     // Default ignores of eslint-config-next:
