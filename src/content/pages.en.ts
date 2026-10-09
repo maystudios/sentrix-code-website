@@ -293,7 +293,7 @@ export const pagesEn: Pages = {
     hero: {
       title: "We are Sentrix Code.",
       intro:
-        "A young software company from Monheim am Rhein, founded in 2026 by two developers who had already built many projects together.",
+        "Founded in 2026 by Luca Finn Wiegand and Sven Fredrik Maibaum in Monheim am Rhein, Germany. We build games, software, apps and AI on commission.",
       scene: "/images/scenes/team",
       sceneAlt: "Pixel scene: two developers at desks with the robot between them, a river with a bridge outside the window",
     },
@@ -355,7 +355,7 @@ export const pagesEn: Pages = {
       topic: "What is it about?",
       topics: ["Game development", "Software development", "App development", "AI & machine learning", "Something else"],
       message: "Your message",
-      messageHint: "What would you like to build, by when, and what exists already?",
+      messageHint: "What should be built? Is there a draft already, or a target date?",
       consent: "I agree that my details are processed to answer my request. More in the",
       privacyLabel: "privacy policy (German)",
       submit: "Send request",

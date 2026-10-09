@@ -77,8 +77,8 @@ export type Dictionary = {
   positioning: string;
   services: { title: string; items: ServiceItem[]; mockups: ServiceMockups };
   cases: { title: string; cta: string; items: CaseItem[] };
-  process: { title: string; intro: string; steps: ProcessStep[] };
-  faq: { title: string; items: FaqItem[] };
+  process: { title: string; intro: string; steps: ProcessStep[]; prototype: { live: string; build: string } };
+  faq: { title: string; items: FaqItem[]; more: { title: string; text: string; cta: string } };
   contact: {
     title: string;
     text: string;
@@ -87,6 +87,7 @@ export type Dictionary = {
     email: string | null;
     missingEmail: string;
     button: string;
+    toForm: string;
     promise: { text: string; example: true };
   };
   footer: {

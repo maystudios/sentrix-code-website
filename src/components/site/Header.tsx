@@ -83,7 +83,7 @@ export function Header({ dict, alternateHref, isHome = false }: HeaderProps) {
     <header
       onMouseLeave={scheduleClose}
       className={`fixed inset-x-0 top-0 z-50 border-b transition-colors duration-300 ${
-        solid ? "border-line bg-base/85 backdrop-blur-md" : "border-transparent bg-transparent"
+        solid ? "border-line bg-base/95 backdrop-blur-md" : "border-transparent bg-transparent"
       }`}
     >
       <div className="mx-auto flex h-14 max-w-[1280px] items-stretch">

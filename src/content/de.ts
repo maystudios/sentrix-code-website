@@ -26,7 +26,7 @@ export const de: Dictionary = {
     headlineA: "Ihre Idee.",
     headlineB: "Unser Code.",
     subline:
-      "Wir entwickeln Spiele, Software, Apps und KI-Lösungen im Auftrag. Für Studios, für den Mittelstand und für Unternehmen, die mehr vorhaben als Standardsoftware hergibt.",
+      "Wir entwickeln Spiele, Software, Apps und KI im Auftrag. Für Studios und Unternehmen, die ein konkretes Vorhaben umsetzen wollen.",
     primaryCta: "Projekt anfragen",
     secondaryCta: "Leistungen ansehen",
   },
@@ -36,13 +36,13 @@ export const de: Dictionary = {
     items: ["Unreal Engine", "C++", "Flutter", "React", "Next.js", "TypeScript", "Java", "Python"],
   },
   statement: {
-    title: "Von der ersten Idee bis zum Release, ohne Übergabe an Dritte.",
+    title: "Ein Team. Von der Idee bis zum Release.",
     chips: ["Idee", "Konzept", "Prototyp", "Design", "Entwicklung", "Tests", "Release"],
   },
   positioning:
     "Wir entwickeln im Auftrag. Vom ersten Prototyp bis zur Anwendung, die Ihre Nutzer jeden Tag verwenden.",
   services: {
-    title: "Vier Bereiche. Ein Team.",
+    title: "Was möchten Sie entwickeln?",
     items: [
       {
         id: "spiele",
@@ -106,7 +106,7 @@ export const de: Dictionary = {
     },
   },
   cases: {
-    title: "So sieht das in der Praxis aus.",
+    title: "Wie aus einer Aufgabe ein Produkt wird.",
     cta: "Ähnliches Projekt anfragen",
     items: [
       {
@@ -153,38 +153,44 @@ export const de: Dictionary = {
   },
   process: {
     title: "So arbeiten wir.",
-    intro: "Vier Schritte, und Sie wissen in jedem davon, wo Ihr Projekt steht.",
+    prototype: { live: "Live", build: "Build läuft" },
+    intro: "Sie sehen Zwischenergebnisse und entscheiden mit, was als Nächstes kommt.",
     steps: [
       {
         title: "Kennenlernen",
         text: "Sie erzählen uns von Ihrem Vorhaben, wir stellen die Fragen, die über Umfang und Technik entscheiden. Das erste Gespräch kostet Sie nichts.",
         scene: "/images/scenes/meet",
-        sceneAlt: "Pixel-Szene: zwei Figuren am Tisch mit Kaffee und Sprechblasen",
+        sceneAlt: "Das Produkt ist noch eine Skizze auf Papier, daneben eine Glühbirne.",
         example: true,
       },
       {
         title: "Konzept und Angebot",
         text: "Sie bekommen einen klaren Umfang, einen Zeitplan und ein nachvollziehbares Angebot. Ist die Idee noch unsicher, beginnen wir mit einem kleinen Prototyp.",
         scene: "/images/scenes/concept",
-        sceneAlt: "Pixel-Szene: eine Figur zeigt auf eine Tafel mit einem Ablaufplan",
+        sceneAlt: "Aus der Skizze wird ein graues Wireframe mit Platzhaltern.",
       },
       {
         title: "Entwicklung in Etappen",
         text: "Wir arbeiten in kurzen Etappen. Alle zwei Wochen sehen Sie einen lauffähigen Stand und können mitentscheiden, was als Nächstes kommt.",
         scene: "/images/scenes/build",
-        sceneAlt: "Pixel-Szene: zwei Figuren bauen mit einem Kran aus Blöcken, daneben ein Monitor mit Code",
+        sceneAlt: "Das Wireframe füllt sich mit Farbe und Inhalten, der Roboter programmiert daneben.",
         example: true,
       },
       {
         title: "Start und Übergabe",
         text: "Wir bringen das Produkt live, übergeben Code und Dokumentation und bleiben auf Wunsch Ihr Partner für die nächsten Versionen.",
         scene: "/images/scenes/launch",
-        sceneAlt: "Pixel-Szene: eine Rakete startet, eine Figur winkt",
+        sceneAlt: "Das fertige Produkt leuchtet auf, eine Rakete startet.",
       },
     ],
   },
   faq: {
     title: "Häufige Fragen.",
+    more: {
+      title: "Ihre Frage ist nicht dabei?",
+      text: "Schreiben Sie uns. Wir antworten persönlich, nicht mit einem Textbaustein.",
+      cta: "Frage stellen",
+    },
     items: [
       {
         question: "Was kostet ein Projekt?",
@@ -230,6 +236,7 @@ export const de: Dictionary = {
     email: null,
     missingEmail: "[OFFEN: Kontakt-E-Mail-Adresse]",
     button: "E-Mail schreiben",
+    toForm: "Zum Kontaktformular",
     promise: { text: "Antwort innerhalb eines Werktags", example: true },
   },
   footer: {

@@ -8,7 +8,7 @@
   --color-line: #1e2737;
   --color-line-strong: #2b364a;
   --color-fg: #f3f6fa;
-  --color-muted: #8691a6;
+  --color-muted: #97a3b8;
 
   --color-ocean-950: #03045e;
   --color-ocean-900: #023e8a;
@@ -124,6 +124,19 @@
       transform: translate(115vw, -6vh) rotate(8deg);
     }
   }
+  @keyframes sway {
+    from {
+      transform: rotate(-2.5deg);
+    }
+    to {
+      transform: rotate(2.5deg);
+    }
+  }
+  @keyframes walk-frames {
+    to {
+      background-position-x: 100%;
+    }
+  }
   @keyframes app-scroll {
     to {
       transform: translateY(-50%);
@@ -228,7 +241,7 @@ html[data-motion="reduced"] .ambient * {
 
 /* Pixel page transition (PixelTransition.tsx). */
 .pixel-transition-cell {
-  animation: pixel-clear 360ms cubic-bezier(0.7, 0, 0.84, 0) both;
+  animation: pixel-clear 240ms cubic-bezier(0.7, 0, 0.84, 0) both;
 }
 @keyframes pixel-clear {
   from {

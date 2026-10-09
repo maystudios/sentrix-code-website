@@ -1,11 +1,10 @@
 "use client";
 
-import { AnimatePresence, motion, useInView } from "motion/react";
+import { motion, useInView } from "motion/react";
 import { useEffect, useRef, useState } from "react";
 import type { Dictionary } from "@/content/types";
-import { asset } from "@/lib/asset";
-import { ease, spring } from "@/lib/motion";
 import { useRovingTabs } from "@/lib/useRovingTabs";
+import { GrowingPrototype } from "./GrowingPrototype";
 import { useMotionPolicy } from "@/components/motion/MotionPolicy";
 
 const STEP_SECONDS = 7;
@@ -74,19 +73,9 @@ export function Process({ dict }: { dict: Dictionary }) {
                         {entry.title}
                       </span>
                     </span>
-                    <AnimatePresence initial={false}>
-                      {isActive && (
-                        <motion.p
-                          initial={{ height: 0, opacity: 0 }}
-                          animate={{ height: "auto", opacity: 1 }}
-                          exit={{ height: 0, opacity: 0 }}
-                          transition={{ duration: 0.4, ease: ease.outExpo }}
-                          className="overflow-hidden pl-8 text-muted"
-                        >
-                          <span className="block pt-3">{entry.text}</span>
-                        </motion.p>
-                      )}
-                    </AnimatePresence>
+                    <span className={`block pl-8 pt-2 text-[15px] leading-relaxed transition-colors duration-300 ${isActive ? "text-fg/85" : "text-muted/70"}`}>
+                      {entry.text}
+                    </span>
                     {isActive && (
                       <span className="absolute inset-x-0 -top-px h-px overflow-hidden bg-line">
                         <motion.span
@@ -104,38 +93,9 @@ export function Process({ dict }: { dict: Dictionary }) {
             })}
           </ol>
 
-          <div
-            id="process-panel"
-            role="tabpanel"
-            aria-labelledby={`process-tab-${active}`}
-            className="relative aspect-video overflow-hidden rounded-[var(--radius-card)] border border-line bg-ocean-900"
-          >
-            <AnimatePresence mode="popLayout" initial={false}>
-              <motion.img
-                key={step.scene}
-                src={asset(`${step.scene}.webp`)}
-                srcSet={`${asset(`${step.scene}-800.webp`)} 800w, ${asset(`${step.scene}.webp`)} 1600w`}
-                sizes="(min-width: 1024px) 680px, 92vw"
-                alt={step.sceneAlt}
-                width={1600}
-                height={900}
-                loading="lazy"
-                initial={{ opacity: 0, scale: 1.08 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 0.8, ease: ease.outExpo }}
-                className="absolute inset-0 size-full object-cover"
-              />
-            </AnimatePresence>
-            <motion.span
-              key={`badge-${active}`}
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ ...spring.playful, delay: 0.25 }}
-              className="absolute bottom-4 left-4 rounded-[var(--radius-control)] bg-base/90 px-3 py-1.5 text-sm"
-            >
-              {active + 1} / {steps.length} · {step.title}
-            </motion.span>
+          <div id="process-panel" role="tabpanel" aria-labelledby={`process-tab-${active}`} aria-live="polite">
+            <p className="sr-only">{step.sceneAlt}</p>
+            <GrowingPrototype step={active} labels={dict.process.prototype} />
           </div>
         </div>
       </div>

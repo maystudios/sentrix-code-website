@@ -293,7 +293,7 @@ export const pagesDe: Pages = {
     hero: {
       title: "Wir sind Sentrix Code.",
       intro:
-        "Eine junge Softwarefirma aus Monheim am Rhein, gegründet 2026 von zwei Entwicklern, die schon vorher viele Projekte gemeinsam umgesetzt haben.",
+        "Gegründet 2026 von Luca Finn Wiegand und Sven Fredrik Maibaum in Monheim am Rhein. Wir entwickeln Spiele, Software, Apps und KI im Auftrag.",
       scene: "/images/scenes/team",
       sceneAlt: "Pixel-Szene: zwei Entwickler an Schreibtischen, dazwischen der Roboter, im Fenster ein Fluss mit Brücke",
     },
@@ -355,7 +355,7 @@ export const pagesDe: Pages = {
       topic: "Worum geht es?",
       topics: ["Spieleentwicklung", "Softwareentwicklung", "App-Entwicklung", "KI & Machine Learning", "Etwas anderes"],
       message: "Ihre Nachricht",
-      messageHint: "Was möchten Sie bauen, bis wann, und was gibt es schon?",
+      messageHint: "Was soll entstehen? Gibt es schon einen Entwurf oder einen gewünschten Termin?",
       consent: "Ich bin einverstanden, dass meine Angaben zur Beantwortung meiner Anfrage verarbeitet werden. Mehr dazu in der",
       privacyLabel: "Datenschutzerklärung",
       submit: "Anfrage senden",

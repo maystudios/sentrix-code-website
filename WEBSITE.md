@@ -403,6 +403,26 @@ Hintergrund-Tabs anhält.
 | `spring-playful` | Steifigkeit 260, Dämpfung 16 | landende Blöcke, Figuren |
 | `stagger` | 60 ms | Listen, Chips, Karten |
 
+### Katalog der Bewegungsmomente
+
+Im Wortlaut des Projektverantwortlichen: „Liebe zum Detail […] wie links, die kleine
+Katze bewegt sich […] oben bewegt sich ein kleiner Greifarm […] dass man damit
+interagieren kann, wenn man mit der Maus hin und her zieht, dass das wirklich sich
+mitbewegt, physikalisch“. Neue Momente passen in diesen Katalog und werden hier ergänzt.
+
+| Ort | Moment |
+| --- | --- |
+| Hero | Blöcke fallen herein und lassen sich ziehen, werfen und federn zurück; die Drohne lässt Blöcke auf den rechten Turm fallen, nach dem dritten poppen sie mit Funken weg; ein Server-Turm taucht immer wieder hinter dem Stapel auf; der Roboter winkt und folgt dem Zeiger mit den Augen; das Logo in der Überschrift dreht sich alle paar Sekunden; Wolken, Funken und ein Satellit am Himmel; Scroll-Hinweis aus Pixel-Winkeln |
+| Kopfzeile | Gleitender Hover-Balken, Mega-Menüs mit springenden Icons und überblendender Vorschaukarte |
+| Prozess-Chips | Hängen an Fäden, schwingen leicht und lassen sich ziehen |
+| Trennlinien | Biegen sich wie Gummibänder, wo der Zeiger vorbeistreift |
+| Leistungen | Mockups mit Tipp-, Scroll- und Build-Animationen; Bildflächen neigen sich zum Zeiger |
+| Praxis, Vorgehen | Tabs mit gleitender Markierung; Vorgehen schaltet sich mit Fortschrittsbalken selbst weiter |
+| Begleiter | Kleiner Roboter unten rechts wechselt sein Werkzeug je Abschnitt; Klick schickt ihn weg |
+| Kontakt | Rakete hebt beim Hover ab, Flamme brüllt; Papierflieger fliegt beim Absenden los |
+| Fuß | Pixel-Logo steigt beim Scrollen aus den Ozeanbändern, der Roboter sitzt darin; ein zweiter läuft mit vier Bildern am Ufer entlang |
+| Seitenwechsel | Pixel-Übergang in Ozeanblau |
+
 ### Technik
 
 Motion (`motion`, ehemals Framer Motion) für Federn, Gesten, scrollgekoppelte

@@ -26,7 +26,7 @@ export const en: Dictionary = {
     headlineA: "Your idea.",
     headlineB: "Our code.",
     subline:
-      "We build games, software, apps and AI solutions on commission. For studios, for mid-sized companies and for anyone who needs more than off-the-shelf software can give.",
+      "We build games, software, apps and AI on commission. For studios and companies with a concrete project in mind.",
     primaryCta: "Start a project",
     secondaryCta: "Explore services",
   },
@@ -36,13 +36,13 @@ export const en: Dictionary = {
     items: ["Unreal Engine", "C++", "Flutter", "React", "Next.js", "TypeScript", "Java", "Python"],
   },
   statement: {
-    title: "From the first idea to release, without handing you over to someone else.",
+    title: "One team. From the idea to release.",
     chips: ["Idea", "Concept", "Prototype", "Design", "Development", "Testing", "Release"],
   },
   positioning:
     "We build on commission. From the first prototype to the application your users rely on every day.",
   services: {
-    title: "Four disciplines. One team.",
+    title: "What would you like to build?",
     items: [
       {
         id: "games",
@@ -106,7 +106,7 @@ export const en: Dictionary = {
     },
   },
   cases: {
-    title: "What it looks like in practice.",
+    title: "How a task becomes a product.",
     cta: "Ask about a similar project",
     items: [
       {
@@ -153,38 +153,44 @@ export const en: Dictionary = {
   },
   process: {
     title: "How we work.",
-    intro: "Four steps, and at every one of them you know where your project stands.",
+    prototype: { live: "Live", build: "Building" },
+    intro: "You see interim results and help decide what comes next.",
     steps: [
       {
         title: "Getting to know you",
         text: "You tell us about your plans, we ask the questions that decide scope and technology. The first conversation costs you nothing.",
         scene: "/images/scenes/meet",
-        sceneAlt: "Pixel scene: two characters at a table with coffee and speech bubbles",
+        sceneAlt: "The product is still a sketch on paper, next to a lightbulb.",
         example: true,
       },
       {
         title: "Concept and quote",
         text: "You get a clear scope, a timeline and a quote you can follow. If the idea is still uncertain, we start with a small prototype.",
         scene: "/images/scenes/concept",
-        sceneAlt: "Pixel scene: a character points at a board with a flow chart",
+        sceneAlt: "The sketch becomes a grey wireframe with placeholders.",
       },
       {
         title: "Development in stages",
         text: "We work in short stages. Every two weeks you see a working build and help decide what comes next.",
         scene: "/images/scenes/build",
-        sceneAlt: "Pixel scene: two characters build with blocks and a crane next to a monitor with code",
+        sceneAlt: "The wireframe fills with colour and content while the robot codes next to it.",
         example: true,
       },
       {
         title: "Launch and handover",
         text: "We take the product live, hand over code and documentation, and stay on as your partner for the next versions if you like.",
         scene: "/images/scenes/launch",
-        sceneAlt: "Pixel scene: a rocket lifts off while a character waves",
+        sceneAlt: "The finished product lights up and a rocket lifts off.",
       },
     ],
   },
   faq: {
     title: "Questions we hear often.",
+    more: {
+      title: "Your question is not here?",
+      text: "Write to us. You will get a personal answer, not a canned reply.",
+      cta: "Ask a question",
+    },
     items: [
       {
         question: "What does a project cost?",
@@ -228,6 +234,7 @@ export const en: Dictionary = {
     email: null,
     missingEmail: "[OPEN: contact email address]",
     button: "Write an email",
+    toForm: "Open the contact form",
     promise: { text: "Reply within one working day", example: true },
   },
   footer: {

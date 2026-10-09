@@ -22,7 +22,7 @@ export function RevealHeading({ text, as = "h2", className = "", delay = 0, trig
     { className },
     <motion.span initial="hidden" {...play} className="inline">
       {words.map((word, index) => (
-        <span key={index} className="inline-block overflow-hidden pb-[0.08em] align-bottom">
+        <span key={index} className="-mb-[0.18em] inline-block overflow-hidden pb-[0.18em] align-bottom">
           <motion.span
             className="inline-block"
             variants={{

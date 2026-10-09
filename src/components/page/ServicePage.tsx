@@ -7,19 +7,13 @@ import { asset } from "@/lib/asset";
 import { ease, spring } from "@/lib/motion";
 import { Button } from "@/components/ui/Button";
 import { FaqList } from "@/components/ui/FaqList";
-import { Mosaic } from "@/components/ui/Mosaic";
+import { TiltPanel } from "@/components/ui/TiltPanel";
+import { Visual } from "@/components/site/Services";
 import { RevealHeading } from "@/components/ui/RevealHeading";
 import { TextLink } from "@/components/ui/TextLink";
 import { ContactCta } from "@/components/site/ContactCta";
 import { SiteShell } from "@/components/site/SiteShell";
 import { PageHero } from "./PageHero";
-
-const ROLE_SPRITES: Record<ServiceVisualKind, string> = {
-  game: "/images/sprites/robot-gamer.webp",
-  software: "/images/sprites/robot-coder.webp",
-  apps: "/images/sprites/robot-phone.webp",
-  ai: "/images/sprites/robot-ai.webp",
-};
 
 const CASE_INDEX: Record<ServiceVisualKind, number> = { game: 0, software: 1, apps: 2, ai: 3 };
 
@@ -41,7 +35,6 @@ export function ServicePage({ dict, kind, alternateHref }: { dict: Dictionary; k
         intro={service.hero.intro}
         scene={service.hero.scene}
         sceneAlt={service.hero.sceneAlt}
-        sprite={ROLE_SPRITES[kind]}
         actions={
           <>
             <Button href={pages.routes.contact}>{dict.nav.cta}</Button>
@@ -124,15 +117,15 @@ export function ServicePage({ dict, kind, alternateHref }: { dict: Dictionary; k
               {dict.cases.cta}
             </TextLink>
           </div>
-          <figure className="relative isolate flex min-h-[320px] flex-col justify-end overflow-hidden bg-ocean-900 p-8 lg:p-12">
-            <Mosaic className="absolute inset-0 -z-10 opacity-60" columns={12} rows={9} from={1} to={4} seed={CASE_INDEX[kind] + 4} />
-            <div aria-hidden="true" className="absolute inset-0 -z-10 bg-gradient-to-t from-ocean-950/90 via-ocean-900/40 to-transparent" />
-            <img src={asset(example.sprite)} alt="" className="absolute right-8 top-8 w-16 object-contain" />
-            <blockquote className="text-2xl font-medium leading-snug tracking-tight text-white md:text-[28px]">
+          <div className="px-6 pb-20 lg:py-20 lg:pr-6">
+            <TiltPanel>
+              <Visual item={dict.services.items[CASE_INDEX[kind]]} mockups={dict.services.mockups} locale={dict.locale} />
+            </TiltPanel>
+            <blockquote className="mt-6 border-l-2 border-ocean-400 pl-4 text-fg/85">
               {dict.locale === "de" ? `„${example.quote}“` : `“${example.quote}”`}
+              <footer className="mt-2 text-sm text-muted">{example.role}</footer>
             </blockquote>
-            <figcaption className="mt-5 text-sm text-ocean-100/80">{example.role}</figcaption>
-          </figure>
+          </div>
         </div>
       </section>
 

@@ -197,25 +197,8 @@ export function AiVisual({ mockups }: { mockups: ServiceMockups }) {
           ))}
         </ul>
       </motion.div>
-      <Sprite src="/images/sprites/robot.webp" className="left-[14%] top-[3%] w-[11%]" delay={0.5} />
       <Sprite src="/images/sprites/drone.webp" className="ambient right-[5%] top-[6%] w-[14%] animate-bob" delay={0.7} />
       <Sprite src="/images/sprites/chip.webp" className="bottom-[5%] left-[6%] w-[11%]" delay={0.9} />
     </div>
-  );
-}
-
-export function GameVisual({ alt }: { alt: string }) {
-  return (
-    <img
-      src={asset("/images/services/game.webp")}
-      srcSet={`${asset("/images/services/game-800.webp")} 800w, ${asset("/images/services/game.webp")} 1600w`}
-      sizes="(min-width: 1024px) 560px, 92vw"
-      alt={alt}
-      width={1600}
-      height={900}
-      loading="lazy"
-      decoding="async"
-      className="block aspect-video w-full object-cover"
-    />
   );
 }

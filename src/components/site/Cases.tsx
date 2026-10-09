@@ -58,15 +58,7 @@ export function Cases({ dict }: { dict: Dictionary }) {
               transition={{ duration: 0.45, ease: ease.outExpo }}
               className="flex h-full flex-col"
             >
-              <motion.img
-                src={asset(item.sprite)}
-                alt=""
-                className="size-14 object-contain"
-                initial={{ scale: 0.5, rotate: -12 }}
-                animate={{ scale: 1, rotate: 0 }}
-                transition={spring.playful}
-              />
-              <p className="mt-6 text-sm text-muted">{item.client}</p>
+              <p className="text-sm text-ocean-300">{item.client}</p>
               <h3 className="text-h3 mt-2">{item.title}</h3>
               <p className="mt-4 text-muted">{item.text}</p>
               <TextLink href={`#${dict.anchors.contact}`} className="mt-auto pt-8">
@@ -76,22 +68,25 @@ export function Cases({ dict }: { dict: Dictionary }) {
           </AnimatePresence>
         </div>
 
-        <div className="relative isolate min-h-[320px] overflow-hidden bg-ocean-900 lg:border-l lg:border-line">
-          <Mosaic className="absolute inset-0 -z-10 opacity-60" columns={12} rows={9} from={1} to={4} seed={active + 2} />
-          <div aria-hidden="true" className="absolute inset-0 -z-10 bg-gradient-to-t from-ocean-950/90 via-ocean-900/40 to-transparent" />
+        <div className="flex items-center p-6 lg:border-l lg:border-line lg:p-10">
           <AnimatePresence mode="wait">
             <motion.figure
               key={active}
-              initial={{ opacity: 0, scale: 0.97 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 1.02 }}
-              transition={{ duration: 0.5, ease: ease.outExpo }}
-              className="flex h-full flex-col justify-end p-8 lg:p-10"
+              initial={{ opacity: 0, y: 14, scale: 0.98 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: -10 }}
+              transition={{ duration: 0.45, ease: ease.outExpo }}
+              className="relative w-full overflow-hidden rounded-[var(--radius-card)] border border-ocean-400/30 bg-surface shadow-[inset_0_0_0_1px_rgba(72,202,228,0.08)]"
             >
-              <blockquote className="text-2xl font-medium leading-snug tracking-tight text-white md:text-[28px]">
-                {dict.locale === "de" ? `„${item.quote}“` : `“${item.quote}”`}
-              </blockquote>
-              <figcaption className="mt-5 text-sm text-ocean-100/80">{item.role}</figcaption>
+              <div className="p-7">
+                <span aria-hidden="true" className="font-mono text-4xl leading-none text-ocean-400">„</span>
+                <blockquote className="mt-2 text-xl font-medium leading-snug tracking-tight md:text-2xl">{item.quote}</blockquote>
+                <figcaption className="mt-5 flex items-center gap-3 text-sm text-muted">
+                  <img src={asset(item.sprite)} alt="" className="size-8 object-contain" />
+                  {item.role}
+                </figcaption>
+              </div>
+              <Mosaic className="h-6 opacity-80" columns={24} rows={1} from={1} to={6} seed={active + 2} />
             </motion.figure>
           </AnimatePresence>
         </div>

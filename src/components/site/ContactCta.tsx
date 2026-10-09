@@ -45,14 +45,9 @@ export function ContactCta({ dict, title, text }: { dict: Dictionary; title?: st
                     {dict.contact.button}
                   </Button>
                 ) : (
-                  <span
-                    aria-disabled="true"
-                    onPointerEnter={() => setLaunch(true)}
-                    onPointerLeave={() => setLaunch(false)}
-                    className="inline-flex h-11 cursor-not-allowed items-center rounded-[var(--radius-control)] border border-line-strong px-5 text-[15px] text-muted"
-                  >
-                    {dict.contact.button}
-                  </span>
+                  <Button href={dict.pages.routes.contact} onHoverChange={setLaunch}>
+                    {dict.contact.toForm}
+                  </Button>
                 )}
                 <span className="flex items-center gap-2 text-sm text-muted">
                   <span className="size-2 rounded-full bg-ocean-400" />

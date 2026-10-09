@@ -91,9 +91,6 @@ export function Footer({ dict, alternateHref }: FooterProps) {
         </motion.div>
       </div>
       <div aria-hidden="true" className="relative">
-        <div className="ambient pointer-events-none absolute -top-[62px] left-0 h-16 w-11 animate-walk">
-          <PixelRobot className="size-full animate-bob" />
-        </div>
         {BANDS.map((color) => (
           <div key={color} className="h-6 md:h-7" style={{ background: color }} />
         ))}

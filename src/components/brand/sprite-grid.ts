@@ -1,0 +1,27 @@
+// Generated from the pixel grids (scripts/pixelize-sprite.py): width and height in art pixels.
+// Used by PixelImg so every figure shows the same pixel size (WEBSITE.md, "Bildsprache").
+export const SPRITE_GRID: Record<string, [number, number]> = {
+  "/images/icons/code.webp": [28, 28],
+  "/images/icons/concept.webp": [29, 34],
+  "/images/icons/design.webp": [20, 20],
+  "/images/icons/idea.webp": [33, 46],
+  "/images/icons/prototype.webp": [20, 20],
+  "/images/icons/test.webp": [21, 25],
+  "/images/sprites/chip.webp": [94, 96],
+  "/images/sprites/drone.webp": [116, 96],
+  "/images/sprites/flag.webp": [38, 60],
+  "/images/sprites/gamepad.webp": [41, 36],
+  "/images/sprites/laptop.webp": [60, 33],
+  "/images/sprites/mailbox.webp": [42, 44],
+  "/images/sprites/paper-plane.webp": [32, 28],
+  "/images/sprites/phone.webp": [34, 59],
+  "/images/sprites/robot-ai.webp": [42, 45],
+  "/images/sprites/robot-astronaut.webp": [33, 41],
+  "/images/sprites/robot-coder.webp": [42, 42],
+  "/images/sprites/robot-gamer.webp": [29, 38],
+  "/images/sprites/robot-phone.webp": [32, 41],
+  "/images/sprites/robot-wave.webp": [27, 41],
+  "/images/sprites/rocket.webp": [26, 41],
+  "/images/sprites/satellite.webp": [62, 41],
+  "/images/sprites/server.webp": [23, 31],
+};

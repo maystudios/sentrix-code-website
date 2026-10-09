@@ -2,17 +2,18 @@
 
 import { motion } from "motion/react";
 import { useEffect, useState } from "react";
-import type { Dictionary, ServiceItem, ServiceMockups } from "@/content/types";
+import type { Dictionary, Locale, ServiceItem, ServiceMockups } from "@/content/types";
 import { ease, spring } from "@/lib/motion";
 import { Arrow } from "@/components/ui/Arrow";
 import { TextLink } from "@/components/ui/TextLink";
 import { TiltPanel } from "@/components/ui/TiltPanel";
-import { AiVisual, AppsVisual, GameVisual, SoftwareVisual } from "./ServiceVisuals";
+import { AiVisual, AppsVisual, SoftwareVisual } from "./ServiceVisuals";
+import { StackGame } from "./StackGame";
 
-function Visual({ item, mockups }: { item: ServiceItem; mockups: ServiceMockups }) {
+export function Visual({ item, mockups, locale }: { item: ServiceItem; mockups: ServiceMockups; locale: Locale }) {
   switch (item.visual) {
     case "game":
-      return <GameVisual alt={item.imageAlt} />;
+      return <StackGame locale={locale} />;
     case "software":
       return <SoftwareVisual mockups={mockups} />;
     case "apps":
@@ -31,7 +32,7 @@ export function Services({ dict }: { dict: Dictionary }) {
       (entries) => {
         for (const entry of entries) if (entry.isIntersecting) setActive(entry.target.id);
       },
-      { rootMargin: "-45% 0px -45% 0px" },
+      { rootMargin: "-30% 0px -60% 0px" },
     );
     for (const item of items) {
       const element = document.getElementById(item.id);
@@ -110,7 +111,7 @@ export function Services({ dict }: { dict: Dictionary }) {
               </motion.div>
               <div className={index % 2 === 1 ? "md:order-1" : ""}>
                 <TiltPanel>
-                  <Visual item={item} mockups={dict.services.mockups} />
+                  <Visual item={item} mockups={dict.services.mockups} locale={dict.locale} />
                 </TiltPanel>
               </div>
             </article>

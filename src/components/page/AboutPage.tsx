@@ -78,7 +78,6 @@ export function AboutPage({ dict, alternateHref }: { dict: Dictionary; alternate
         intro={about.hero.intro}
         scene={about.hero.scene}
         sceneAlt={about.hero.sceneAlt}
-        sprite="/images/sprites/robot-wave.webp"
         actions={<Button href={pages.routes.contact}>{dict.nav.cta}</Button>}
       />
 

@@ -34,7 +34,7 @@ export function ContactPage({ dict, alternateHref }: { dict: Dictionary; alterna
   const copy = page.form;
   const id = useId();
   const { reduced } = useMotionPolicy();
-  const [values, setValues] = useState<Values>({ name: "", email: "", company: "", topic: copy.topics[0], message: "", consent: false });
+  const [values, setValues] = useState<Values>({ name: "", email: "", company: "", topic: "", message: "", consent: false });
   const [touched, setTouched] = useState<Partial<Record<Field, boolean>>>({});
   const [submitted, setSubmitted] = useState(false);
   const [status, setStatus] = useState<Status>("idle");
@@ -53,7 +53,7 @@ export function ContactPage({ dict, alternateHref }: { dict: Dictionary; alterna
       setStatus("unavailable");
       return;
     }
-    const subject = `[Sentrix Code] ${values.topic} · ${values.name}`;
+    const subject = `[Sentrix Code] ${values.topic || "Anfrage"} · ${values.name}`;
     const body = `${values.message}\n\n${values.name}${values.company ? `, ${values.company}` : ""}\n${values.email}`;
     if (!reduced) {
       await animatePlane(plane.current, { x: [0, -16, 420], y: [0, 10, -260], rotate: [0, -8, -24], opacity: [1, 1, 0] }, { duration: 1.1, ease: "easeIn" });
@@ -135,7 +135,7 @@ export function ContactPage({ dict, alternateHref }: { dict: Dictionary; alterna
               </div>
               <fieldset>
                 <legend className="text-sm">{copy.topic}</legend>
-                <div className="mt-3 flex flex-wrap gap-2">
+                <div className="mt-3 grid grid-cols-2 gap-2 sm:grid-cols-3">
                   {copy.topics.map((topic) => (
                     <label key={topic} className="relative cursor-pointer">
                       <input
@@ -146,7 +146,7 @@ export function ContactPage({ dict, alternateHref }: { dict: Dictionary; alterna
                         onChange={() => set("topic", topic)}
                         className="peer sr-only"
                       />
-                      <span className="block rounded-[var(--radius-control)] border border-line-strong px-3.5 py-2 text-sm text-muted transition-all duration-150 hover:border-muted hover:text-fg peer-checked:border-ocean-400 peer-checked:bg-ocean-400/10 peer-checked:text-fg peer-focus-visible:outline peer-focus-visible:outline-2 peer-focus-visible:outline-ocean-400 active:scale-95">
+                      <span className="block h-full rounded-[var(--radius-control)] border border-line-strong px-3.5 py-2.5 text-center text-sm text-muted transition-all duration-150 hover:border-muted hover:text-fg peer-checked:border-ocean-400 peer-checked:bg-ocean-400/10 peer-checked:text-fg peer-focus-visible:outline peer-focus-visible:outline-2 peer-focus-visible:outline-ocean-400 active:scale-95">
                         {topic}
                       </span>
                     </label>

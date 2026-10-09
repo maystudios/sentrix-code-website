@@ -1,7 +1,7 @@
 "use client";
 
-import { AnimatePresence, motion, useMotionValue, useSpring, useTransform } from "motion/react";
-import { useEffect, useRef, useState, type PointerEvent, type ReactNode, type RefObject } from "react";
+import { AnimatePresence, motion, useAnimate, useMotionValue, useSpring, useTransform } from "motion/react";
+import { useCallback, useEffect, useRef, useState, type PointerEvent, type ReactNode, type RefObject } from "react";
 import type { Dictionary } from "@/content/types";
 import { asset } from "@/lib/asset";
 import { duration, ease, spring } from "@/lib/motion";
@@ -114,10 +114,11 @@ function Img({ src, className = "" }: { src: string; className?: string }) {
 
 // The drone sways above the right tower, opens its claw and drops blocks that bounce onto
 // the tower; three blocks later they pop and the game starts over (the reference's claw).
-function DroneDrop({ reduced, slotRef }: { reduced: boolean; slotRef: RefObject<HTMLDivElement | null> }) {
+function DroneDrop({ reduced, slotRef, onTowerDone }: { reduced: boolean; slotRef: RefObject<HTMLDivElement | null>; onTowerDone: () => void }) {
   const drone = useRef<HTMLDivElement>(null);
   const [drops, setDrops] = useState<{ id: number; distance: number }[]>([]);
   const [popping, setPopping] = useState(false);
+  const [dust, setDust] = useState<{ id: number; level: number }[]>([]);
   const counter = useRef(0);
 
   useEffect(() => {
@@ -126,12 +127,13 @@ function DroneDrop({ reduced, slotRef }: { reduced: boolean; slotRef: RefObject<
     const step = (count: number) => {
       timer = setTimeout(() => {
         if (count >= 3) {
+          onTowerDone();
           setPopping(true);
           timer = setTimeout(() => {
             setDrops([]);
             setPopping(false);
             step(0);
-          }, 900);
+          }, 2600);
           return;
         }
         const droneBox = drone.current?.getBoundingClientRect();
@@ -142,11 +144,11 @@ function DroneDrop({ reduced, slotRef }: { reduced: boolean; slotRef: RefObject<
         counter.current += 1;
         setDrops((current) => [...current, { id: counter.current, distance }]);
         step(count + 1);
-      }, count === 0 ? 2600 : 3400);
+      }, count === 0 ? 1800 : 3000 + Math.random() * 1400);
     };
     step(0);
     return () => clearTimeout(timer);
-  }, [reduced, slotRef]);
+  }, [reduced, slotRef, onTowerDone]);
 
   return (
     <>
@@ -156,7 +158,7 @@ function DroneDrop({ reduced, slotRef }: { reduced: boolean; slotRef: RefObject<
         className="absolute right-[calc(var(--u)*0.35)] top-16 z-10 w-[calc(var(--u)*1.3)] md:top-20"
         initial={{ opacity: 0, y: -90 }}
         animate={reduced ? { opacity: 1, y: 0 } : { opacity: 1, y: [0, -6, 0], x: [0, -10, 8, 0] }}
-        transition={reduced ? { duration: 0 } : { y: { duration: 2.4, repeat: Infinity, ease: "easeInOut" }, x: { duration: 6, repeat: Infinity, ease: "easeInOut" }, opacity: { delay: 1.4 } }}
+        transition={reduced ? { duration: 0 } : { y: { duration: 2.4, repeat: Infinity, ease: "easeInOut" }, x: { duration: 6, repeat: Infinity, ease: "easeInOut" }, opacity: { delay: 0.6 } }}
       >
         <Img src="/images/sprites/drone.webp" />
       </motion.div>
@@ -176,9 +178,25 @@ function DroneDrop({ reduced, slotRef }: { reduced: boolean; slotRef: RefObject<
               animate={popping ? { scale: 0, rotate: 45, transition: { delay: (2 - index) * 0.08, duration: 0.25 } } : { y: 0, rotate: 0 }}
               exit={{ opacity: 0 }}
               transition={{ type: "spring", stiffness: 420, damping: 14, mass: 1.1 }}
+              onAnimationComplete={() => {
+                if (!popping) setDust((current) => [...current.slice(-6), { id: drop.id, level: index }]);
+              }}
             />
           ))}
         </AnimatePresence>
+        {/* Pixel dust where a block lands. */}
+        {dust.map((puff) =>
+          [-1, 1].map((side) => (
+            <motion.span
+              key={`${puff.id}-${side}`}
+              className="absolute block size-1.5 bg-ocean-100"
+              style={{ bottom: `calc(var(--u) * ${puff.level})`, left: side < 0 ? "-6%" : "100%" }}
+              initial={{ opacity: 1, x: 0, y: 0 }}
+              animate={{ opacity: 0, x: side * 14, y: -10 }}
+              transition={{ duration: 0.45, ease: "easeOut" }}
+            />
+          )),
+        )}
         <AnimatePresence>
           {popping && (
             <motion.img
@@ -199,7 +217,7 @@ function DroneDrop({ reduced, slotRef }: { reduced: boolean; slotRef: RefObject<
 
 function Word({ children, delay }: { children: ReactNode; delay: number }) {
   return (
-    <span className="inline-block overflow-hidden pb-[0.08em] align-bottom">
+    <span className="-mb-[0.18em] inline-block overflow-hidden pb-[0.18em] align-bottom">
       <motion.span className="inline-block" initial={{ y: "110%" }} animate={{ y: 0 }} transition={{ duration: 0.9, ease: ease.outExpo, delay }}>
         {children}
       </motion.span>
@@ -225,6 +243,16 @@ export function Hero({ dict }: { dict: Dictionary }) {
   const rightX = useTransform(smoothX, (value) => value * 18);
   const stackY = useTransform(smoothY, (value) => value * -10);
   const slot = useRef<HTMLDivElement>(null);
+  const [rocketScope, animateRocket] = useAnimate();
+  const [launching, setLaunching] = useState(false);
+  const launch = useCallback(async () => {
+    if (!rocketScope.current) return;
+    setLaunching(true);
+    await animateRocket(rocketScope.current, { y: [0, 3, -4, 0] }, { duration: 0.6 });
+    await animateRocket(rocketScope.current, { y: "-115vh" }, { duration: 1.1, ease: [0.5, 0, 0.9, 0.6] });
+    setLaunching(false);
+    await animateRocket(rocketScope.current, { y: 0 }, { type: "spring", stiffness: 70, damping: 14, delay: 0.9 });
+  }, [animateRocket, rocketScope]);
 
   function handlePointer(event: PointerEvent<HTMLElement>) {
     if (reduced) return;
@@ -258,7 +286,6 @@ export function Hero({ dict }: { dict: Dictionary }) {
         <img src={asset("/images/sprites/cloud-2.webp")} alt="" className="absolute top-[14%] w-28 animate-[cloud_95s_linear_infinite] opacity-25 [animation-delay:-30s] md:w-40" />
         <img src={asset("/images/sprites/cloud-3.webp")} alt="" className="absolute top-[30%] w-16 animate-[cloud_70s_linear_infinite] opacity-20 [animation-delay:-50s] md:w-24" />
         <img src={asset("/images/sprites/cloud-4.webp")} alt="" className="absolute top-[8%] w-14 animate-[cloud_120s_linear_infinite] opacity-15 [animation-delay:-5s] md:w-20" />
-        <img src={asset("/images/sprites/satellite.webp")} alt="" className="absolute top-[22%] w-14 animate-[satellite_28s_linear_infinite] md:w-20" />
         {SPARKLES.map((sparkle, index) => (
           <img key={index} src={asset(sparkle.src)} alt="" className={`absolute animate-twinkle ${sparkle.className}`} style={{ animationDelay: sparkle.delay }} />
         ))}
@@ -309,7 +336,7 @@ export function Hero({ dict }: { dict: Dictionary }) {
           className="mt-14 flex flex-col items-center gap-0.5 p-3 text-ocean-400"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ duration: duration.slow, delay: 1.6 }}
+          transition={{ duration: duration.slow, delay: 1.1 }}
         >
           {[0, 1, 2].map((index) => (
             <svg key={index} viewBox="0 0 7 4" className="ambient h-2 w-3.5 animate-scroll-cue" style={{ animationDelay: `${index * 0.2}s` }} aria-hidden="true">
@@ -323,33 +350,24 @@ export function Hero({ dict }: { dict: Dictionary }) {
       <div aria-hidden="true" className="pointer-events-none absolute inset-0">
         <motion.div className="absolute inset-y-0 left-0 w-1/2" style={{ x: leftX, y: stackY }}>
           <Stack blocks={LEFT} side="left" reduced={reduced} />
-          <Sprite className="pointer-events-auto cursor-pointer" delay={1.05} style={{ left: "calc(var(--u) * 0.25)", bottom: "calc(var(--u) * 4)", width: "calc(var(--u) * 1.5)", height: "calc(var(--u) * 2.28)" }}>
+          <Sprite className="pointer-events-auto cursor-pointer" delay={0.7} style={{ left: "calc(var(--u) * 0.25)", bottom: "calc(var(--u) * 4)", width: "calc(var(--u) * 1.5)", height: "calc(var(--u) * 2.28)" }}>
             <PixelRobot className="size-full" waves watching />
           </Sprite>
-          <Sprite className="pointer-events-auto" delay={1.2} style={{ left: "calc(var(--u) * 3.55)", bottom: "calc(var(--u) * 0.98)", width: "calc(var(--u) * 1.4)", height: "calc(var(--u) * 1.1)" }}>
+          <Sprite className="pointer-events-auto" delay={0.78} style={{ left: "calc(var(--u) * 3.55)", bottom: "calc(var(--u) * 0.98)", width: "calc(var(--u) * 1.4)", height: "calc(var(--u) * 1.1)" }}>
             <Img src="/images/sprites/gamepad.webp" className="ambient animate-bob" />
           </Sprite>
         </motion.div>
         <motion.div className="absolute inset-y-0 right-0 w-1/2" style={{ x: rightX, y: stackY }}>
-          {/* Server tower that keeps popping up behind the stack, like the reference's castle. */}
-          <div className="absolute bottom-0 right-[calc(var(--u)*2.15)] h-[calc(var(--u)*2.2)] w-[calc(var(--u)*1.4)] overflow-hidden">
-            <motion.div
-              className="size-full"
-              initial={{ y: "100%" }}
-              animate={reduced ? { y: "100%" } : { y: ["100%", "4%", "8%", "4%", "100%"] }}
-              transition={{ duration: 4.2, times: [0, 0.18, 0.5, 0.75, 1], repeat: Infinity, repeatDelay: 5.5, delay: 3, ease: "easeInOut" }}
-            >
-              <Img src="/images/sprites/server.webp" />
-            </motion.div>
-          </div>
           <Stack blocks={RIGHT} side="right" reduced={reduced} />
           <div ref={slot} aria-hidden="true" className="absolute bottom-[calc(var(--u)*4)] right-[calc(var(--u)*0.5)] h-px w-[calc(var(--u)*1)]" />
-          <DroneDrop reduced={reduced} slotRef={slot} />
-          <Sprite className="pointer-events-auto" delay={1.15} style={{ right: "calc(var(--u) * 3.85)", bottom: "calc(var(--u) * 1.55)", width: "calc(var(--u) * 1.5)", height: "calc(var(--u) * 1.5)" }}>
+          <DroneDrop reduced={reduced} slotRef={slot} onTowerDone={launch} />
+          <Sprite className="pointer-events-auto" delay={0.82} style={{ right: "calc(var(--u) * 3.85)", bottom: "calc(var(--u) * 1.55)", width: "calc(var(--u) * 1.5)", height: "calc(var(--u) * 1.5)" }}>
             <Img src="/images/sprites/laptop.webp" className="ambient animate-bob" />
           </Sprite>
-          <Sprite className="pointer-events-auto hidden sm:block" delay={1.4} style={{ right: "calc(var(--u) * 7.15)", bottom: "calc(var(--u) * 0.55)", width: "calc(var(--u) * 1.3)", height: "calc(var(--u) * 2.05)" }}>
-            <PixelRocket className="ambient size-full animate-bob" />
+          <Sprite className="pointer-events-auto hidden sm:block" delay={0.9} style={{ right: "calc(var(--u) * 7.15)", bottom: "calc(var(--u) * 0.55)", width: "calc(var(--u) * 1.3)", height: "calc(var(--u) * 2.05)" }}>
+            <div ref={rocketScope} className="size-full">
+              <PixelRocket className="size-full" launching={launching} />
+            </div>
           </Sprite>
         </motion.div>
       </div>
