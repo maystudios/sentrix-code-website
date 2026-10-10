@@ -15,7 +15,7 @@ const BANDS = ["#00b4d8", "#0096c7", "#0077b6", "#023e8a"];
 type FooterProps = { dict: Dictionary; alternateHref?: string };
 
 // The big pixel logo rises out of the ocean bands as the page end comes into view and
-// sinks again when scrolling back up; the robot walks back and forth in the lower bands.
+// sinks again when scrolling back up; the robot walks back and forth on the darkest band.
 export function Footer({ dict, alternateHref }: FooterProps) {
   const { pages } = dict;
   const { reduced } = useMotionPolicy();
@@ -92,8 +92,8 @@ export function Footer({ dict, alternateHref }: FooterProps) {
         {BANDS.map((color) => (
           <div key={color} className="h-6 md:h-7" style={{ background: color }} />
         ))}
-        {/* The robot walks back and forth inside the lower bands, blue on blue. */}
-        <PixelWalker className="absolute inset-x-[6%] bottom-0 h-[51px]" />
+        {/* The robot walks back and forth on the top edge of the darkest band, blue on blue. */}
+        <PixelWalker className="absolute inset-x-[6%] bottom-6 h-[44px] md:bottom-7 md:h-[51px]" />
       </div>
     </footer>
   );

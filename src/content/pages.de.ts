@@ -363,7 +363,7 @@ export const pagesDe: Pages = {
       invalidEmail: "Bitte geben Sie eine gültige E-Mail-Adresse ein.",
       tooShort: "Ein paar Worte mehr helfen uns, Ihr Projekt einzuschätzen.",
       unavailable:
-        "Das Formular wird gerade angebunden. Bis dahin erreichen Sie uns per E-Mail: [OFFEN: Kontakt-E-Mail-Adresse]",
+        "Das Formular wird gerade angebunden. Bis dahin erreichen Sie uns per E-Mail: contact@sentrixcode.com",
       sent: "Danke! Ihr E-Mail-Programm öffnet sich mit Ihrer Anfrage.",
     },
     aside: {

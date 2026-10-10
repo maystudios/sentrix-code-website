@@ -279,7 +279,7 @@ export const en: Dictionary = {
     title: "Tell us about your project.",
     text: "A few sentences about your idea are enough. We will get back to you with a first assessment and a suggested date to talk.",
     emailLabel: "Email",
-    email: null,
+    email: "contact@sentrixcode.com",
     missingEmail: "[OPEN: contact email address]",
     button: "Write an email",
     toForm: "Open the contact form",

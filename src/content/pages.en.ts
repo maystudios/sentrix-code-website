@@ -362,7 +362,7 @@ export const pagesEn: Pages = {
       required: "Please fill in this field.",
       invalidEmail: "Please enter a valid email address.",
       tooShort: "A few more words help us assess your project.",
-      unavailable: "The form is being connected. Until then you can reach us by email: [OPEN: contact email address]",
+      unavailable: "The form is being connected. Until then you can reach us by email: contact@sentrixcode.com",
       sent: "Thank you! Your email program opens with your request.",
     },
     aside: {

@@ -3,10 +3,9 @@
 import { motion } from "motion/react";
 import { useState } from "react";
 import type { Dictionary } from "@/content/types";
-import { ease, spring } from "@/lib/motion";
+import { ease } from "@/lib/motion";
 import { Button } from "@/components/ui/Button";
-import { Mosaic } from "@/components/ui/Mosaic";
-import { PixelRocket } from "@/components/brand/PixelCharacters";
+import { RocketFlight } from "./RocketFlight";
 
 export function ContactCta({ dict, title, text }: { dict: Dictionary; title?: string; text?: string }) {
   const [launch, setLaunch] = useState(false);
@@ -47,22 +46,15 @@ export function ContactCta({ dict, title, text }: { dict: Dictionary; title?: st
                   </Button>
                 )}
                 <span className="flex items-center gap-2 text-sm text-muted">
-                  <span className="size-2 rounded-full bg-ocean-400" />
+                  <span className="relative size-2">
+                    <span className="ambient absolute inset-0 animate-ping rounded-full bg-ocean-400/60" />
+                    <span className="absolute inset-0 rounded-full bg-ocean-400" />
+                  </span>
                   {dict.contact.promise.text}
                 </span>
               </div>
             </div>
-            <div className="relative flex min-h-[260px] items-center justify-center overflow-hidden">
-            <Mosaic className="absolute inset-0" tile={28} from={1} to={6} direction="horizontal" seed={11} />
-            <motion.div
-              aria-hidden="true"
-              className="relative w-28 md:w-36"
-              animate={launch ? { y: -22, rotate: -4 } : { y: 0, rotate: 0 }}
-              transition={spring.playful}
-            >
-              <PixelRocket engine={launch ? "roar" : "idle"} className="ambient w-full animate-bob" />
-            </motion.div>
-            </div>
+            <RocketFlight launch={launch} locale={dict.locale} />
           </div>
         </motion.div>
       </div>

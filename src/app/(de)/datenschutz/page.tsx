@@ -31,7 +31,7 @@ const sections: LegalSection[] = [
         <br />
         vertreten durch die Geschäftsführer Luca Finn Wiegand und Sven Fredrik Maibaum.
         <br />
-        E-Mail: <Open>Kontakt-E-Mail-Adresse</Open>
+        E-Mail: <a href="mailto:contact@sentrixcode.com">contact@sentrixcode.com</a>
       </p>
     ),
   },

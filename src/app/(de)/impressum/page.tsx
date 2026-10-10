@@ -37,7 +37,7 @@ const sections: LegalSection[] = [
     title: "Kontakt",
     body: (
       <p>
-        E-Mail: <Open>Kontakt-E-Mail-Adresse</Open>
+        E-Mail: <a href="mailto:contact@sentrixcode.com">contact@sentrixcode.com</a>
         <br />
         Kontaktformular: <Link href="/kontakt/">Kontaktseite</Link>
         <br />

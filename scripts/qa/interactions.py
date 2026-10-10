@@ -6,7 +6,8 @@ Checks, each printed as PASS or FAIL:
 1. Hovering a hero figure and leaving it puts the figure back where it was.
 2. A free hero block dragged upwards and released springs back into place, on screen.
 3. Each cloud lane has a cloud on screen at every sample over 12 seconds.
-4. The footer robot walks (its position changes) and stays inside the bands.
+4. The footer robot walks (its position changes), stays inside the bands and stands on the
+   top edge of the darkest band.
 5. No console errors or page errors.
 """
 
@@ -103,6 +104,15 @@ with sync_playwright() as p:
     walks = first and second and abs(second["x"] - first["x"]) > 3
     inside = second and footer and second["y"] + second["height"] <= footer["y"] + footer["height"] + 1
     check("footer robot walks inside the bands", bool(walks and inside), f"moved {abs(second['x'] - first['x']) if first and second else 'n/a'} px")
+    # Its feet rest on the top edge of the darkest (last) band.
+    band = page.evaluate("""() => {
+        const bands = [...document.querySelectorAll('footer div')].filter((el) => getComputedStyle(el).backgroundColor === 'rgb(2, 62, 138)');
+        const last = bands[bands.length - 1];
+        return last ? last.getBoundingClientRect().top : null;
+    }""")
+    feet = second["y"] + second["height"] if second else None
+    on_edge = band is not None and feet is not None and abs(feet - band) <= 2
+    check("footer robot stands on the darkest band", on_edge, f"feet {feet}, band top {band}")
 
     check("no console or page errors", not errors, "; ".join(errors[:3]))
     browser.close()

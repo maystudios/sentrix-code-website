@@ -364,7 +364,8 @@ export function PixelProp({ name, className }: { name: PropName; className?: str
 
 // The robot walking back and forth along a line: four walk frames while it moves, a short
 // rest and a look around at each end, then it turns (mirrored) and walks back.
-export function PixelWalker({ className }: { className?: string }) {
+// The track is the element itself: give it a position (and a size) with `className`.
+export function PixelWalker({ className = "relative" }: { className?: string }) {
   const { ref, live } = useLive<HTMLDivElement>();
   const [scope, animate] = useAnimate<HTMLDivElement>();
   const [walking, setWalking] = useState(false);
@@ -395,7 +396,7 @@ export function PixelWalker({ className }: { className?: string }) {
     };
   }, [live, animate, scope, ref]);
   return (
-    <div ref={ref} className={`relative ${className ?? ""}`}>
+    <div ref={ref} className={className}>
       <div ref={scope} className="absolute bottom-0 left-0 h-full" style={{ aspectRatio: `${FIGURES["robot-walk"].width} / ${FIGURES["robot-walk"].height}` }}>
         <div className="size-full" style={{ transform: facing < 0 ? "scaleX(-1)" : undefined }}>
           <PixelArt figure={FIGURES["robot-walk"]} className="size-full" frames={{ walk: walking ? (tick % 4) + 1 : 2 }} />

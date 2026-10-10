@@ -40,6 +40,12 @@ const TWINKLES = [
   [0.3, 0.86, 3.1],
 ];
 
+// "relative" and "absolute" set the same property, and the stylesheet's order decides which
+// wins, not the class order. So the default "relative" is left out when a position is given.
+function positioned(className: string) {
+  return /(^|\s)(absolute|fixed|sticky)(\s|$)/.test(className);
+}
+
 export function Mosaic({ tile = 28, from = 7, to = 1, direction = "diagonal", seed = 1, twinkle = true, className = "" }: MosaicProps) {
   const root = useRef<HTMLDivElement>(null);
   const canvas = useRef<HTMLCanvasElement>(null);
@@ -74,7 +80,7 @@ export function Mosaic({ tile = 28, from = 7, to = 1, direction = "diagonal", se
   }, [tile, from, to, direction, seed]);
 
   return (
-    <div ref={root} aria-hidden="true" className={`relative overflow-hidden ${className}`} style={{ background: OCEAN[Math.round((from + to) / 2)] }}>
+    <div ref={root} aria-hidden="true" className={`overflow-hidden ${positioned(className) ? "" : "relative "}${className}`} style={{ background: OCEAN[Math.round((from + to) / 2)] }}>
       <canvas ref={canvas} className="absolute left-0 top-0 block" />
       {twinkle &&
         TWINKLES.map(([x, y, delay], index) => (
