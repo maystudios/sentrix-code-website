@@ -18,7 +18,8 @@ type LegalPageProps = {
 };
 
 // German legal pages with a sticky table of contents that follows the reading position.
-// Drafts stay marked until the project owner has had them reviewed (WEBSITE.md, "Rechtliches").
+// The date says which version is published; review by the project owner: WEBSITE.md,
+// "Rechtliches".
 export function LegalPage({ title, intro, updated, sections }: LegalPageProps) {
   const [active, setActive] = useState(sections[0]?.id);
 
@@ -70,7 +71,7 @@ export function LegalPage({ title, intro, updated, sections }: LegalPageProps) {
           <div className="max-w-3xl">
             <p className="mb-10 inline-flex items-center gap-3 rounded-[var(--radius-control)] border border-line-strong bg-surface px-4 py-2.5 text-sm text-muted">
               <PixelIcon name="test" px={2} />
-              Entwurf, Stand {updated}. Vor der Veröffentlichung unter eigener Domain rechtlich prüfen.
+              Stand: {updated}
             </p>
             {sections.map((section, index) => (
               <motion.section
@@ -96,8 +97,4 @@ export function LegalPage({ title, intro, updated, sections }: LegalPageProps) {
       </section>
     </SiteShell>
   );
-}
-
-export function Open({ children }: { children: ReactNode }) {
-  return <span className="font-mono text-sm text-ocean-300">[OFFEN: {children}]</span>;
 }

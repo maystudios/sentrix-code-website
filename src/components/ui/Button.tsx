@@ -8,7 +8,9 @@ import { spring } from "@/lib/motion";
 const MotionLink = motion.create(Link);
 
 type ButtonProps = {
-  href: string;
+  // A link with `href`, a button with `onClick`.
+  href?: string;
+  onClick?: () => void;
   children: ReactNode;
   variant?: "primary" | "secondary";
   size?: "md" | "sm";
@@ -30,28 +32,29 @@ const sizes = {
 // No arrow on buttons; arrows belong to text links only (WEBSITE.md, "Kein AI-Slop").
 export function Button({
   href,
+  onClick,
   children,
   variant = "primary",
   size = "md",
   className = "",
   onHoverChange,
 }: ButtonProps) {
-  return (
-    <MotionLink
-      href={href}
-      initial="rest"
-      animate="rest"
-      whileHover="hover"
-      whileFocus="hover"
-      whileTap="tap"
-      variants={{ rest: { scale: 1 }, hover: { scale: 1.02 }, tap: { scale: 0.96 } }}
-      transition={spring.ui}
-      onHoverStart={() => onHoverChange?.(true)}
-      onHoverEnd={() => onHoverChange?.(false)}
-      onFocus={() => onHoverChange?.(true)}
-      onBlur={() => onHoverChange?.(false)}
-      className={`relative inline-flex select-none items-center gap-2 overflow-hidden rounded-[var(--radius-control)] font-medium transition-colors duration-150 ${variants[variant]} ${sizes[size]} ${className}`}
-    >
+  const shared = {
+    initial: "rest",
+    animate: "rest",
+    whileHover: "hover",
+    whileFocus: "hover",
+    whileTap: "tap",
+    variants: { rest: { scale: 1 }, hover: { scale: 1.02 }, tap: { scale: 0.96 } },
+    transition: spring.ui,
+    onHoverStart: () => onHoverChange?.(true),
+    onHoverEnd: () => onHoverChange?.(false),
+    onFocus: () => onHoverChange?.(true),
+    onBlur: () => onHoverChange?.(false),
+    className: `relative inline-flex select-none items-center justify-center gap-2 overflow-hidden rounded-[var(--radius-control)] font-medium transition-colors duration-150 ${variants[variant]} ${sizes[size]} ${className}`,
+  } as const;
+  const inner = (
+    <>
       {/* Hover and focus: a pixel bar fills along the bottom edge in eight steps. */}
       <motion.span
         aria-hidden="true"
@@ -60,6 +63,18 @@ export function Button({
         transition={{ duration: 0.24, ease: (t: number) => Math.ceil(t * 8) / 8 }}
       />
       <span className="relative">{children}</span>
+    </>
+  );
+  if (href === undefined) {
+    return (
+      <motion.button type="button" onClick={onClick} {...shared}>
+        {inner}
+      </motion.button>
+    );
+  }
+  return (
+    <MotionLink href={href} {...shared}>
+      {inner}
     </MotionLink>
   );
 }

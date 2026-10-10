@@ -116,4 +116,25 @@ export type Dictionary = {
     company: string;
     tagline: string;
   };
+  consent: ConsentCopy;
+};
+
+// Banner and settings dialog for optional services (src/lib/consent.ts).
+export type ConsentCopy = {
+  settingsLink: string;
+  banner: { title: string; text: string; accept: string; reject: string; settings: string };
+  dialog: {
+    title: string;
+    intro: string;
+    always: string;
+    none: string;
+    save: string;
+    acceptAll: string;
+    rejectAll: string;
+    close: string;
+    saved: string;
+    privacy: string;
+    imprint: string;
+    categories: Record<"necessary" | "statistics" | "media", { title: string; text: string }>;
+  };
 };

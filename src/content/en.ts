@@ -316,4 +316,41 @@ export const en: Dictionary = {
     company: "Sentrix Code GmbH i. G.",
     tagline: "Games, software, apps and AI on commission. From Monheim am Rhein, Germany.",
   },
+  consent: {
+    settingsLink: "Privacy settings",
+    banner: {
+      title: "Your privacy",
+      text: "We only use what this website needs to work. Optional services load only once you agree. You can change your choice at any time under “Privacy settings” in the footer.",
+      accept: "Accept all",
+      reject: "Reject all",
+      settings: "Settings",
+    },
+    dialog: {
+      title: "Privacy settings",
+      intro: "This website sets no cookies. It only keeps settings you choose yourself in your browser's local storage. For optional services we ask you first.",
+      always: "Always on",
+      none: "We currently use no service of this kind.",
+      save: "Save choice",
+      acceptAll: "Accept all",
+      rejectAll: "Reject all",
+      close: "Close",
+      saved: "Your choice of",
+      privacy: "Privacy policy (German)",
+      imprint: "Legal notice (German)",
+      categories: {
+        necessary: {
+          title: "Necessary",
+          text: "Keeps your animation setting, whether you hid the little companion for this session, and this choice. No cookies; the data never leaves your device.",
+        },
+        statistics: {
+          title: "Statistics",
+          text: "Shows us which pages are visited how often, so we can improve the website.",
+        },
+        media: {
+          title: "External media",
+          text: "Content from other platforms, such as videos or game trailers. Loading it gives the provider your IP address.",
+        },
+      },
+    },
+  },
 };

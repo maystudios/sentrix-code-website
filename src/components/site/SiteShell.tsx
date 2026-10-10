@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 import type { Dictionary } from "@/content/types";
+import { ConsentManager } from "@/components/consent/ConsentManager";
 import { Footer } from "./Footer";
 import { Header } from "./Header";
 
@@ -11,7 +12,8 @@ type SiteShellProps = {
   isHome?: boolean;
 };
 
-// Frame shared by every page: frame lines, header, content, footer. One wrapping element,
+// Frame shared by every page: frame lines, header, content, footer, consent banner and
+// privacy settings. One wrapping element,
 // so the page slide (PageTransition) names only this wrapper and the header keeps its own
 // view-transition-name and stays in place.
 export function SiteShell({ dict, children, alternateHref, isHome = false }: SiteShellProps) {
@@ -21,6 +23,7 @@ export function SiteShell({ dict, children, alternateHref, isHome = false }: Sit
       <Header dict={dict} alternateHref={alternateHref} isHome={isHome} />
       <main className="relative">{children}</main>
       <Footer dict={dict} alternateHref={alternateHref} />
+      <ConsentManager copy={dict.consent} locale={dict.locale} privacyHref={dict.pages.routes.privacy} imprintHref={dict.pages.routes.imprint} />
     </div>
   );
 }

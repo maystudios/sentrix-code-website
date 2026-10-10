@@ -8,9 +8,12 @@ import { PixelLogo } from "@/components/brand/PixelLogo";
 import { PixelWalker } from "@/components/brand/PixelCharacters";
 import { MotionSwitch } from "@/components/motion/MotionSwitch";
 import { useMotionPolicy } from "@/components/motion/MotionPolicy";
+import { openConsentSettings } from "@/lib/consent";
 import { LanguageSwitch } from "./LanguageSwitch";
 
 const BANDS = ["#00b4d8", "#0096c7", "#0077b6", "#023e8a"];
+const FOOTER_LINK = "group inline-flex items-center gap-1 text-sm text-fg/90 transition-colors duration-150 hover:text-ocean-300";
+const FOOTER_DASH = "h-px w-0 bg-ocean-300 transition-all duration-200 group-hover:w-2.5";
 
 type FooterProps = { dict: Dictionary; alternateHref?: string };
 
@@ -40,6 +43,7 @@ export function Footer({ dict, alternateHref }: FooterProps) {
     },
     {
       title: dict.footer.columns[2].title,
+      legal: true,
       links: [
         { label: "Impressum", href: pages.routes.imprint },
         { label: "Datenschutz", href: pages.routes.privacy },
@@ -60,12 +64,20 @@ export function Footer({ dict, alternateHref }: FooterProps) {
             <ul className="mt-4 space-y-2.5">
               {column.links.map((link) => (
                 <li key={link.href}>
-                  <Link href={link.href} className="group inline-flex items-center gap-1 text-sm text-fg/90 transition-colors duration-150 hover:text-ocean-300">
-                    <span className="h-px w-0 bg-ocean-300 transition-all duration-200 group-hover:w-2.5" aria-hidden="true" />
+                  <Link href={link.href} className={FOOTER_LINK}>
+                    <span className={FOOTER_DASH} aria-hidden="true" />
                     {link.label}
                   </Link>
                 </li>
               ))}
+              {column.legal && (
+                <li>
+                  <button type="button" onClick={openConsentSettings} className={FOOTER_LINK}>
+                    <span className={FOOTER_DASH} aria-hidden="true" />
+                    {dict.consent.settingsLink}
+                  </button>
+                </li>
+              )}
             </ul>
           </div>
         ))}

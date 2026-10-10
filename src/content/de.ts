@@ -318,4 +318,41 @@ export const de: Dictionary = {
     company: "Sentrix Code GmbH i. G.",
     tagline: "Spiele, Software, Apps und KI im Auftrag. Aus Monheim am Rhein.",
   },
+  consent: {
+    settingsLink: "Datenschutz-Einstellungen",
+    banner: {
+      title: "Ihre Privatsphäre",
+      text: "Wir nutzen nur, was diese Website zum Funktionieren braucht. Optionale Dienste laden wir erst, wenn Sie zustimmen. Ihre Wahl können Sie jederzeit unter „Datenschutz-Einstellungen“ im Fußbereich ändern.",
+      accept: "Alle akzeptieren",
+      reject: "Alle ablehnen",
+      settings: "Einstellungen",
+    },
+    dialog: {
+      title: "Datenschutz-Einstellungen",
+      intro: "Diese Website setzt keine Cookies. Sie speichert nur Einstellungen, die Sie selbst wählen, im lokalen Speicher Ihres Browsers. Für optionale Dienste fragen wir Sie vorher.",
+      always: "Immer aktiv",
+      none: "Derzeit nutzen wir keinen Dienst dieser Art.",
+      save: "Auswahl speichern",
+      acceptAll: "Alle akzeptieren",
+      rejectAll: "Alle ablehnen",
+      close: "Schließen",
+      saved: "Ihre Auswahl vom",
+      privacy: "Datenschutzerklärung",
+      imprint: "Impressum",
+      categories: {
+        necessary: {
+          title: "Notwendig",
+          text: "Speichert Ihre Einstellung für Animationen, ob Sie den kleinen Begleiter für diese Sitzung ausgeblendet haben, und diese Auswahl. Keine Cookies; die Angaben verlassen Ihr Gerät nicht.",
+        },
+        statistics: {
+          title: "Statistik",
+          text: "Zeigt uns, welche Seiten wie oft besucht werden, damit wir die Website verbessern können.",
+        },
+        media: {
+          title: "Externe Medien",
+          text: "Inhalte anderer Plattformen, etwa Videos oder Spiele-Trailer. Beim Laden erhält der jeweilige Anbieter Ihre IP-Adresse.",
+        },
+      },
+    },
+  },
 };

@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { LegalPage, Open, type LegalSection } from "@/components/legal/LegalPage";
+import { LegalPage, type LegalSection } from "@/components/legal/LegalPage";
 
 export const metadata: Metadata = {
   title: "Impressum · Sentrix Code",
@@ -39,9 +39,7 @@ const sections: LegalSection[] = [
       <p>
         E-Mail: <a href="mailto:contact@sentrixcode.com">contact@sentrixcode.com</a>
         <br />
-        Kontaktformular: <Link href="/kontakt/">Kontaktseite</Link>
-        <br />
-        Telefon: <Open>Telefonnummer, falls gewünscht</Open>
+        Kontaktformular: <Link href="/kontakt/">sentrixcode.com/kontakt</Link>
       </p>
     ),
   },
@@ -77,9 +75,9 @@ const sections: LegalSection[] = [
     body: (
       <p>
         Wir erstellen die Inhalte dieser Website mit Sorgfalt. Für die Richtigkeit, Vollständigkeit und Aktualität können wir
-        dennoch keine Gewähr übernehmen. Als Diensteanbieter sind wir für eigene Inhalte nach den allgemeinen Gesetzen
-        verantwortlich, für fremde Informationen gelten die Haftungsregeln der §§ 7 bis 10 DDG in Verbindung mit dem Digital
-        Services Act.
+        dennoch keine Gewähr übernehmen. Für eigene Inhalte sind wir nach den allgemeinen Gesetzen verantwortlich. Für fremde
+        Informationen, die wir übermitteln oder speichern, richtet sich unsere Verantwortlichkeit nach den Artikeln 4 bis 8 der
+        Verordnung (EU) 2022/2065 über digitale Dienste (Digital Services Act).
       </p>
     ),
   },
@@ -100,9 +98,21 @@ const sections: LegalSection[] = [
     body: (
       <p>
         Texte, Grafiken und Code dieser Website unterliegen dem deutschen Urheberrecht. Vervielfältigung, Bearbeitung und
-        Verbreitung außerhalb der Grenzen des Urheberrechts bedürfen unserer schriftlichen Zustimmung. Einige Illustrationen
-        wurden mit Unterstützung von KI-Werkzeugen erstellt.
+        Verbreitung außerhalb der Grenzen des Urheberrechts bedürfen unserer schriftlichen Zustimmung. Inhalte Dritter sind als
+        solche gekennzeichnet.
       </p>
+    ),
+  },
+  {
+    id: "bildnachweise",
+    title: "Bildnachweise",
+    body: (
+      <ul>
+        <li>Spielszenen aus Heistline: © Emotions-Gaming</li>
+        <li>Spielszenen aus Mr. Dork 3: One Last Doodle: © MayStudios und Simsalabim Studio</li>
+        <li>Screenshots und Symbole der Apps SplitUp, FamFlow, Shapes und Tiles: aus eigenen Projekten unseres Teams</li>
+        <li>Pixel-Illustrationen und Figuren: Sentrix Code, teilweise mit Unterstützung von KI-Werkzeugen erstellt</li>
+      </ul>
     ),
   },
 ];
