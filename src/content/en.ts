@@ -117,6 +117,16 @@ export const en: Dictionary = {
       ],
       example: true,
     },
+    apps: {
+      title: "Apps from our team",
+      items: [
+        { name: "SplitUp", text: "Split group expenses fairly: scan receipts, keep balances in view.", icon: "/images/work/apps/splitup-icon.webp", screen: "/images/work/apps/splitup-screen.webp", screenAlt: "SplitUp: the group “Lisbon Trip” with total spent, balances and recent payments" },
+        { name: "FamFlow", text: "The family planner: shared calendar, cars, chores and a pinboard.", screen: "/images/work/apps/famflow-screen.webp", screenAlt: "FamFlow: a family overview with open chores, car reservations and members" },
+        { name: "Shapes", text: "Sliding puzzle: move the shapes, find the exit. Eight tiers, no timer.", icon: "/images/work/apps/shapes-icon.webp", screen: "/images/work/apps/shapes-screen.webp", screenAlt: "Shapes: start screen with level 1 and a play button" },
+        { name: "Tiles", text: "Logic puzzle with 1000 verified levels: one gem per colour, row and column.", icon: "/images/work/apps/tiles-icon.webp", screen: "/images/work/apps/tiles-screen.webp", screenAlt: "Tiles: level 210, a coloured grid with the rules above it" },
+        { name: "Wake Up", text: "An alarm that only stops once you scan the QR code on your wall." },
+      ],
+    },
   },
   cases: {
     title: "How a task becomes a product.",

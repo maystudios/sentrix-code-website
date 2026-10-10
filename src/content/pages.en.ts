@@ -172,7 +172,7 @@ export const pagesEn: Pages = {
         intro:
           "We build apps for iOS and Android from one shared Flutter codebase. That saves time and budget without the app feeling like a compromise.",
         scene: "/images/scenes/app-world",
-        sceneAlt: "Pixel scene: a giant smartphone with tiny characters walking on its app tiles",
+        sceneAlt: "Pixel scene: the robot holds up a smartphone with colourful app tiles and message bubbles popping out",
       },
       offer: {
         title: "From the idea to the store",
@@ -235,7 +235,7 @@ export const pagesEn: Pages = {
         intro:
           "Together we find the places where AI genuinely helps, and we build solutions that fit your workflows: understandable, verifiable and GDPR-compliant.",
         scene: "/images/scenes/ai-lab",
-        sceneAlt: "Pixel scene: the robot in a small lab in front of a glowing sculpture of connected nodes",
+        sceneAlt: "Pixel scene: the robot at a laptop next to a sculpture of connected nodes and a light bulb",
       },
       offer: {
         title: "How we make AI useful for you",

@@ -283,7 +283,7 @@ export function GrowingPrototype({ step, labels }: { step: number; labels: Label
                     animate={{ scale: [0, 1.18, 1], opacity: 1 }}
                     transition={{ delay: LAUNCH_AT + 0.08, duration: 0.32, ease: "easeOut" }}
                   >
-                    <PixelRocket className="w-full" launching />
+                    <PixelRocket className="w-full" engine="roar" />
                   </motion.div>
                 </motion.div>
               </motion.div>

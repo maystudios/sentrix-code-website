@@ -5,7 +5,7 @@ import { motion, useScroll, useSpring, useTransform } from "motion/react";
 import { useRef } from "react";
 import type { Dictionary } from "@/content/types";
 import { PixelLogo } from "@/components/brand/PixelLogo";
-import { PixelRobot } from "@/components/brand/PixelCharacters";
+import { PixelWalker } from "@/components/brand/PixelCharacters";
 import { MotionSwitch } from "@/components/motion/MotionSwitch";
 import { useMotionPolicy } from "@/components/motion/MotionPolicy";
 import { LanguageSwitch } from "./LanguageSwitch";
@@ -15,7 +15,7 @@ const BANDS = ["#00b4d8", "#0096c7", "#0077b6", "#023e8a"];
 type FooterProps = { dict: Dictionary; alternateHref?: string };
 
 // The big pixel logo rises out of the ocean bands as the page end comes into view and
-// sinks again when scrolling back up; the robot stands on the top line of the bands.
+// sinks again when scrolling back up; the robot walks back and forth in the lower bands.
 export function Footer({ dict, alternateHref }: FooterProps) {
   const { pages } = dict;
   const { reduced } = useMotionPolicy();
@@ -89,13 +89,11 @@ export function Footer({ dict, alternateHref }: FooterProps) {
         </motion.div>
       </div>
       <div aria-hidden="true" className="relative">
-        {/* The robot stands on the top line of the bands, beside the logo. */}
-        <div className="absolute bottom-full right-[9%] z-10 w-[clamp(34px,3.6vw,52px)] md:right-[14%]">
-          <PixelRobot className="aspect-[25/35] w-full" waves watching />
-        </div>
         {BANDS.map((color) => (
           <div key={color} className="h-6 md:h-7" style={{ background: color }} />
         ))}
+        {/* The robot walks back and forth inside the lower bands, blue on blue. */}
+        <PixelWalker className="absolute inset-x-[6%] bottom-0 h-[51px]" />
       </div>
     </footer>
   );

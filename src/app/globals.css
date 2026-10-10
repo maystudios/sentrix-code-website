@@ -149,6 +149,18 @@
       opacity: 0;
     }
   }
+  /* Three sprite frames in turn: each shows for a third of the cycle (PixelDrone). */
+  @keyframes frame-third {
+    0% {
+      opacity: 1;
+    }
+    33.333% {
+      opacity: 0;
+    }
+    100% {
+      opacity: 0;
+    }
+  }
   @keyframes pixel-pulse {
     50% {
       opacity: 0.3;

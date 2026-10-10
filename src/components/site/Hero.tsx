@@ -1,7 +1,7 @@
 "use client";
 
-import { motion, useAnimate, useMotionValue, useSpring, useTransform } from "motion/react";
-import { useCallback, useRef, useState, type PointerEvent, type ReactNode } from "react";
+import { motion, useAnimate, useMotionValue, useScroll, useSpring, useTransform } from "motion/react";
+import { useCallback, useEffect, useRef, useState, type PointerEvent, type ReactNode } from "react";
 import type { Dictionary } from "@/content/types";
 import { duration, ease, spring } from "@/lib/motion";
 import { useMotionPolicy } from "@/components/motion/MotionPolicy";
@@ -76,19 +76,21 @@ function Stack({ blocks, side, reduced }: { blocks: Block[]; side: "left" | "rig
 }
 
 // A figure drops onto its block after the block has landed and gives under its own weight
-// for a moment (a short dip, no rebound).
-function Sprite({ children, className, delay, style }: { children: ReactNode; className?: string; delay: number; style: React.CSSProperties }) {
+// for a moment (a short dip, no rebound). The drop plays once on the outer element; hover
+// lives on the inner one, so ending a hover never replays the drop.
+function Sprite({ children, className, delay, style, reduced, onHover }: { children: ReactNode; className?: string; delay: number; style: React.CSSProperties; reduced: boolean; onHover?: (hovered: boolean) => void }) {
+  const [scope, animate] = useAnimate<HTMLDivElement>();
+  useEffect(() => {
+    if (reduced || !scope.current) return;
+    animate(scope.current, { opacity: [0, 1, 1, 1], y: [-260, 0, 5, 0] }, { delay, duration: 0.62, times: [0, 0.62, 0.8, 1], ease: [fallEase, "easeOut", "easeInOut"] });
+    // The drop is the entrance and plays once.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
   return (
-    <motion.div
-      aria-hidden="true"
-      className={`absolute ${className ?? ""}`}
-      style={style}
-      initial={{ opacity: 0, y: -260 }}
-      animate={{ opacity: 1, y: [-260, 0, 5, 0] }}
-      transition={{ delay, duration: 0.62, times: [0, 0.62, 0.8, 1], ease: [fallEase, "easeOut", "easeInOut"], opacity: { delay, duration: 0.1 } }}
-      whileHover={{ y: -8, transition: spring.ui }}
-    >
-      {children}
+    <motion.div ref={scope} aria-hidden="true" className={`absolute ${className ?? ""}`} style={style} initial={reduced ? false : { opacity: 0, y: -260 }}>
+      <motion.div className="size-full" whileHover={reduced ? undefined : { y: -8, transition: spring.ui }} onHoverStart={() => onHover?.(true)} onHoverEnd={() => onHover?.(false)}>
+        {children}
+      </motion.div>
     </motion.div>
   );
 }
@@ -124,6 +126,13 @@ function Word({ children, delay }: { children: ReactNode; delay: number }) {
   );
 }
 
+const CLOUDS = [
+  { top: "6%", seconds: 96, delay: -30 },
+  { top: "6%", seconds: 96, delay: -78 },
+  { top: "62%", seconds: 120, delay: -15 },
+  { top: "62%", seconds: 120, delay: -75 },
+];
+
 // Kept clear of the headline (review: a star sat on a letter).
 const SPARKLES = [
   { className: "left-[7%] top-[30%]", delay: 0 },
@@ -140,25 +149,55 @@ export function Hero({ dict }: { dict: Dictionary }) {
   const leftX = useTransform(smoothX, (value) => value * -18);
   const rightX = useTransform(smoothX, (value) => value * 18);
   const stackY = useTransform(smoothY, (value) => value * -10);
+  // Scroll depth: as the hero scrolls away, the sky lags furthest, the blocks a little and
+  // the text runs slightly ahead.
+  const hero = useRef<HTMLElement>(null);
+  const { scrollYProgress: heroScroll } = useScroll({ target: hero, offset: ["start start", "end start"] });
+  const skyDepth = useTransform(heroScroll, [0, 1], [0, 320]);
+  const blockDepth = useTransform(heroScroll, [0, 1], [0, 140]);
+  const textDepth = useTransform(heroScroll, [0, 1], [0, -60]);
+  const textFade = useTransform(heroScroll, [0, 0.7], [1, 0]);
   const [rocketScope, animateRocket] = useAnimate();
   const [decoScope, animateDeco] = useAnimate<HTMLDivElement>();
-  const [launching, setLaunching] = useState(false);
+  const [engine, setEngine] = useState<"off" | "idle" | "roar">("idle");
+  const [revving, setRevving] = useState(false);
   const [smoke, setSmoke] = useState(0);
-  // Startled by the falling tower: the rocket rumbles in a puff of smoke, lifts off, and a
-  // moment later comes back down on its thrusters and lands softly.
+  const flying = useRef(false);
+  // Startled by the falling tower, the rocket flies a whole mission: ignition in a cloud of
+  // smoke, a slow lift-off, a gravity turn in a gentle arc out of the picture. Later the
+  // booster falls back engine-off, lights its landing burn, steers back over the pad and
+  // touches down softly, like a SpaceX landing.
   const launch = useCallback(async () => {
-    if (!rocketScope.current) return;
+    const rocket = rocketScope.current;
+    if (!rocket || flying.current) return;
+    flying.current = true;
     const wait = (ms: number) => new Promise<void>((resolve) => window.setTimeout(resolve, ms));
-    await wait(350);
-    setLaunching(true);
+    await wait(300);
+    setEngine("roar");
     setSmoke((value) => value + 1);
-    await wait(650);
-    await animateRocket(rocketScope.current, { y: "-115vh" }, { duration: 1, ease: [0.5, 0, 0.9, 0.6] });
-    await wait(1100);
-    await animateRocket(rocketScope.current, { y: ["-70vh", "0vh"] }, { duration: 1.8, ease: [0.16, 1, 0.3, 1] });
+    await wait(700);
+    await animateRocket(
+      rocket,
+      { x: ["0vw", "0vw", "1.5vw", "9vw", "30vw"], y: ["0vh", "-1vh", "-22vh", "-68vh", "-125vh"], rotate: [0, 0, 3, 13, 28] },
+      { duration: 2.3, times: [0, 0.14, 0.45, 0.72, 1], ease: ["easeIn", "easeIn", "linear", "linear"] },
+    );
+    setEngine("off");
+    await wait(1300);
+    // The booster comes back: falling engine-off, slightly off course ...
+    await animateRocket(rocket, { x: ["4vw", "3vw"], y: ["-115vh", "-38vh"], rotate: [-7, -5] }, { duration: 0.9, ease: "easeIn" });
+    // ... lights the landing burn, brakes hard and steers back over the pad ...
+    setEngine("roar");
     setSmoke((value) => value + 1);
-    await wait(250);
-    setLaunching(false);
+    await animateRocket(
+      rocket,
+      { x: ["3vw", "-0.6vw", "0vw"], y: ["-38vh", "-5vh", "-1.5vh"], rotate: [-5, 2, 0] },
+      { duration: 1.25, times: [0, 0.7, 1], ease: [[0.16, 1, 0.3, 1], "easeInOut"] },
+    );
+    // ... and settles onto it.
+    await animateRocket(rocket, { y: ["-1.5vh", "0vh"] }, { duration: 0.45, ease: "easeOut" });
+    setSmoke((value) => value + 1);
+    setEngine("idle");
+    flying.current = false;
   }, [animateRocket, rocketScope]);
   // The tower hitting the ground outside the picture shakes the scene a little.
   const shake = useCallback(() => {
@@ -177,24 +216,32 @@ export function Hero({ dict }: { dict: Dictionary }) {
   const textDelay = 0.08;
 
   return (
-    <section onPointerMove={handlePointer} className="relative isolate flex min-h-[100svh] flex-col overflow-hidden [--u:clamp(26px,4.4vw,64px)]">
+    <section ref={hero} onPointerMove={handlePointer} className="relative isolate flex min-h-[100svh] flex-col overflow-hidden [--u:clamp(26px,4.4vw,64px)]">
       {/* Sky: drifting pixel clouds and twinkling stars. */}
-      <div aria-hidden="true" className="ambient pointer-events-none absolute inset-0 -z-10">
+      <motion.div aria-hidden="true" className="ambient pointer-events-none absolute inset-0 -z-10" style={{ y: reduced ? 0 : skyDepth }}>
         {/* Deep-blue pixel clouds, opaque so they read as shapes, not haze. */}
-        <div className="absolute top-[6%] animate-[cloud_95s_linear_infinite] [animation-delay:-30s]" style={{ width: cells(51), height: cells(18) }}>
-          <PixelCloud className="size-full" />
-        </div>
-        <div className="absolute top-[62%] animate-[cloud_120s_linear_infinite] [animation-delay:-80s]" style={{ width: cells(51), height: cells(18) }}>
-          <PixelCloud className="size-full" />
-        </div>
+        {/* Two lanes, two clouds each, half a crossing apart: one always drifts in from the
+            left while the other leaves on the right. */}
+        {CLOUDS.map((cloud, index) => (
+          <div
+            key={index}
+            className="absolute"
+            style={{ top: cloud.top, width: cells(51), height: cells(18), animation: `cloud ${cloud.seconds}s linear ${cloud.delay}s infinite` }}
+          >
+            <PixelCloud className="size-full" />
+          </div>
+        ))}
         {SPARKLES.map((sparkle, index) => (
           <div key={index} className={`absolute ${sparkle.className}`} style={{ width: cells(13), height: cells(13) }}>
             <PixelSparkle className="size-full" delay={sparkle.delay} />
           </div>
         ))}
-      </div>
+      </motion.div>
 
-      <div className="relative z-10 mx-auto flex w-full max-w-[1280px] flex-1 flex-col items-center justify-center px-6 pb-[calc(var(--u)*6.4)] pt-24 text-center md:pb-[calc(var(--u)*5)]">
+      <motion.div
+        className="relative z-10 mx-auto flex w-full max-w-[1280px] flex-1 flex-col items-center justify-center px-6 pb-[calc(var(--u)*6.4)] pt-24 text-center md:pb-[calc(var(--u)*5)]"
+        style={reduced ? undefined : { y: textDepth, opacity: textFade }}
+      >
         <h1 className="text-display flex max-w-5xl flex-wrap items-center justify-center gap-x-[0.28em]">
           {wordsA.map((word, index) => (
             <Word key={`a-${index}`} delay={textDelay + index * 0.05}>
@@ -247,33 +294,35 @@ export function Hero({ dict }: { dict: Dictionary }) {
             </svg>
           ))}
         </motion.a>
-      </div>
+      </motion.div>
 
       {/* Falling blocks with pixel figures, framed like the reference but in ocean blues. */}
-      <div ref={decoScope} aria-hidden="true" className="pointer-events-none absolute inset-0">
+      <motion.div aria-hidden="true" className="pointer-events-none absolute inset-0" style={{ y: reduced ? 0 : blockDepth }}>
+      <div ref={decoScope} className="absolute inset-0">
         <motion.div className="absolute inset-y-0 left-0 w-1/2" style={{ x: leftX, y: stackY }}>
           <Stack blocks={LEFT} side="left" reduced={reduced} />
-          <Sprite className="pointer-events-auto cursor-pointer" delay={1.45} style={{ left: "calc(var(--u) * 0.25)", bottom: "calc(var(--u) * 4)", width: cells(25), height: cells(35) }}>
+          <Sprite className="pointer-events-auto cursor-pointer" delay={1.45} reduced={reduced} style={{ left: "calc(var(--u) * 0.25)", bottom: "calc(var(--u) * 4)", width: cells(25), height: cells(35) }}>
             <PixelRobot className="size-full" waves watching />
           </Sprite>
-          <Sprite className="pointer-events-auto" delay={1.55} style={{ left: "calc(var(--u) * 3.4)", bottom: "calc(var(--u) * 1)", width: cells(34), height: cells(24) }}>
+          <Sprite className="pointer-events-auto" delay={1.55} reduced={reduced} style={{ left: "calc(var(--u) * 3.4)", bottom: "calc(var(--u) * 1)", width: cells(34), height: cells(24) }}>
             <PixelGamepad className="size-full" />
           </Sprite>
         </motion.div>
         <motion.div className="absolute inset-y-0 right-0 w-1/2" style={{ x: rightX, y: stackY }}>
           <Stack blocks={RIGHT} side="right" reduced={reduced} />
           <DroneScene reduced={reduced} onImpact={shake} onTopple={launch} />
-          <Sprite className="pointer-events-auto" delay={1.6} style={{ right: "calc(var(--u) * 3.5)", bottom: "calc(var(--u) * 1.6)", width: cells(38), height: cells(32) }}>
+          <Sprite className="pointer-events-auto" delay={1.6} reduced={reduced} style={{ right: "calc(var(--u) * 3.5)", bottom: "calc(var(--u) * 1.6)", width: cells(38), height: cells(32) }}>
             <PixelLaptop className="size-full" />
           </Sprite>
-          <Sprite className="pointer-events-auto hidden sm:block" delay={1.3} style={{ right: "calc(var(--u) * 7.1)", bottom: "calc(var(--u) * 0.55)", width: cells(22), height: cells(35) }}>
+          <Sprite className="pointer-events-auto hidden sm:block" delay={1.3} reduced={reduced} onHover={setRevving} style={{ right: "calc(var(--u) * 7.1)", bottom: "calc(var(--u) * 0.55)", width: cells(22), height: cells(35) }}>
             <div ref={rocketScope} className="size-full">
-              <PixelRocket className="size-full" launching={launching} />
+              <PixelRocket className="size-full" engine={revving && engine === "idle" ? "roar" : engine} />
             </div>
             <Smoke burst={smoke} />
           </Sprite>
         </motion.div>
       </div>
+      </motion.div>
       <div aria-hidden="true" className="absolute inset-x-0 bottom-0 h-px bg-line" />
     </section>
   );

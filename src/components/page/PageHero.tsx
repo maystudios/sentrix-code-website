@@ -7,6 +7,7 @@ import { asset } from "@/lib/asset";
 import { duration, ease, spring } from "@/lib/motion";
 import { RevealHeading } from "@/components/ui/RevealHeading";
 import { TiltPanel } from "@/components/ui/TiltPanel";
+import { Parallax } from "@/components/ui/Parallax";
 
 type PageHeroProps = {
   breadcrumb: { label: string; href?: string }[];
@@ -69,6 +70,7 @@ export function PageHero({ breadcrumb, title, intro, scene, sceneAlt, sprite, ac
           )}
         </div>
         <div className="relative">
+          <Parallax distance={24}>
           <TiltPanel>
             <img
               src={asset(`${scene}.png`)}
@@ -78,6 +80,7 @@ export function PageHero({ breadcrumb, title, intro, scene, sceneAlt, sprite, ac
               className="block aspect-video w-full object-cover [image-rendering:pixelated]"
             />
           </TiltPanel>
+          </Parallax>
           {sprite && (
             <motion.img
               src={asset(sprite)}

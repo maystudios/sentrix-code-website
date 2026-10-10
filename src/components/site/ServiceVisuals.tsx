@@ -84,56 +84,6 @@ export function SoftwareVisual({ mockups }: { mockups: ServiceMockups }) {
   );
 }
 
-const APP_CARDS = ["bg-ocean-500", "bg-ocean-300", "bg-ocean-700", "bg-ocean-400", "bg-ocean-600"];
-
-export function AppsVisual({ mockups }: { mockups: ServiceMockups }) {
-  const notes = mockups.appNotes;
-  return (
-    <div className="relative aspect-video overflow-hidden bg-ocean-950">
-      <Mosaic className="absolute inset-0" from={6} to={1} seed={5} />
-      <motion.div
-        className="absolute left-[12%] top-[9%] h-[82%] w-[26%] min-w-[110px] overflow-hidden rounded-[var(--radius-device)] border-[3px] border-base bg-base shadow-[0_24px_60px_-20px_rgba(0,0,0,0.7)]"
-        initial={{ opacity: 0, y: 30, rotate: -4 }}
-        whileInView={{ opacity: 1, y: 0, rotate: -2 }}
-        viewport={{ once: true }}
-        transition={spring.playful}
-      >
-        <div className="mx-auto mt-1.5 h-1.5 w-10 rounded-full bg-line-strong" />
-        <div className="mx-2 mt-2 h-2 w-1/2 rounded-sm bg-fg/80" />
-        <div className="relative mt-2 h-full overflow-hidden px-2">
-          <div className="ambient flex animate-[app-scroll_9s_linear_infinite] flex-col gap-1.5">
-            {[...APP_CARDS, ...APP_CARDS].map((color, index) => (
-              <div key={index} className="flex items-center gap-1.5 rounded-md bg-surface p-1.5">
-                <span className={`size-5 shrink-0 rounded ${color}`} />
-                <span className="flex-1 space-y-1">
-                  <span className="block h-1.5 w-4/5 rounded-sm bg-fg/60" />
-                  <span className="block h-1.5 w-1/2 rounded-sm bg-muted/50" />
-                </span>
-              </div>
-            ))}
-          </div>
-        </div>
-      </motion.div>
-      {notes.map((note, index) => (
-        <motion.div
-          key={note}
-          className="absolute flex items-center gap-2 rounded-[var(--radius-control)] border border-white/10 bg-base/95 px-3 py-2 text-[11px] shadow-lg sm:text-xs"
-          style={{ left: "44%", top: `${24 + index * 22}%` }}
-          initial={{ opacity: 0, x: -20, scale: 0.9 }}
-          whileInView={{ opacity: 1, x: 0, scale: 1 }}
-          viewport={{ once: true }}
-          transition={{ ...spring.playful, delay: 0.6 + index * 0.35 }}
-          whileHover={{ scale: 1.05, transition: spring.ui }}
-        >
-          <span className="size-2 rounded-full bg-ocean-400" />
-          {note}
-        </motion.div>
-      ))}
-      <Sprite name="phone" className="bottom-[7%] right-[24%] w-[11%]" delay={0.4} />
-      <Sprite name="flag" className="ambient bottom-[9%] right-[8%] w-[12%] animate-bob" delay={0.7} />
-    </div>
-  );
-}
 
 const PROMPT_ICONS: IconName[] = ["concept", "test", "idea"];
 

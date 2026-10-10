@@ -117,6 +117,16 @@ export const de: Dictionary = {
       ],
       example: true,
     },
+    apps: {
+      title: "Apps aus unserem Team",
+      items: [
+        { name: "SplitUp", text: "Ausgaben in der Gruppe fair teilen: Belege scannen, Salden im Blick.", icon: "/images/work/apps/splitup-icon.webp", screen: "/images/work/apps/splitup-screen.webp", screenAlt: "SplitUp: Gruppe „Lisbon Trip“ mit Gesamtausgaben, Salden und letzten Zahlungen" },
+        { name: "FamFlow", text: "Der Familienplaner: gemeinsamer Kalender, Autos, Aufgaben und Pinnwand.", screen: "/images/work/apps/famflow-screen.webp", screenAlt: "FamFlow: Übersicht einer Familie mit offenen Aufgaben, Autoreservierungen und Mitgliedern" },
+        { name: "Shapes", text: "Schiebepuzzle: Formen verschieben, den Ausgang finden. Acht Stufen, kein Timer.", icon: "/images/work/apps/shapes-icon.webp", screen: "/images/work/apps/shapes-screen.webp", screenAlt: "Shapes: Startbildschirm mit Level 1 und Play-Knopf" },
+        { name: "Tiles", text: "Logikrätsel mit 1000 geprüften Leveln: ein Juwel pro Farbe, Zeile und Spalte.", icon: "/images/work/apps/tiles-icon.webp", screen: "/images/work/apps/tiles-screen.webp", screenAlt: "Tiles: Level 210, ein farbiges Raster mit den Regeln darüber" },
+        { name: "Wake Up", text: "Ein Wecker, der erst verstummt, wenn du den QR-Code an der Wand scannst." },
+      ],
+    },
   },
   cases: {
     title: "Wie aus einer Aufgabe ein Produkt wird.",

@@ -60,7 +60,7 @@ export function ContactCta({ dict, title, text }: { dict: Dictionary; title?: st
               animate={launch ? { y: -22, rotate: -4 } : { y: 0, rotate: 0 }}
               transition={spring.playful}
             >
-              <PixelRocket launching={launch} className="ambient w-full animate-bob" />
+              <PixelRocket engine={launch ? "roar" : "idle"} className="ambient w-full animate-bob" />
             </motion.div>
             </div>
           </div>

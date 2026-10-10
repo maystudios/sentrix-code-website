@@ -2,22 +2,24 @@
 
 import { motion } from "motion/react";
 import { useEffect, useState } from "react";
-import type { Dictionary, Locale, ServiceItem, ServiceMockups } from "@/content/types";
+import type { AppShowcase as AppShowcaseItem, Dictionary, Locale, ServiceItem, ServiceMockups } from "@/content/types";
 import { ease, spring } from "@/lib/motion";
 import { Arrow } from "@/components/ui/Arrow";
 import { TextLink } from "@/components/ui/TextLink";
 import { TiltPanel } from "@/components/ui/TiltPanel";
-import { AiVisual, AppsVisual, SoftwareVisual } from "./ServiceVisuals";
+import { Parallax } from "@/components/ui/Parallax";
+import { AiVisual, SoftwareVisual } from "./ServiceVisuals";
+import { AppShowcase } from "./AppShowcase";
 import { StackGame } from "./StackGame";
 
-export function Visual({ item, mockups, locale }: { item: ServiceItem; mockups: ServiceMockups; locale: Locale }) {
+export function Visual({ item, mockups, apps, locale }: { item: ServiceItem; mockups: ServiceMockups; apps: AppShowcaseItem[]; locale: Locale }) {
   switch (item.visual) {
     case "game":
       return <StackGame locale={locale} />;
     case "software":
       return <SoftwareVisual mockups={mockups} />;
     case "apps":
-      return <AppsVisual mockups={mockups} />;
+      return <AppShowcase apps={apps} />;
     case "ai":
       return <AiVisual mockups={mockups} />;
   }
@@ -110,9 +112,11 @@ export function Services({ dict }: { dict: Dictionary }) {
                 </TextLink>
               </motion.div>
               <div className={index % 2 === 1 ? "md:order-1" : ""}>
-                <TiltPanel>
-                  <Visual item={item} mockups={dict.services.mockups} locale={dict.locale} />
-                </TiltPanel>
+                <Parallax distance={28}>
+                  <TiltPanel>
+                    <Visual item={item} mockups={dict.services.mockups} apps={dict.services.apps.items} locale={dict.locale} />
+                  </TiltPanel>
+                </Parallax>
               </div>
             </article>
           ))}

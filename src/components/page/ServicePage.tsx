@@ -4,6 +4,7 @@ import Link from "next/link";
 import { motion } from "motion/react";
 import type { Dictionary, ServiceVisualKind } from "@/content/types";
 import { ease, spring } from "@/lib/motion";
+import { asset } from "@/lib/asset";
 import { Button } from "@/components/ui/Button";
 import { FaqList } from "@/components/ui/FaqList";
 import { TiltPanel } from "@/components/ui/TiltPanel";
@@ -103,6 +104,45 @@ export function ServicePage({ dict, kind, alternateHref }: { dict: Dictionary; k
         </div>
       </section>
 
+      {/* Apps page: our own apps, with screen and icon where they exist. */}
+      {kind === "apps" && (
+        <section className="border-b border-line">
+          <div className="mx-auto max-w-[1280px] px-6 py-20">
+            <RevealHeading text={dict.services.apps.title} className="text-h2" />
+            <ul className="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
+              {dict.services.apps.items.map((app, index) => (
+                <motion.li
+                  key={app.name}
+                  initial={{ opacity: 0, y: 24 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true, margin: "0px 0px -10% 0px" }}
+                  transition={{ ...spring.ui, delay: index * 0.06 }}
+                  whileHover={{ y: -6, transition: spring.ui }}
+                  className="group flex flex-col overflow-hidden rounded-[var(--radius-card)] border border-line bg-surface transition-colors duration-200 hover:border-line-strong"
+                >
+                  <div className="relative aspect-[9/12] overflow-hidden bg-raised">
+                    {app.screen ? (
+                      <img src={asset(app.screen)} alt={app.screenAlt ?? app.name} className="size-full object-cover object-top transition-transform duration-700 ease-out group-hover:scale-[1.04]" />
+                    ) : (
+                      <div className="grid size-full place-items-center">
+                        <PixelIcon name="phone" px={5} />
+                      </div>
+                    )}
+                  </div>
+                  <div className="flex items-start gap-3 p-4">
+                    {app.icon && <img src={asset(app.icon)} alt="" className="size-9 shrink-0 rounded-[9px]" />}
+                    <div>
+                      <h3 className="font-medium">{app.name}</h3>
+                      <p className="mt-1 text-sm text-muted">{app.text}</p>
+                    </div>
+                  </div>
+                </motion.li>
+              ))}
+            </ul>
+          </div>
+        </section>
+      )}
+
       {/* Practice: real references with their own images, or an example with a live demo. */}
       {cases.map((example, index) => (
         <section key={example.tab} className="border-b border-line">
@@ -134,7 +174,7 @@ export function ServicePage({ dict, kind, alternateHref }: { dict: Dictionary; k
               ) : (
                 <>
                   <TiltPanel>
-                    <Visual item={dict.services.items[SERVICE_INDEX[kind]]} mockups={dict.services.mockups} locale={dict.locale} />
+                    <Visual item={dict.services.items[SERVICE_INDEX[kind]]} mockups={dict.services.mockups} apps={dict.services.apps.items} locale={dict.locale} />
                   </TiltPanel>
                   <blockquote className="mt-6 border-l-2 border-ocean-400 pl-4 text-fg/85">
                     {dict.locale === "de" ? `„${example.quote}“` : `“${example.quote}”`}

@@ -116,11 +116,27 @@ FIGURES["rocket"] = rocket.export()
 # The generated cube is split off and not drawn; the site hangs its own flat block between
 # the prongs (prongs in front, block behind).
 drone = Figure(load("drone-carry"))
-rotor_spin = {}
+# Propellers: three frames per disc, swapped quickly in CSS so they read as spinning.
+# Frame a is the disc as generated; b and c paint a dark blade across it, once along the
+# long axis and once along the diagonal (only the disc's own cells are recoloured).
+def blade_frames(disc):
+    xs = [x for x, _ in disc]
+    ys = [y for _, y in disc]
+    cx, cy = (min(xs) + max(xs)) / 2, (min(ys) + max(ys)) / 2
+    half_w, half_h = max(1, (max(xs) - min(xs)) / 2), max(1, (max(ys) - min(ys)) / 2)
+    along = {cell: ("N" if abs(cell[1] - cy) <= 0.5 and abs(cell[0] - cx) < half_w - 1 else ch) for cell, ch in disc.items()}
+    diagonal = {cell: ("N" if abs((cell[0] - cx) / half_w - (cell[1] - cy) / half_h) < 0.35 and abs(cell[0] - cx) < half_w - 1 else ch) for cell, ch in disc.items()}
+    return along, diagonal
+
+
+spin_b, spin_c = {}, {}
 for name, rect in [("back", (18, 0, 30, 3)), ("left", (0, 13, 11, 16)), ("right", (48, 13, 59, 16)), ("front", (33, 28, 44, 31))]:
     disc = drone.take(f"rotor-{name}", rect)
-    rotor_spin.update(mirrored(disc))
-drone.add("rotor-spin", rotor_spin)
+    along, diagonal = blade_frames(disc)
+    spin_b.update(along)
+    spin_c.update(diagonal)
+drone.add("rotor-spin", spin_b)
+drone.add("rotor-spin-c", spin_c)
 drone.take("light", (25, 14, 29, 16), letters="pOqr")
 pupil = drone.take("pupil", (21, 21, 24, 25), letters="CW")
 backfill(drone, pupil, "k")
@@ -142,7 +158,7 @@ drone.add("claw1", {**right, **left})
 drone.add("claw2", {**shifted(right, dx=2), **shifted(left, dx=-2)})
 FIGURES["drone"] = drone.export()
 # Layer order: the claw must be drawn after (in front of) the cube.
-order = ["base", "rotor-back", "rotor-left", "rotor-right", "rotor-spin", "light", "pupil", "claw-head", "cube", "claw1", "claw2", "rotor-front"]
+order = ["base", "rotor-back", "rotor-left", "rotor-right", "rotor-spin", "rotor-spin-c", "light", "pupil", "claw-head", "cube", "claw1", "claw2", "rotor-front"]
 FIGURES["drone"]["layers"] = {name: FIGURES["drone"]["layers"][name] for name in order}
 
 # --- Gamepad, laptop, cloud, sparkle (Gemini, round 3b props) ---------------------------------
@@ -216,3 +232,26 @@ for name in ["phone", "flag", "mailbox", "paper-plane", "server", "chip"]:
     prop = Figure(load(name))
     prop.take("lights", (0, 0, prop.width, prop.height), letters="AO")
     FIGURES[name] = prop.export()
+
+
+# --- Walking robot (Flow walk sheet #2): four frames cut from one rebuilt grid ---------------
+def walk_frames(name, columns):
+    grid = load(name)
+    frames = []
+    for x0, x1 in columns:
+        cells = {(x, y): ch for (x, y), ch in grid["cells"].items() if x0 <= x <= x1}
+        # Drop the little spark marks the generation put beside the head.
+        cells = {(x, y): ch for (x, y), ch in cells.items() if not (ch in "AOpqrs" and y < 14 and x > x0 + 18)}
+        # Align frames on the head: the mean column of the top 20 rows.
+        head = [x for (x, y) in cells if y < 20]
+        centre = sum(head) / len(head)
+        frames.append((cells, centre))
+    width = max(x1 - x0 for x0, x1 in columns) + 7
+    figure = {"width": width, "height": grid["height"], "palette": grid["palette"], "layers": {}}
+    for index, (cells, centre) in enumerate(frames, start=1):
+        dx = round(width / 2 - centre)
+        figure["layers"][f"walk{index}"] = {(x + dx, y): ch for (x, y), ch in cells.items()}
+    return figure
+
+
+FIGURES["robot-walk"] = walk_frames("robot-walk", [(0, 29), (32, 57), (61, 87), (90, 117)])

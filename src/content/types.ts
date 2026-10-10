@@ -20,6 +20,10 @@ export type ServiceItem = {
 };
 
 // Texts shown inside the illustrative UI mock-ups of the service panels.
+// Our own apps (real, from the founders' projects). `screen` and `icon` are optional:
+// apps without published artwork are listed by name and text only.
+export type AppShowcase = { name: string; text: string; icon?: string; screen?: string; screenAlt?: string };
+
 export type ServiceMockups = {
   codeFile: string;
   code: string[][];
@@ -92,7 +96,7 @@ export type Dictionary = {
   // stay grey and hide their icon until they are hovered.
   statement: { title: string; chips: { label: string; icon: IconName; muted?: true }[] };
   positioning: string;
-  services: { title: string; items: ServiceItem[]; mockups: ServiceMockups };
+  services: { title: string; items: ServiceItem[]; mockups: ServiceMockups; apps: { title: string; items: AppShowcase[] } };
   cases: { title: string; cta: string; items: CaseItem[] };
   process: { title: string; intro: string; steps: ProcessStep[]; prototype: { live: string; build: string; thanks: string; play: string; pause: string } };
   faq: { title: string; items: FaqItem[]; more: { title: string; text: string; cta: string } };

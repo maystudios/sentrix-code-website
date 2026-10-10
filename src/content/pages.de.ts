@@ -172,7 +172,7 @@ export const pagesDe: Pages = {
         intro:
           "Wir entwickeln Apps für iOS und Android aus einer gemeinsamen Codebasis mit Flutter. Das spart Zeit und Budget, ohne dass sich die App wie ein Kompromiss anfühlt.",
         scene: "/images/scenes/app-world",
-        sceneAlt: "Pixel-Szene: ein riesiges Smartphone, auf dessen App-Kacheln kleine Figuren laufen",
+        sceneAlt: "Pixel-Szene: der Roboter hält ein Smartphone mit bunten App-Kacheln, aus dem Nachrichten aufpoppen",
       },
       offer: {
         title: "Von der Idee bis in den Store",
@@ -235,7 +235,7 @@ export const pagesDe: Pages = {
         intro:
           "Wir finden mit Ihnen die Stellen, an denen KI wirklich hilft, und bauen Lösungen, die in Ihre Abläufe passen: verständlich, überprüfbar und datenschutzkonform.",
         scene: "/images/scenes/ai-lab",
-        sceneAlt: "Pixel-Szene: der Roboter vor einer leuchtenden Skulptur aus verbundenen Knoten in einem kleinen Labor",
+        sceneAlt: "Pixel-Szene: der Roboter am Laptop, daneben eine Skulptur aus verbundenen Knoten und eine Glühbirne",
       },
       offer: {
         title: "Wie wir KI für Sie nutzbar machen",

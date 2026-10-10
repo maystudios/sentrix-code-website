@@ -175,26 +175,27 @@ export function PixelRobot({ className, waves = false, watching = false }: Pixel
 
 // ---------------------------------------------------------------------------------------
 
-// The rocket. Its flame swaps between two frames; when `launching` it roars and the hull
-// shakes.
-export function PixelRocket({ className, launching = false }: { className?: string; launching?: boolean }) {
+// The rocket. Engine "idle" flickers a small flame, "roar" a long one with a rumbling hull,
+// "off" shows no flame (coasting). The flame swaps between two frames in CSS.
+export function PixelRocket({ className, engine = "idle" }: { className?: string; engine?: "off" | "idle" | "roar" }) {
   const { ref, live, reduced } = useLive<HTMLDivElement>();
-  const roar = { style: { originY: 0 }, animate: { scaleY: launching ? 2 : 1, scaleX: launching ? 1.2 : 1 }, transition: spring.ui };
-  const speed = launching ? 0.1 : 0.2;
+  const roaring = engine === "roar";
+  const flame = { style: { originY: 0 }, animate: { scaleY: roaring ? 2 : 1, scaleX: roaring ? 1.2 : 1 }, transition: spring.ui };
+  const speed = roaring ? 0.1 : 0.2;
   return (
     <motion.div
       ref={ref}
       className={className}
-      animate={launching && live ? { x: [0, -1.2, 0, 1.2, 0] } : { x: 0 }}
-      transition={launching ? { duration: 0.16, repeat: Infinity, ease: "easeInOut" } : { duration: 0.3, ease: "easeOut" }}
+      animate={roaring && live ? { x: [0, -1.2, 0, 1.2, 0] } : { x: 0 }}
+      transition={roaring ? { duration: 0.16, repeat: Infinity, ease: "easeInOut" } : { duration: 0.3, ease: "easeOut" }}
     >
       <PixelArt
         figure={FIGURES.rocket}
         className="size-full"
         parts={{
-          flame: { ...roar, ...swapA(speed), style: { ...roar.style, ...swapA(speed).style } },
-          "flame-b": reduced ? { hidden: true } : { ...roar, ...swapB(speed), style: { ...roar.style, ...swapB(speed).style } },
-          window: { className: launching ? "ambient animate-glow" : undefined },
+          flame: engine === "off" ? { hidden: true } : { ...flame, ...swapA(speed), style: { ...flame.style, ...swapA(speed).style } },
+          "flame-b": engine === "off" || reduced ? { hidden: true } : { ...flame, ...swapB(speed), style: { ...flame.style, ...swapB(speed).style } },
+          window: { className: roaring ? "ambient animate-glow" : undefined },
         }}
       />
     </motion.div>
@@ -213,7 +214,10 @@ export function PixelDrone({ className, open = false, part = "all" }: { classNam
   const { ref, live, reduced } = useLive<HTMLDivElement>();
   const tick = useTick(1400, live && part !== "front");
   const look = live ? DRONE_LOOK[tick % DRONE_LOOK.length] : 0;
-  const disc = swapA(0.1);
+  // Propellers: disc, blade along, blade across, each for a third of a 0.18 s turn.
+  const turn = 0.18;
+  const third = (offset: number) => ({ className: "ambient", style: { animation: `frame-third ${turn}s steps(1) ${-offset * turn}s infinite` } });
+  const disc = reduced ? {} : third(0);
   const include = (layer: string) => {
     if (layer === "cube") return false;
     const prong = layer.startsWith("claw") && layer !== "claw-head";
@@ -231,7 +235,8 @@ export function PixelDrone({ className, open = false, part = "all" }: { classNam
           "rotor-left": disc,
           "rotor-right": disc,
           "rotor-front": disc,
-          "rotor-spin": reduced ? { hidden: true } : swapB(0.1),
+          "rotor-spin": reduced ? { hidden: true } : third(2 / 3),
+          "rotor-spin-c": reduced ? { hidden: true } : third(1 / 3),
           pupil: { animate: { x: look }, transition: { duration: 0 } },
           light: { className: "ambient animate-glow" },
         }}
@@ -349,4 +354,49 @@ export type PropName = "phone" | "flag" | "mailbox" | "paper-plane" | "server" |
 // A still prop whose little lights pulse.
 export function PixelProp({ name, className }: { name: PropName; className?: string }) {
   return <PixelArt figure={FIGURES[name]} className={className} parts={{ lights: { className: "ambient animate-glow" } }} />;
+}
+
+// ---------------------------------------------------------------------------------------
+
+// The robot walking back and forth along a line: four walk frames while it moves, a short
+// rest and a look around at each end, then it turns (mirrored) and walks back.
+export function PixelWalker({ className }: { className?: string }) {
+  const { ref, live } = useLive<HTMLDivElement>();
+  const [scope, animate] = useAnimate<HTMLDivElement>();
+  const [walking, setWalking] = useState(false);
+  const [facing, setFacing] = useState<1 | -1>(1);
+  const tick = useTick(130, live && walking);
+  useEffect(() => {
+    if (!live || !scope.current || !ref.current) return;
+    let cancelled = false;
+    const wait = (ms: number) => new Promise<void>((resolve) => window.setTimeout(resolve, ms));
+    (async () => {
+      let direction: 1 | -1 = 1;
+      while (!cancelled && scope.current && ref.current) {
+        const track = ref.current.offsetWidth - scope.current.offsetWidth;
+        const target = direction > 0 ? track : 0;
+        const from = Number(scope.current.dataset.x ?? 0);
+        const distance = Math.abs(target - from);
+        setFacing(direction);
+        setWalking(true);
+        await animate(scope.current, { x: target }, { duration: distance / 46, ease: "linear" });
+        scope.current.dataset.x = String(target);
+        setWalking(false);
+        await wait(1400 + Math.random() * 1600);
+        direction = direction > 0 ? -1 : 1;
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [live, animate, scope, ref]);
+  return (
+    <div ref={ref} className={`relative ${className ?? ""}`}>
+      <div ref={scope} className="absolute bottom-0 left-0 h-full" style={{ aspectRatio: `${FIGURES["robot-walk"].width} / ${FIGURES["robot-walk"].height}` }}>
+        <div className="size-full" style={{ transform: facing < 0 ? "scaleX(-1)" : undefined }}>
+          <PixelArt figure={FIGURES["robot-walk"]} className="size-full" frames={{ walk: walking ? (tick % 4) + 1 : 2 }} />
+        </div>
+      </div>
+    </div>
+  );
 }

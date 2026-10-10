@@ -107,24 +107,24 @@ export function LiveBlock({ style, delay, tilt, from = "-115vh", reduced, dragga
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  // The outer element only falls; grabbing, hovering and pressing live on the inner one.
+  // (A gesture on the falling element would return it to its start, 115 vh above.)
   return (
-    <motion.div
-      ref={scope}
-      aria-hidden="true"
-      className={`absolute ${draggable ? "pointer-events-auto cursor-grab touch-none active:cursor-grabbing" : ""} ${className}`}
-      style={style}
-      initial={reduced ? false : { y: from, rotate: tilt }}
-      drag={draggable && !reduced}
-      dragSnapToOrigin
-      dragElastic={0.55}
-      dragTransition={{ bounceStiffness: 320, bounceDamping: 12 }}
-      whileHover={draggable ? { y: -6, transition: spring.ui } : undefined}
-      whileDrag={{ scale: 1.08, rotate: 6, zIndex: 20 }}
-      whileTap={draggable ? { scale: 0.94 } : undefined}
-    >
-      <div ref={body} className="size-full" style={{ transformOrigin: "50% 100%" }}>
-        {children}
-      </div>
+    <motion.div ref={scope} aria-hidden="true" className={`absolute ${className}`} style={style} initial={reduced ? false : { y: from, rotate: tilt }}>
+      <motion.div
+        className={`size-full ${draggable ? "pointer-events-auto cursor-grab touch-none active:cursor-grabbing" : ""}`}
+        drag={draggable && !reduced}
+        dragSnapToOrigin
+        dragElastic={0.55}
+        dragTransition={{ bounceStiffness: 320, bounceDamping: 12 }}
+        whileHover={draggable && !reduced ? { y: -6, transition: spring.ui } : undefined}
+        whileDrag={{ scale: 1.08, rotate: 6, zIndex: 20 }}
+        whileTap={draggable && !reduced ? { scale: 0.94 } : undefined}
+      >
+        <div ref={body} className="size-full" style={{ transformOrigin: "50% 100%" }}>
+          {children}
+        </div>
+      </motion.div>
       <Dust burst={dust} />
     </motion.div>
   );
