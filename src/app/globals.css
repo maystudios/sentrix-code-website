@@ -142,6 +142,11 @@
       transform: translateY(-50%);
     }
   }
+  @keyframes pixel-pulse {
+    50% {
+      opacity: 0.3;
+    }
+  }
   @keyframes twinkle {
     0%,
     100% {
@@ -239,25 +244,78 @@ html[data-motion="reduced"] .ambient * {
   animation: none !important;
 }
 
-/* Pixel page transition (PixelTransition.tsx). */
-.pixel-transition-cell {
-  animation: pixel-clear 240ms cubic-bezier(0.7, 0, 0.84, 0) both;
+/* Seitenwechsel (PageTransition.tsx): the old page slides out, the new one slides in. */
+::view-transition-group(site-header) {
+  animation: none;
+  z-index: 10;
 }
-@keyframes pixel-clear {
-  from {
-    transform: scale(1.02);
-    opacity: 1;
-  }
+::view-transition-old(site-header) {
+  display: none;
+}
+::view-transition-new(site-header) {
+  animation: none;
+}
+::view-transition-old(.slide-forward) {
+  animation: 380ms cubic-bezier(0.7, 0, 0.84, 0) both page-out-left;
+}
+::view-transition-new(.slide-forward) {
+  animation: 620ms cubic-bezier(0.16, 1, 0.3, 1) 140ms both page-in-right;
+}
+::view-transition-old(.slide-back) {
+  animation: 380ms cubic-bezier(0.7, 0, 0.84, 0) both page-out-right;
+}
+::view-transition-new(.slide-back) {
+  animation: 620ms cubic-bezier(0.16, 1, 0.3, 1) 140ms both page-in-left;
+}
+::view-transition-old(.page-fade) {
+  animation: 200ms ease-in both page-fade-out;
+}
+::view-transition-new(.page-fade) {
+  animation: 320ms ease-out 120ms both page-fade-in;
+}
+@keyframes page-out-left {
   to {
-    transform: scale(0);
+    transform: translateX(-18vw) scale(0.97);
+    opacity: 0;
+  }
+}
+@keyframes page-in-right {
+  from {
+    transform: translateX(24vw);
+    opacity: 0;
+  }
+}
+@keyframes page-out-right {
+  to {
+    transform: translateX(18vw) scale(0.97);
+    opacity: 0;
+  }
+}
+@keyframes page-in-left {
+  from {
+    transform: translateX(-24vw);
+    opacity: 0;
+  }
+}
+@keyframes page-fade-out {
+  to {
+    opacity: 0;
+  }
+}
+@keyframes page-fade-in {
+  from {
     opacity: 0;
   }
 }
 @media (prefers-reduced-motion: reduce) {
-  html:not([data-motion="full"]) .pixel-transition {
-    display: none;
+  html:not([data-motion="full"])::view-transition-group(*),
+  html:not([data-motion="full"])::view-transition-old(*),
+  html:not([data-motion="full"])::view-transition-new(*) {
+    animation: none !important;
   }
 }
-html[data-motion="reduced"] .pixel-transition {
-  display: none;
+html[data-motion="reduced"]::view-transition-group(*),
+html[data-motion="reduced"]::view-transition-old(*),
+html[data-motion="reduced"]::view-transition-new(*) {
+  animation: none !important;
 }

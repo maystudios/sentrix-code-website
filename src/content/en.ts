@@ -37,7 +37,20 @@ export const en: Dictionary = {
   },
   statement: {
     title: "One team. From the idea to release.",
-    chips: ["Idea", "Concept", "Prototype", "Design", "Development", "Testing", "Release"],
+    chips: [
+      { label: "Gameplay", icon: "gamepad", muted: true },
+      { label: "Idea", icon: "idea" },
+      { label: "Concept", icon: "concept" },
+      { label: "Prototype", icon: "prototype" },
+      { label: "Design", icon: "design" },
+      { label: "APIs", icon: "chip", muted: true },
+      { label: "AI integration", icon: "robot", muted: true },
+      { label: "Development", icon: "code" },
+      { label: "Testing", icon: "test" },
+      { label: "Maintenance", icon: "server", muted: true },
+      { label: "Release", icon: "rocket" },
+      { label: "App stores", icon: "phone", muted: true },
+    ],
   },
   positioning:
     "We build on commission. From the first prototype to the application your users rely on every day.",
@@ -116,7 +129,7 @@ export const en: Dictionary = {
         text: "The publisher wanted practice exercises to feel like play. We built a tablet puzzle game that turns curriculum tasks into levels, and teachers can follow their class's progress.",
         quote: "The kids ask for the next level, not for the end of the lesson.",
         role: "Head of product, educational publisher",
-        sprite: "/images/sprites/gamepad.webp",
+        icon: "gamepad",
         example: true,
       },
       {
@@ -126,7 +139,7 @@ export const en: Dictionary = {
         text: "Orders, delivery dates and spare parts lived in three systems. We built a portal that pulls the data from the ERP and lets customers check their order status themselves.",
         quote: "Our sales team talks to customers about new machines again, not about delivery dates.",
         role: "Managing director, machine building",
-        sprite: "/images/sprites/server.webp",
+        icon: "server",
         example: true,
       },
       {
@@ -136,7 +149,7 @@ export const en: Dictionary = {
         text: "The chain wanted its own app rather than a third-party booking platform. We built it with Flutter for iOS and Android and connected it to the existing membership system.",
         quote: "Most bookings now come through the app, and the front desk has time for advice again.",
         role: "Head of digital, gym chain",
-        sprite: "/images/sprites/phone.webp",
+        icon: "phone",
         example: true,
       },
       {
@@ -146,7 +159,7 @@ export const en: Dictionary = {
         text: "Many requests were about fit and delivery. Our assistant answers from product data and manuals and hands difficult cases to the team with everything they need.",
         quote: "The team now spends its time on the cases where it is really needed.",
         role: "Head of customer service, online retail",
-        sprite: "/images/sprites/chip.webp",
+        icon: "chip",
         example: true,
       },
     ],

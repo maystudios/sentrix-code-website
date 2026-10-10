@@ -64,6 +64,7 @@ export function LanguageSwitch({ locale, alternateHref }: { locale: Locale; alte
             <li>
               <Link
                 href={alternateHref}
+                transitionTypes={["nav-fade"]}
                 lang={other}
                 hrefLang={other}
                 className="block rounded-[4px] px-3 py-2 text-sm text-muted transition-colors duration-150 hover:bg-raised hover:text-fg"

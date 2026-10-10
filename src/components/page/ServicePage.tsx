@@ -3,7 +3,6 @@
 import Link from "next/link";
 import { motion } from "motion/react";
 import type { Dictionary, ServiceVisualKind } from "@/content/types";
-import { asset } from "@/lib/asset";
 import { ease, spring } from "@/lib/motion";
 import { Button } from "@/components/ui/Button";
 import { FaqList } from "@/components/ui/FaqList";
@@ -14,6 +13,7 @@ import { TextLink } from "@/components/ui/TextLink";
 import { ContactCta } from "@/components/site/ContactCta";
 import { SiteShell } from "@/components/site/SiteShell";
 import { PageHero } from "./PageHero";
+import { PixelIcon } from "@/components/brand/PixelIcon";
 
 const CASE_INDEX: Record<ServiceVisualKind, number> = { game: 0, software: 1, apps: 2, ai: 3 };
 
@@ -67,13 +67,9 @@ export function ServicePage({ dict, kind, alternateHref }: { dict: Dictionary; k
                   variants={{ hover: { scaleX: 1, opacity: 1 } }}
                   transition={{ duration: 0.35, ease: ease.outExpo }}
                 />
-                <motion.img
-                  src={asset(item.icon)}
-                  alt=""
-                  className="size-12 object-contain"
-                  variants={{ hover: { y: -6, rotate: -8 } }}
-                  transition={spring.playful}
-                />
+                <motion.span className="block w-fit" variants={{ hover: { y: -6, rotate: -8 } }} transition={spring.playful}>
+                  <PixelIcon name={item.icon} px={4} />
+                </motion.span>
                 <div>
                   <h3 className="text-xl font-medium tracking-tight">{item.title}</h3>
                   <p className="mt-2 max-w-lg text-muted">{item.text}</p>
@@ -150,7 +146,7 @@ export function ServicePage({ dict, kind, alternateHref }: { dict: Dictionary; k
                   href={pages.routes.services[other.kind]}
                   className="group flex items-center gap-4 rounded-[var(--radius-card)] border border-line p-4 transition-colors duration-150 hover:border-line-strong hover:bg-surface"
                 >
-                  <img src={asset(other.icon)} alt="" className="size-10 object-contain transition-transform duration-300 group-hover:-translate-y-1 group-hover:-rotate-6" />
+                  <PixelIcon name={other.icon} px={3} className="transition-transform duration-300 group-hover:-translate-y-1 group-hover:-rotate-6" />
                   <span>
                     <span className="block font-medium">{other.nav}</span>
                     <span className="block text-sm text-muted">{other.menuText}</span>

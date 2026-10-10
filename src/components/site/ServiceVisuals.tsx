@@ -2,29 +2,29 @@
 
 import { motion, useInView } from "motion/react";
 import { useEffect, useRef, useState } from "react";
-import type { ServiceMockups } from "@/content/types";
-import { asset } from "@/lib/asset";
+import type { IconName, ServiceMockups } from "@/content/types";
 import { ease, spring } from "@/lib/motion";
 import { useMotionPolicy } from "@/components/motion/MotionPolicy";
 import { Mosaic } from "@/components/ui/Mosaic";
+import { PixelIcon } from "@/components/brand/PixelIcon";
+import { PixelProp, type PropName } from "@/components/brand/PixelCharacters";
 
 // Illustrative product UI inside the service panels. The mock-up texts come from
 // src/content (services.mockups, marked as example; WEBSITE.md, "Wahrheit vor Wirkung").
 
-function Sprite({ src, className, delay = 0 }: { src: string; className: string; delay?: number }) {
+function Sprite({ name, className, delay = 0 }: { name: PropName; className: string; delay?: number }) {
   return (
-    <motion.img
-      src={asset(src)}
-      alt=""
+    <motion.div
       aria-hidden="true"
-      draggable={false}
       initial={{ opacity: 0, y: 14, scale: 0.8 }}
       whileInView={{ opacity: 1, y: 0, scale: 1 }}
       viewport={{ once: true }}
       transition={{ ...spring.playful, delay }}
       whileHover={{ y: -8, rotate: -6, transition: spring.ui }}
-      className={`absolute object-contain object-bottom drop-shadow-[0_6px_0_rgba(3,4,94,0.35)] ${className}`}
-    />
+      className={`absolute ${className}`}
+    >
+      <PixelProp name={name} className="h-auto w-full drop-shadow-[0_6px_0_rgba(3,4,94,0.35)]" />
+    </motion.div>
   );
 }
 
@@ -78,8 +78,8 @@ export function SoftwareVisual({ mockups }: { mockups: ServiceMockups }) {
           ✓ {mockups.buildPassed}
         </motion.div>
       </motion.div>
-      <Sprite src="/images/sprites/server.webp" className="bottom-[6%] left-[5%] w-[17%]" delay={0.2} />
-      <Sprite src="/images/sprites/chip.webp" className="ambient right-[3%] top-[62%] w-[13%] animate-bob" delay={0.5} />
+      <Sprite name="server" className="bottom-[6%] left-[5%] w-[17%]" delay={0.2} />
+      <Sprite name="chip" className="ambient right-[3%] top-[62%] w-[13%] animate-bob" delay={0.5} />
     </div>
   );
 }
@@ -129,13 +129,13 @@ export function AppsVisual({ mockups }: { mockups: ServiceMockups }) {
           {note}
         </motion.div>
       ))}
-      <Sprite src="/images/sprites/phone.webp" className="bottom-[7%] right-[24%] w-[11%]" delay={0.4} />
-      <Sprite src="/images/sprites/flag.webp" className="ambient bottom-[9%] right-[8%] w-[12%] animate-bob" delay={0.7} />
+      <Sprite name="phone" className="bottom-[7%] right-[24%] w-[11%]" delay={0.4} />
+      <Sprite name="flag" className="ambient bottom-[9%] right-[8%] w-[12%] animate-bob" delay={0.7} />
     </div>
   );
 }
 
-const PROMPT_ICONS = ["/images/icons/concept.webp", "/images/icons/test.webp", "/images/icons/idea.webp"];
+const PROMPT_ICONS: IconName[] = ["concept", "test", "idea"];
 
 export function AiVisual({ mockups }: { mockups: ServiceMockups }) {
   const prompts = mockups.aiPrompts;
@@ -191,14 +191,14 @@ export function AiVisual({ mockups }: { mockups: ServiceMockups }) {
                 row === index ? "bg-raised text-fg" : "text-muted"
               }`}
             >
-              <img src={asset(PROMPT_ICONS[row])} alt="" className="size-4 object-contain" />
+              <PixelIcon name={PROMPT_ICONS[row]} px={1.5} />
               {prompt}
             </li>
           ))}
         </ul>
       </motion.div>
-      <Sprite src="/images/sprites/drone.webp" className="ambient right-[5%] top-[6%] w-[14%] animate-bob" delay={0.7} />
-      <Sprite src="/images/sprites/chip.webp" className="bottom-[5%] left-[6%] w-[11%]" delay={0.9} />
+      <Sprite name="drone" className="ambient right-[5%] top-[6%] w-[14%] animate-bob" delay={0.7} />
+      <Sprite name="chip" className="bottom-[5%] left-[6%] w-[11%]" delay={0.9} />
     </div>
   );
 }

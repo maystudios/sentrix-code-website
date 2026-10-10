@@ -3,10 +3,10 @@
 import { motion } from "motion/react";
 import { useEffect, useState, type ReactNode } from "react";
 import { de } from "@/content/de";
-import { asset } from "@/lib/asset";
 import { ease, spring } from "@/lib/motion";
 import { PageHero } from "@/components/page/PageHero";
 import { SiteShell } from "@/components/site/SiteShell";
+import { PixelIcon } from "@/components/brand/PixelIcon";
 
 export type LegalSection = { id: string; title: string; body: ReactNode };
 
@@ -69,7 +69,7 @@ export function LegalPage({ title, intro, updated, sections }: LegalPageProps) {
           </nav>
           <div className="max-w-3xl">
             <p className="mb-10 inline-flex items-center gap-3 rounded-[var(--radius-control)] border border-line-strong bg-surface px-4 py-2.5 text-sm text-muted">
-              <img src={asset("/images/icons/test.webp")} alt="" className="size-5 object-contain" />
+              <PixelIcon name="test" px={2} />
               Entwurf, Stand {updated}. Vor der Veröffentlichung unter eigener Domain rechtlich prüfen.
             </p>
             {sections.map((section, index) => (

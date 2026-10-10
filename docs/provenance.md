@@ -58,15 +58,32 @@ nach dem Listenpreis von Nano Banana Pro für 1K- und 2K-Bilder; nicht aus einer
 Rechnung abgelesen. Ein erster Versuch mit dem Schlüssel aus der Rechnerumgebung
 scheiterte am Ausgabenlimit jenes Google-Projekts (HTTP 429).
 
-## Im Code nachgebaute Figuren
+## Im Code nachgebaute Figuren (Runde 4, 10.10.2026)
 
-Auf Anregung des Projektverantwortlichen werden zentrale Figuren nach der
-Bildgenerierung im Code nachgebaut, damit einzelne Teile animiert werden können.
-`scripts/pixelize-sprite.py` rechnet die generierte Figur in ihr Pixelraster zurück
-und schreibt `src/components/brand/sprites/<name>.ts`; `PixelCharacters.tsx` teilt
-die Pixel in Ebenen.
+Alle Figuren, Requisiten und Icons auf der Seite sind pixelgenaue Nachbauten generierter
+Bilder; im Ordner `public/images` liegen nur noch die Szenenbilder. Ablauf nach Vorgabe
+des Projektverantwortlichen: erst ein Bild generieren, dann exakt nachbauen, dann
+animieren. Frei gezeichnete Pixelgrafik wurde verworfen.
 
-| Figur | Vorlage | Raster | Bewegte Ebenen |
+1. `scripts/pixel-art/rebuild.py` findet die Kachelgröße des Bildes (auch gebrochene
+   Größen) und nimmt je Kachel die mittlere Farbe. Nahe Farben werden auf die Seitenpalette
+   gesetzt, andere bleiben erhalten. Das Ergebnis ist ein Buchstabenraster in
+   `scripts/pixel-art/grids/`.
+2. `scripts/pixel-art/figures.py` teilt die Raster in Ebenen. Abgeleitete Frames (Arm unten,
+   kurze Rotorblätter, geschlossener Greifer) verschieben oder spiegeln nur vorhandene
+   Kacheln desselben Bildes.
+3. `scripts/pixel-art/build.py` schreibt `src/components/brand/figures.ts` und `pixel-icons.ts`.
+
+| Figur | Vorlage | Raster | Bewegung |
 | --- | --- | --- | --- |
-| Rakete | `sprite-rocket` | 26 × 41 | Flamme flackert, beim Start größer; im Fenster sitzt der Roboter und blinzelt |
-| Roboter | `sprite-robot` | 27 × 41 | Augen blinzeln, Antenne leuchtet, springt beim Antippen |
+| Roboter | Flow `robot-wave` Nr. 2 | 25 × 35 | blinzelt, schaut zum Zeiger, winkt (zwei Frames), Arm unten aus gespiegeltem linken Arm |
+| Rakete | `sprite-rocket` (09.10.) | 22 × 35 | Flamme flackert, beim Start lang |
+| Drohne | Gemini, Runde 4, 16:9 | 62 × 34 | Rotoren (zwei Frames), Auge schaut, Licht pulsiert, Greifer öffnet |
+| Controller, Laptop, Wolke, Handy, Flagge, Briefkasten, Papierflieger | Gemini, Runde 3b (`props/`) | 20 × 31 bis 51 × 18 | Tasten, getippte Codezeilen mit Cursor, funkelnde Sterne, Lichter |
+| Server, Chip, Funkelstern | Gemini, Runde 4 | 24 × 31, 34 × 35, 13 × 13 | Lichter, Funkeln |
+| Begleiter (Spiel, Code, Handy, KI), Astronaut | Flow-Sätze und Gemini (09.10.) | 26 × 34 bis 36 × 39 | Augen blinzeln, Funken |
+| 12 Icons | Gemini, Runde 4, Stilvorlage `icon-code` | 14 × 14 bis 36 × 30 | ruhend |
+
+Runde 4 hat über die Gemini-Schnittstelle (Nano Banana Pro, 2K) 18 Bilder erzeugt:
+Drohne in zwei Formaten, zwei Funkelsterne, Server, Chip und zwölf Icons. Prompts und
+Rohbilder liegen lokal unter `.harness/runs/2026-10-10-website-v2/round4/gen/`.

@@ -1,0 +1,42 @@
+# source: .harness/runs/2026-10-10-website-v2/round4/gen/server.png
+# cell: 51.25px  grid: 24x31
+@ A #ffb703
+@ B #0077b6
+@ D #101013
+@ L #caf0f8
+@ N #023e8a
+@ W #ffffff
+@ c #00b4d8
+@ k #03045e
+@ l #90e0ef
+..DDDDDDDDDDDDDDDDDDDD..
+.DBBBBBBBBBBBBBBBBBBBBD.
+DLWWWWWWWWWWWWWWWWWWWWLD
+DLWkkkkkkkkkkkWllllllWLD
+DcllllllllllllllllllllcD
+DclkkkkkkkkkkkllAlAlAlcD
+DccccccccccccccccccccccD
+DcckkkkkkkkkkkccLclLLccD
+DBccccccccccccccccccccBD
+DDBNBBBNNBNNBBNNBNNNNBDD
+.DDkkkkkkkkkkkkkkkkkkDD.
+.DBBBBBBBBBBBBBBBBBBBBD.
+DLWWWWWWWWWWWWWWWWWWWWLD
+DLWkkkkkkkkkkkWllllllWLD
+DcllllllllllllllllllllcD
+DclkkkkkkkkkkkllAlAlAlcD
+DccccccccccccccccccccccD
+DcckkkkkkkkkkkccLclLLccD
+DBccccccccccccccccccccBD
+DDBNNBBNBBBBBBBBBBBBBBDD
+.DDkkkkkkkkkkkkkkkkkkDD.
+.DBBBBBBBBBBBBBBBBBBBBD.
+DLWWWWWWWWWWWWWWWWWWWWLD
+DLWkkkkkkkkkkkWllllllWLD
+DcllllllllllllllllllllcD
+DclkkkkkkkkkkkllAlAlAlcD
+DccccccccccccccccccccccD
+DcckkkkkkkkkkkccLclLLccD
+DBccccccccccccccccccccBD
+.DBBBBBBBBNNNBNNNNBNBBD.
+..DDDDDDDDDDDDDDDDDDDD..

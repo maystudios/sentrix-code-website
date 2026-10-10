@@ -1,0 +1,36 @@
+# source: .harness/runs/2026-10-10-website-v2/props/gamepad.png
+# cell: 25.50px  grid: 34x24
+@ A #ffb703
+@ B #0077b6
+@ C #48cae4
+@ D #101013
+@ L #caf0f8
+@ N #023e8a
+@ W #ffffff
+@ b #0096c7
+@ c #00b4d8
+@ k #03045e
+.....DDDDD..............DDDDD.....
+....DNbbAAD............DAABbND....
+...DNLLLLLLDDDDDDDDDDDDLLLLLLND...
+..DLWWWWWWWWLLLLLLLLLLWWWWWWWWLD..
+.DNWWWWWWWWWLLLLLLLLLLWWBBBBLWWND.
+.DLWLbkkkbWWWWWWWWWWWWWBbbbbBbWLD.
+DLWLbbNckbbWWWWWWWWWWWBbbbbkkkCWLD
+DLWbbbNNkbbbWWWWWWWWWCbbbbkLWLkWLD
+DLWkbNkNNNbkWWWWWWWWWBkCkbkWWWkWLD
+DLWkNNNkNNNkWWWWWWWWWkCCCBkBLBkWLD
+DLWkkkNNkkkkWWWWWWWWWkCCCkbkkkBWLD
+DBWBbBNbkbbbWWkkWWkkWkNCNkbBBBCWBD
+DbWWbbkkkbbWWWLLWWLLWWkkkbbbbbWLbD
+DbLWWbbbbbWLBBBBBBBBBBLLbbbbLWLBbD
+DbBLWWWWWWLNkkkkkkkkkkNLWWWWWLBBbD
+DbBBBLLLLLNkDDDDDDDDDDkNLLLLBBBBbD
+DbBBBBBBBNkD..........DkNBBBBBBBbD
+DbBBBBBBBND............DNBBBBBBBbD
+DNBBBBBBNkD............DkNBBBBBBND
+DNBBBBBBkD..............DkBBBBBBND
+DkNBBBBNkD..............DkNBBBBNkD
+.DkNNNNkD................DkNNNNkD.
+..DkkkkD..................DkkkkD..
+...DDDD....................DDDD...

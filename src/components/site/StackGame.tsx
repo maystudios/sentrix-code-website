@@ -118,7 +118,7 @@ export function StackGame({ locale }: { locale: Locale }) {
       }}
       className="relative aspect-video cursor-pointer select-none overflow-hidden bg-ocean-950 outline-none focus-visible:ring-2 focus-visible:ring-ocean-400"
     >
-      <Mosaic className="absolute inset-0 opacity-25" columns={16} rows={9} from={0} to={2} seed={7} twinkle={false} />
+      <Mosaic className="absolute inset-0" tile={32} from={0} to={1} seed={7} twinkle={false} />
       <div aria-hidden="true" className="absolute inset-0 bg-[radial-gradient(rgba(202,240,248,0.18)_1px,transparent_1px)] bg-[size:18px_18px]" />
       <svg viewBox="0 0 100 100" preserveAspectRatio="none" className="absolute inset-0 size-full" shapeRendering="crispEdges" aria-hidden="true">
         {/* ground */}

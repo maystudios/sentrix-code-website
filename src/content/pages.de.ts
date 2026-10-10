@@ -34,7 +34,7 @@ export const pagesDe: Pages = {
       kind: "game",
       nav: "Spieleentwicklung",
       menuText: "Prototypen, Gameplay und Multiplayer mit Unreal Engine",
-      icon: "/images/sprites/gamepad.webp",
+      icon: "gamepad",
       meta: {
         title: "Spieleentwicklung im Auftrag · Sentrix Code",
         description:
@@ -53,22 +53,22 @@ export const pagesDe: Pages = {
           {
             title: "Prototypen und Vertical Slices",
             text: "Aus einer Idee wird in wenigen Wochen etwas Spielbares. Damit testen Sie den Spielspaß, überzeugen Publisher oder beantragen Förderung.",
-            icon: "/images/sprites/gamepad.webp",
+            icon: "gamepad",
           },
           {
             title: "Gameplay-Programmierung",
             text: "Mechaniken, Gegner-KI, Fahrzeuge, Kampf und Inventar entstehen als Systeme in C++, die sauber zusammenspielen und sich erweitern lassen.",
-            icon: "/images/icons/code.webp",
+            icon: "code",
           },
           {
             title: "Multiplayer",
             text: "Koop und Online-Spiel mit Listen-Server oder dedizierten Servern. Wir testen auch unter schlechter Verbindung, nicht nur im Büronetz.",
-            icon: "/images/sprites/server.webp",
+            icon: "server",
           },
           {
             title: "Werkzeuge und Pipelines",
             text: "Editor-Werkzeuge, automatische Tests und Build-Pipelines sorgen dafür, dass Ihr Team schneller Inhalte baut und weniger sucht.",
-            icon: "/images/icons/prototype.webp",
+            icon: "prototype",
           },
         ],
       },
@@ -97,7 +97,7 @@ export const pagesDe: Pages = {
       kind: "software",
       nav: "Softwareentwicklung",
       menuText: "Webanwendungen, Portale, Schnittstellen und Backends",
-      icon: "/images/sprites/server.webp",
+      icon: "server",
       meta: {
         title: "Softwareentwicklung im Auftrag · Sentrix Code",
         description:
@@ -116,22 +116,22 @@ export const pagesDe: Pages = {
           {
             title: "Webanwendungen und Portale",
             text: "Kundenportale, interne Werkzeuge und Dashboards, die im Browser laufen und mit Ihren echten Daten arbeiten.",
-            icon: "/images/icons/code.webp",
+            icon: "code",
           },
           {
             title: "Schnittstellen",
             text: "Wir verbinden ERP, Shop, CRM und Fachsysteme, damit niemand mehr Daten von Hand von einem System ins nächste tippt.",
-            icon: "/images/sprites/chip.webp",
+            icon: "chip",
           },
           {
             title: "Backends und APIs",
             text: "Stabile Server und APIs in Java, TypeScript oder Python, mit Tests, Protokollen und Überwachung von Anfang an.",
-            icon: "/images/sprites/server.webp",
+            icon: "server",
           },
           {
             title: "Modernisierung",
             text: "Gewachsene Altsysteme lösen wir Schritt für Schritt ab, während der laufende Betrieb weitergeht.",
-            icon: "/images/icons/prototype.webp",
+            icon: "prototype",
           },
         ],
       },
@@ -161,7 +161,7 @@ export const pagesDe: Pages = {
       kind: "apps",
       nav: "App-Entwicklung",
       menuText: "Apps für iOS und Android aus einer Codebasis",
-      icon: "/images/sprites/phone.webp",
+      icon: "phone",
       meta: {
         title: "App-Entwicklung mit Flutter · Sentrix Code",
         description:
@@ -180,22 +180,22 @@ export const pagesDe: Pages = {
           {
             title: "Konzept und Design",
             text: "Wir klären, was die erste Version können muss, und gestalten Abläufe, die ohne Anleitung funktionieren.",
-            icon: "/images/icons/design.webp",
+            icon: "design",
           },
           {
             title: "Entwicklung mit Flutter",
             text: "Eine Codebasis für iOS und Android, mit Kamera, Standort und Push-Benachrichtigungen, wo Ihre App sie braucht.",
-            icon: "/images/sprites/phone.webp",
+            icon: "phone",
           },
           {
             title: "Anbindung an Ihre Systeme",
             text: "Login, Zahlungen, Buchungen und Daten aus Ihrem Backend, sicher und nachvollziehbar angebunden.",
-            icon: "/images/sprites/chip.webp",
+            icon: "chip",
           },
           {
             title: "Veröffentlichung und Pflege",
             text: "Wir bringen die App in den App Store und zu Google Play und halten sie mit Updates auf dem aktuellen Stand.",
-            icon: "/images/sprites/rocket.webp",
+            icon: "rocket",
           },
         ],
       },
@@ -224,7 +224,7 @@ export const pagesDe: Pages = {
       kind: "ai",
       nav: "KI & Machine Learning",
       menuText: "Beratung, Assistenten und Automatisierung mit KI",
-      icon: "/images/sprites/chip.webp",
+      icon: "chip",
       meta: {
         title: "KI und Machine Learning für Unternehmen · Sentrix Code",
         description:
@@ -243,22 +243,22 @@ export const pagesDe: Pages = {
           {
             title: "Beratung und Potenzialanalyse",
             text: "In einem Workshop sehen wir uns Ihre Abläufe an und bewerten ehrlich, wo sich KI lohnt und wo nicht.",
-            icon: "/images/icons/idea.webp",
+            icon: "idea",
           },
           {
             title: "KI-Assistenten",
             text: "Assistenten für Kunden oder Mitarbeitende, die aus Ihren Dokumenten und Daten antworten und ihre Quellen nennen.",
-            icon: "/images/sprites/robot.webp",
+            icon: "robot",
           },
           {
             title: "Automatisierung",
             text: "Wiederkehrende Aufgaben wie Zusammenfassungen, Einordnung von Anfragen oder Datenabgleich laufen von selbst.",
-            icon: "/images/icons/prototype.webp",
+            icon: "prototype",
           },
           {
             title: "Datenauswertung und Machine Learning",
             text: "Wir werten Ihre Daten aus und trainieren eigene Modelle, wenn fertige Lösungen nicht ausreichen.",
-            icon: "/images/sprites/chip.webp",
+            icon: "chip",
           },
         ],
       },
@@ -331,10 +331,10 @@ export const pagesDe: Pages = {
     principles: {
       title: "Wie wir arbeiten",
       items: [
-        { text: "Wir zeigen früh etwas Lauffähiges, statt lange Konzepte zu schreiben.", sprite: "/images/sprites/rocket.webp" },
-        { text: "Wir sagen es offen, wenn eine Idee teurer wird als ihr Nutzen.", sprite: "/images/icons/idea.webp" },
-        { text: "Wir schreiben Code, den auch andere später weiterführen können.", sprite: "/images/icons/code.webp" },
-        { text: "Wir nutzen KI als Werkzeug. Die Verantwortung für das Ergebnis bleibt bei uns.", sprite: "/images/sprites/chip.webp" },
+        { text: "Wir zeigen früh etwas Lauffähiges, statt lange Konzepte zu schreiben.", icon: "rocket" },
+        { text: "Wir sagen es offen, wenn eine Idee teurer wird als ihr Nutzen.", icon: "idea" },
+        { text: "Wir schreiben Code, den auch andere später weiterführen können.", icon: "code" },
+        { text: "Wir nutzen KI als Werkzeug. Die Verantwortung für das Ergebnis bleibt bei uns.", icon: "chip" },
       ],
       example: true,
     },

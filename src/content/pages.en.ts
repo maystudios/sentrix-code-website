@@ -34,7 +34,7 @@ export const pagesEn: Pages = {
       kind: "game",
       nav: "Game development",
       menuText: "Prototypes, gameplay and multiplayer in Unreal Engine",
-      icon: "/images/sprites/gamepad.webp",
+      icon: "gamepad",
       meta: {
         title: "Game development on commission · Sentrix Code",
         description:
@@ -53,22 +53,22 @@ export const pagesEn: Pages = {
           {
             title: "Prototypes and vertical slices",
             text: "An idea becomes something playable within a few weeks. Use it to test the fun, win over publishers or apply for funding.",
-            icon: "/images/sprites/gamepad.webp",
+            icon: "gamepad",
           },
           {
             title: "Gameplay programming",
             text: "Mechanics, enemy AI, vehicles, combat and inventory are built as C++ systems that work together cleanly and stay extensible.",
-            icon: "/images/icons/code.webp",
+            icon: "code",
           },
           {
             title: "Multiplayer",
             text: "Co-op and online play with listen servers or dedicated servers. We test on bad connections too, not just on the office network.",
-            icon: "/images/sprites/server.webp",
+            icon: "server",
           },
           {
             title: "Tools and pipelines",
             text: "Editor tools, automated tests and build pipelines help your team build content faster and search less.",
-            icon: "/images/icons/prototype.webp",
+            icon: "prototype",
           },
         ],
       },
@@ -97,7 +97,7 @@ export const pagesEn: Pages = {
       kind: "software",
       nav: "Software development",
       menuText: "Web applications, portals, integrations and backends",
-      icon: "/images/sprites/server.webp",
+      icon: "server",
       meta: {
         title: "Software development on commission · Sentrix Code",
         description:
@@ -116,22 +116,22 @@ export const pagesEn: Pages = {
           {
             title: "Web applications and portals",
             text: "Customer portals, internal tools and dashboards that run in the browser and work with your real data.",
-            icon: "/images/icons/code.webp",
+            icon: "code",
           },
           {
             title: "Integrations",
             text: "We connect ERP, shop, CRM and specialist systems so nobody copies data from one system into the next by hand.",
-            icon: "/images/sprites/chip.webp",
+            icon: "chip",
           },
           {
             title: "Backends and APIs",
             text: "Robust servers and APIs in Java, TypeScript or Python, with tests, logging and monitoring from day one.",
-            icon: "/images/sprites/server.webp",
+            icon: "server",
           },
           {
             title: "Modernisation",
             text: "We replace grown legacy systems step by step while daily operations carry on.",
-            icon: "/images/icons/prototype.webp",
+            icon: "prototype",
           },
         ],
       },
@@ -161,7 +161,7 @@ export const pagesEn: Pages = {
       kind: "apps",
       nav: "App development",
       menuText: "Apps for iOS and Android from one codebase",
-      icon: "/images/sprites/phone.webp",
+      icon: "phone",
       meta: {
         title: "App development with Flutter · Sentrix Code",
         description:
@@ -180,22 +180,22 @@ export const pagesEn: Pages = {
           {
             title: "Concept and design",
             text: "We work out what the first version has to do and design flows that work without a manual.",
-            icon: "/images/icons/design.webp",
+            icon: "design",
           },
           {
             title: "Development with Flutter",
             text: "One codebase for iOS and Android, with camera, location and push notifications wherever your app needs them.",
-            icon: "/images/sprites/phone.webp",
+            icon: "phone",
           },
           {
             title: "Connecting your systems",
             text: "Login, payments, bookings and data from your backend, connected securely and traceably.",
-            icon: "/images/sprites/chip.webp",
+            icon: "chip",
           },
           {
             title: "Release and care",
             text: "We take the app to the App Store and Google Play and keep it current with updates.",
-            icon: "/images/sprites/rocket.webp",
+            icon: "rocket",
           },
         ],
       },
@@ -224,7 +224,7 @@ export const pagesEn: Pages = {
       kind: "ai",
       nav: "AI & machine learning",
       menuText: "Advice, assistants and automation with AI",
-      icon: "/images/sprites/chip.webp",
+      icon: "chip",
       meta: {
         title: "AI and machine learning for companies · Sentrix Code",
         description:
@@ -243,22 +243,22 @@ export const pagesEn: Pages = {
           {
             title: "Advice and assessment",
             text: "In a workshop we look at your workflows and give you an honest view of where AI pays off and where it does not.",
-            icon: "/images/icons/idea.webp",
+            icon: "idea",
           },
           {
             title: "AI assistants",
             text: "Assistants for customers or staff that answer from your documents and data and cite their sources.",
-            icon: "/images/sprites/robot.webp",
+            icon: "robot",
           },
           {
             title: "Automation",
             text: "Recurring tasks such as summaries, sorting requests or matching data run by themselves.",
-            icon: "/images/icons/prototype.webp",
+            icon: "prototype",
           },
           {
             title: "Data analysis and machine learning",
             text: "We analyse your data and train our own models when ready-made solutions are not enough.",
-            icon: "/images/sprites/chip.webp",
+            icon: "chip",
           },
         ],
       },
@@ -331,10 +331,10 @@ export const pagesEn: Pages = {
     principles: {
       title: "How we work",
       items: [
-        { text: "We show something that runs early instead of writing long concepts.", sprite: "/images/sprites/rocket.webp" },
-        { text: "We say so openly when an idea would cost more than it brings.", sprite: "/images/icons/idea.webp" },
-        { text: "We write code that others can carry on later.", sprite: "/images/icons/code.webp" },
-        { text: "We use AI as a tool. Responsibility for the result stays with us.", sprite: "/images/sprites/chip.webp" },
+        { text: "We show something that runs early instead of writing long concepts.", icon: "rocket" },
+        { text: "We say so openly when an idea would cost more than it brings.", icon: "idea" },
+        { text: "We write code that others can carry on later.", icon: "code" },
+        { text: "We use AI as a tool. Responsibility for the result stays with us.", icon: "chip" },
       ],
       example: true,
     },

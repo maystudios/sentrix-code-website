@@ -3,11 +3,10 @@
 import { AnimatePresence, motion, useAnimate, useMotionValue, useSpring, useTransform } from "motion/react";
 import { useCallback, useEffect, useRef, useState, type PointerEvent, type ReactNode, type RefObject } from "react";
 import type { Dictionary } from "@/content/types";
-import { asset } from "@/lib/asset";
 import { duration, ease, spring } from "@/lib/motion";
 import { useMotionPolicy } from "@/components/motion/MotionPolicy";
 import { AnimatedPictogram } from "@/components/brand/AnimatedPictogram";
-import { PixelRobot, PixelRocket } from "@/components/brand/PixelCharacters";
+import { PixelCloud, PixelDrone, PixelGamepad, PixelLaptop, PixelRobot, PixelRocket, PixelSparkle } from "@/components/brand/PixelCharacters";
 import { CHEVRON_PATH, X_PATH } from "@/components/brand/paths";
 import { Button } from "@/components/ui/Button";
 
@@ -108,9 +107,8 @@ function Sprite({ children, className, delay, style }: { children: ReactNode; cl
   );
 }
 
-function Img({ src, className = "" }: { src: string; className?: string }) {
-  return <img src={asset(src)} alt="" draggable={false} className={`size-full object-contain object-bottom ${className}`} />;
-}
+// Hero figures share one pixel size: one art pixel is 0.06 hero units.
+const cells = (count: number) => `calc(var(--u) * ${(count * 0.06).toFixed(3)})`;
 
 // The drone sways above the right tower, opens its claw and drops blocks that bounce onto
 // the tower; three blocks later they pop and the game starts over (the reference's claw).
@@ -119,6 +117,7 @@ function DroneDrop({ reduced, slotRef, onTowerDone }: { reduced: boolean; slotRe
   const [drops, setDrops] = useState<{ id: number; distance: number }[]>([]);
   const [popping, setPopping] = useState(false);
   const [dust, setDust] = useState<{ id: number; level: number }[]>([]);
+  const [holding, setHolding] = useState(true);
   const counter = useRef(0);
 
   useEffect(() => {
@@ -142,7 +141,9 @@ function DroneDrop({ reduced, slotRef, onTowerDone }: { reduced: boolean; slotRe
         const cube = slotBox.width;
         const distance = slotBox.top - cube * (count + 1) - (droneBox.bottom - cube * 0.2);
         counter.current += 1;
+        setHolding(false);
         setDrops((current) => [...current, { id: counter.current, distance }]);
+        window.setTimeout(() => setHolding(true), 1100);
         step(count + 1);
       }, count === 0 ? 1800 : 3000 + Math.random() * 1400);
     };
@@ -155,15 +156,35 @@ function DroneDrop({ reduced, slotRef, onTowerDone }: { reduced: boolean; slotRe
       <motion.div
         ref={drone}
         aria-hidden="true"
-        className="absolute right-[calc(var(--u)*0.35)] top-16 z-10 w-[calc(var(--u)*1.3)] md:top-20"
+        className="absolute right-[calc(var(--u)*-0.46)] top-16 z-10 md:top-20"
+        style={{ width: cells(62), height: cells(34) }}
         initial={{ opacity: 0, y: -90 }}
         animate={reduced ? { opacity: 1, y: 0 } : { opacity: 1, y: [0, -6, 0], x: [0, -10, 8, 0] }}
         transition={reduced ? { duration: 0 } : { y: { duration: 2.4, repeat: Infinity, ease: "easeInOut" }, x: { duration: 6, repeat: Infinity, ease: "easeInOut" }, opacity: { delay: 0.6 } }}
       >
-        <Img src="/images/sprites/drone.webp" />
+        <PixelDrone className="size-full" open={!holding && !reduced} />
+        {/* The next block, held in the claw until it is dropped. */}
+        <AnimatePresence>
+          {holding && !reduced && (
+            <motion.span
+              className="absolute left-1/2 block -translate-x-1/2"
+              style={{
+                top: "86%",
+                width: "var(--u)",
+                height: "var(--u)",
+                background: DROP_COLORS[drops.length % DROP_COLORS.length],
+                boxShadow: "inset 0 3px 0 rgba(255,255,255,0.3), inset 0 -4px 0 rgba(0,0,0,0.25)",
+              }}
+              initial={{ scale: 0, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ opacity: 0, transition: { duration: 0 } }}
+              transition={spring.playful}
+            />
+          )}
+        </AnimatePresence>
       </motion.div>
       {/* Landing slots on top of the right tower. */}
-      <div aria-hidden="true" className="absolute bottom-[calc(var(--u)*4)] right-[calc(var(--u)*0.5)] w-[calc(var(--u)*1)]">
+      <div aria-hidden="true" className="absolute bottom-[calc(var(--u)*4)] right-[calc(var(--u)*0.9)] w-[calc(var(--u)*1)]">
         <AnimatePresence>
           {drops.map((drop, index) => (
             <motion.span
@@ -198,17 +219,21 @@ function DroneDrop({ reduced, slotRef, onTowerDone }: { reduced: boolean; slotRe
           )),
         )}
         <AnimatePresence>
-          {popping && (
-            <motion.img
-              src={asset("/images/sprites/sparkle-1.webp")}
-              alt=""
-              className="absolute -left-1/2 bottom-[calc(var(--u)*1)] w-[200%]"
-              initial={{ scale: 0, rotate: -30, opacity: 1 }}
-              animate={{ scale: 1.2, rotate: 20, opacity: 0 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.8, ease: ease.outExpo }}
-            />
-          )}
+          {popping &&
+            Array.from({ length: 10 }, (_, index) => {
+              const angle = (index / 10) * Math.PI * 2;
+              return (
+                <motion.span
+                  key={index}
+                  className="absolute left-1/2 block size-2"
+                  style={{ bottom: "calc(var(--u) * 1.5)", background: ["#caf0f8", "#48cae4", "#ffb703"][index % 3] }}
+                  initial={{ x: 0, y: 0, opacity: 1, rotate: 0 }}
+                  animate={{ x: Math.cos(angle) * 70, y: Math.sin(angle) * 70 + 30, opacity: 0, rotate: index * 36 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.75, ease: ease.outExpo }}
+                />
+              );
+            })}
         </AnimatePresence>
       </div>
     </>
@@ -225,12 +250,12 @@ function Word({ children, delay }: { children: ReactNode; delay: number }) {
   );
 }
 
+// Kept clear of the headline (review: a star sat on a letter).
 const SPARKLES = [
-  { src: "/images/sprites/sparkle-2.webp", className: "left-[8%] top-[34%] w-6", delay: "0s" },
-  { src: "/images/sprites/sparkle-3.webp", className: "left-[22%] top-[60%] w-4", delay: "1.7s" },
-  { src: "/images/sprites/sparkle-4.webp", className: "right-[24%] top-[42%] w-5", delay: "0.9s" },
-  { src: "/images/sprites/sparkle-2.webp", className: "right-[9%] top-[62%] w-4", delay: "2.4s" },
-  { src: "/images/sprites/sparkle-5.webp", className: "left-[38%] top-[18%] w-3", delay: "3.1s" },
+  { className: "left-[7%] top-[30%]", delay: 0 },
+  { className: "left-[17%] top-[64%]", delay: 1.7 },
+  { className: "right-[18%] top-[70%]", delay: 0.9 },
+  { className: "left-[31%] top-[12%]", delay: 3.1 },
 ];
 
 export function Hero({ dict }: { dict: Dictionary }) {
@@ -283,11 +308,17 @@ export function Hero({ dict }: { dict: Dictionary }) {
         ))}
       </svg>
       <div aria-hidden="true" className="ambient pointer-events-none absolute inset-0 -z-10">
-        <img src={asset("/images/sprites/cloud-2.webp")} alt="" className="absolute top-[14%] w-28 animate-[cloud_95s_linear_infinite] opacity-25 [animation-delay:-30s] md:w-40" />
-        <img src={asset("/images/sprites/cloud-3.webp")} alt="" className="absolute top-[30%] w-16 animate-[cloud_70s_linear_infinite] opacity-20 [animation-delay:-50s] md:w-24" />
-        <img src={asset("/images/sprites/cloud-4.webp")} alt="" className="absolute top-[8%] w-14 animate-[cloud_120s_linear_infinite] opacity-15 [animation-delay:-5s] md:w-20" />
+        {/* Deep-blue pixel clouds, opaque so they read as shapes, not haze. */}
+        <div className="absolute top-[7%] animate-[cloud_95s_linear_infinite] [animation-delay:-30s]" style={{ width: cells(51), height: cells(18) }}>
+          <PixelCloud className="size-full" />
+        </div>
+        <div className="absolute top-[54%] animate-[cloud_120s_linear_infinite] [animation-delay:-80s]" style={{ width: cells(51), height: cells(18) }}>
+          <PixelCloud className="size-full" />
+        </div>
         {SPARKLES.map((sparkle, index) => (
-          <img key={index} src={asset(sparkle.src)} alt="" className={`absolute animate-twinkle ${sparkle.className}`} style={{ animationDelay: sparkle.delay }} />
+          <div key={index} className={`absolute ${sparkle.className}`} style={{ width: cells(13), height: cells(13) }}>
+            <PixelSparkle className="size-full" delay={sparkle.delay} />
+          </div>
         ))}
       </div>
 
@@ -350,21 +381,21 @@ export function Hero({ dict }: { dict: Dictionary }) {
       <div aria-hidden="true" className="pointer-events-none absolute inset-0">
         <motion.div className="absolute inset-y-0 left-0 w-1/2" style={{ x: leftX, y: stackY }}>
           <Stack blocks={LEFT} side="left" reduced={reduced} />
-          <Sprite className="pointer-events-auto cursor-pointer" delay={0.7} style={{ left: "calc(var(--u) * 0.25)", bottom: "calc(var(--u) * 4)", width: "calc(var(--u) * 1.5)", height: "calc(var(--u) * 2.28)" }}>
+          <Sprite className="pointer-events-auto cursor-pointer" delay={0.7} style={{ left: "calc(var(--u) * 0.25)", bottom: "calc(var(--u) * 4)", width: cells(25), height: cells(35) }}>
             <PixelRobot className="size-full" waves watching />
           </Sprite>
-          <Sprite className="pointer-events-auto" delay={0.78} style={{ left: "calc(var(--u) * 3.55)", bottom: "calc(var(--u) * 0.98)", width: "calc(var(--u) * 1.4)", height: "calc(var(--u) * 1.1)" }}>
-            <Img src="/images/sprites/gamepad.webp" className="ambient animate-bob" />
+          <Sprite className="pointer-events-auto" delay={0.78} style={{ left: "calc(var(--u) * 3.4)", bottom: "calc(var(--u) * 1)", width: cells(34), height: cells(24) }}>
+            <PixelGamepad className="size-full" />
           </Sprite>
         </motion.div>
         <motion.div className="absolute inset-y-0 right-0 w-1/2" style={{ x: rightX, y: stackY }}>
           <Stack blocks={RIGHT} side="right" reduced={reduced} />
-          <div ref={slot} aria-hidden="true" className="absolute bottom-[calc(var(--u)*4)] right-[calc(var(--u)*0.5)] h-px w-[calc(var(--u)*1)]" />
+          <div ref={slot} aria-hidden="true" className="absolute bottom-[calc(var(--u)*4)] right-[calc(var(--u)*0.9)] h-px w-[calc(var(--u)*1)]" />
           <DroneDrop reduced={reduced} slotRef={slot} onTowerDone={launch} />
-          <Sprite className="pointer-events-auto" delay={0.82} style={{ right: "calc(var(--u) * 3.85)", bottom: "calc(var(--u) * 1.55)", width: "calc(var(--u) * 1.5)", height: "calc(var(--u) * 1.5)" }}>
-            <Img src="/images/sprites/laptop.webp" className="ambient animate-bob" />
+          <Sprite className="pointer-events-auto" delay={0.82} style={{ right: "calc(var(--u) * 3.5)", bottom: "calc(var(--u) * 1.6)", width: cells(38), height: cells(32) }}>
+            <PixelLaptop className="size-full" />
           </Sprite>
-          <Sprite className="pointer-events-auto hidden sm:block" delay={0.9} style={{ right: "calc(var(--u) * 7.15)", bottom: "calc(var(--u) * 0.55)", width: "calc(var(--u) * 1.3)", height: "calc(var(--u) * 2.05)" }}>
+          <Sprite className="pointer-events-auto hidden sm:block" delay={0.9} style={{ right: "calc(var(--u) * 7.1)", bottom: "calc(var(--u) * 0.55)", width: cells(22), height: cells(35) }}>
             <div ref={rocketScope} className="size-full">
               <PixelRocket className="size-full" launching={launching} />
             </div>

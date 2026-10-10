@@ -2,7 +2,6 @@
 
 import { motion } from "motion/react";
 import type { Dictionary } from "@/content/types";
-import { asset } from "@/lib/asset";
 import { ease, spring } from "@/lib/motion";
 import { Button } from "@/components/ui/Button";
 import { Mosaic } from "@/components/ui/Mosaic";
@@ -10,6 +9,7 @@ import { RevealHeading } from "@/components/ui/RevealHeading";
 import { ContactCta } from "@/components/site/ContactCta";
 import { SiteShell } from "@/components/site/SiteShell";
 import { PageHero } from "./PageHero";
+import { PixelIcon } from "@/components/brand/PixelIcon";
 
 // Rhine between Düsseldorf and Köln as pixel cells on a 24 x 16 grid (schematic, not to scale).
 const RIVER = [
@@ -116,7 +116,7 @@ export function AboutPage({ dict, alternateHref }: { dict: Dictionary; alternate
                 className="overflow-hidden rounded-[var(--radius-card)] border border-line bg-surface"
               >
                 <div className="relative isolate flex h-40 items-end overflow-hidden p-6">
-                  <Mosaic className="absolute inset-0 -z-10" columns={14} rows={5} from={index === 0 ? 1 : 5} to={index === 0 ? 5 : 1} seed={index + 21} />
+                  <Mosaic className="absolute inset-0 -z-10" tile={24} from={index === 0 ? 1 : 4} to={index === 0 ? 4 : 1} seed={index + 21} />
                   <span className="font-mono text-6xl font-medium text-white drop-shadow-[0_4px_0_rgba(3,4,94,0.6)]">{person.initials}</span>
                 </div>
                 <div className="p-6">
@@ -156,13 +156,13 @@ export function AboutPage({ dict, alternateHref }: { dict: Dictionary; alternate
                 whileHover="hover"
                 className={`flex items-center gap-6 border-t border-line py-8 last:border-b ${index % 2 === 1 ? "md:flex-row-reverse md:text-right" : ""}`}
               >
-                <motion.img
-                  src={asset(item.sprite)}
-                  alt=""
-                  className="size-14 shrink-0 object-contain"
+                <motion.span
+                  className="block shrink-0"
                   variants={{ hover: { rotate: index % 2 === 0 ? -10 : 10, scale: 1.12 } }}
                   transition={spring.playful}
-                />
+                >
+                  <PixelIcon name={item.icon} px={4} />
+                </motion.span>
                 <p className="text-h3 max-w-3xl">{item.text}</p>
               </motion.li>
             ))}

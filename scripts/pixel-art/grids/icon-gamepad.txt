@@ -1,0 +1,41 @@
+# source: .harness/runs/2026-10-10-website-v2/round4/gen/icon-gamepad.png
+# cell: 51.00px  grid: 36x30
+@ A #ffb703
+@ B #0077b6
+@ D #101013
+@ L #caf0f8
+@ W #ffffff
+@ b #0096c7
+@ c #00b4d8
+@ l #90e0ef
+@ p #ffcc51
+......DDDDDD............DDDDDD......
+......DDDDDD............DDDDDD......
+....DDLLLLLLDDDDDDDDDDDDLLLLLLDD....
+....DDWLllllLDDDDDDDDDDLllllLWDD....
+..DDLWWWWWWllLLLLLLLLLLllWWWWWWLDD..
+..DDWWWDDWWWllLLWWWWLLllWWWbbWWWDD..
+..DDWWDbbDWWWlLLWWWWLLlWWWDbbDWWDD..
+..DDWWDbbDWWWLbbbbbbbbLWWWWDDWWWDD..
+DDLWDbbbbbbDWLbbbbbbbbLWbbWWWWApWLDD
+DDLWDbbbbbbDWLDDbbbbDDLWbbDWWDpAWLDD
+DDLWDDDbbDDDWLbbbbbbbbLWDDWWWWDDWLDD
+DDLWWWDbbDWWWLbbbWWcbbLWWWWbbWWWWLDD
+DDbLWWDDDDWWWWWbbbbbbWWWWWDbbDWWLbDD
+DDbbLWWWWWWWDDDWbbbbWDDDWWWDDWWLbcDD
+DDbbbLWWWWWDbbbDWcbWDbbbDWWWWWLbbbDD
+DDbbccLLLLWDbbcDWbbWDccbDWLLLLccbcDD
+DDbbbbbcccWDBBBDWccWDBBBDWbbbbbbbbDD
+DDbbcccbbcLWDDDWLccLWDDDWLcbbcbbcbDD
+DDbbccbcbbcLWWWLcbccLWWWLcbbbbbbbbDD
+DDbbcbbbcbbBLLLBBBBBBLLLBcbcbbbcbbDD
+DDbbbbbbbBDDDDDDDDDDDDDDDDBbbbbbbbDD
+DDbbbbbbBDDDDDDDDDDDDDDDDDDBbbbbbbDD
+DDcbcccBDD................DDBcbcccDD
+DDccbccBDD................DDBbcccbDD
+DDBccccDDD................DDDcccbBDD
+DDBcbcBDDD................DDDBccbBDD
+DDDcccDD....................DDbccDDD
+DDDBBBDD....................DDBBBDDD
+..DDDDDD....................DDDDDD..
+..DDDDDD....................DDDDDD..

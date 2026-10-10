@@ -80,12 +80,14 @@ export function Footer({ dict, alternateHref }: FooterProps) {
       </div>
 
       {/* Stage: the logo rises from behind the bands. */}
-      <div ref={stage} aria-hidden="true" className="relative mt-4 h-[clamp(140px,22vw,300px)] overflow-hidden">
+      {/* Headroom above the logo for the robot and for blocks lifted by the wave. */}
+      <div ref={stage} aria-hidden="true" className="relative mt-4 h-[calc(min(78vw,640px)*0.477+clamp(64px,9vw,110px))] overflow-hidden">
         <motion.div className="absolute inset-x-0 bottom-0 flex justify-center" style={{ y: riseY }}>
           <div className="relative w-[min(78vw,640px)]">
             <PixelLogo />
-            <div className="absolute bottom-[34%] left-[2%] w-[9%]">
-              <PixelRobot className="w-full" />
+            {/* The robot keeps watch on the tip of the chevron's upper arm. */}
+            <div className="absolute bottom-full left-[21.6%] w-[9%]">
+              <PixelRobot className="aspect-[25/35] w-full" waves watching />
             </div>
           </div>
         </motion.div>

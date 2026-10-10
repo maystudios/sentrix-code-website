@@ -37,7 +37,20 @@ export const de: Dictionary = {
   },
   statement: {
     title: "Ein Team. Von der Idee bis zum Release.",
-    chips: ["Idee", "Konzept", "Prototyp", "Design", "Entwicklung", "Tests", "Release"],
+    chips: [
+      { label: "Gameplay", icon: "gamepad", muted: true },
+      { label: "Idee", icon: "idea" },
+      { label: "Konzept", icon: "concept" },
+      { label: "Prototyp", icon: "prototype" },
+      { label: "Design", icon: "design" },
+      { label: "Schnittstellen", icon: "chip", muted: true },
+      { label: "KI-Integration", icon: "robot", muted: true },
+      { label: "Entwicklung", icon: "code" },
+      { label: "Tests", icon: "test" },
+      { label: "Wartung", icon: "server", muted: true },
+      { label: "Release", icon: "rocket" },
+      { label: "App-Stores", icon: "phone", muted: true },
+    ],
   },
   positioning:
     "Wir entwickeln im Auftrag. Vom ersten Prototyp bis zur Anwendung, die Ihre Nutzer jeden Tag verwenden.",
@@ -116,7 +129,7 @@ export const de: Dictionary = {
         text: "Der Verlag wollte Übungsaufgaben spielerischer machen. Wir haben ein Puzzlespiel für Tablets entwickelt, das Aufgaben aus dem Lehrplan in Level verwandelt. Lehrkräfte sehen den Fortschritt ihrer Klasse.",
         quote: "Die Kinder fragen nach dem nächsten Level, nicht nach dem Ende der Stunde.",
         role: "Produktleitung, Bildungsverlag",
-        sprite: "/images/sprites/gamepad.webp",
+        icon: "gamepad",
         example: true,
       },
       {
@@ -126,7 +139,7 @@ export const de: Dictionary = {
         text: "Aufträge, Lieferzeiten und Ersatzteile lagen in drei Systemen. Wir haben ein Portal gebaut, das die Daten aus dem ERP holt und Kunden den Stand ihrer Bestellung selbst zeigt.",
         quote: "Unser Vertrieb spricht mit Kunden wieder über neue Maschinen statt über Liefertermine.",
         role: "Geschäftsführer, Maschinenbau",
-        sprite: "/images/sprites/server.webp",
+        icon: "server",
         example: true,
       },
       {
@@ -136,7 +149,7 @@ export const de: Dictionary = {
         text: "Die Kette wollte eine eigene App statt einer fremden Buchungsplattform. Wir haben sie mit Flutter für iOS und Android gebaut und an die bestehende Mitgliederverwaltung angebunden.",
         quote: "Die meisten Buchungen kommen inzwischen über die App, und am Tresen bleibt wieder Zeit für Beratung.",
         role: "Leitung Digitales, Fitnessstudio-Kette",
-        sprite: "/images/sprites/phone.webp",
+        icon: "phone",
         example: true,
       },
       {
@@ -146,7 +159,7 @@ export const de: Dictionary = {
         text: "Viele Anfragen drehten sich um Passform und Lieferung. Unser Assistent antwortet aus Produktdaten und Handbüchern und gibt schwierige Fälle mit allen Angaben an das Team weiter.",
         quote: "Das Team kümmert sich jetzt um die Fälle, bei denen es wirklich gebraucht wird.",
         role: "Leitung Kundenservice, Onlinehandel",
-        sprite: "/images/sprites/chip.webp",
+        icon: "chip",
         example: true,
       },
     ],

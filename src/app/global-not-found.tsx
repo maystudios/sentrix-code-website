@@ -5,6 +5,7 @@ import { en } from "@/content/en";
 import { asset } from "@/lib/asset";
 import { geistMono, geistSans } from "./fonts";
 import "./globals.css";
+import { PixelCompanion } from "@/components/brand/PixelCharacters";
 
 export const metadata: Metadata = {
   title: "404 · Sentrix Code",
@@ -23,11 +24,7 @@ export default function GlobalNotFound() {
             alt=""
             className="absolute inset-0 -z-10 size-full object-cover opacity-25"
           />
-          <img
-            src={asset("/images/sprites/robot-astronaut.webp")}
-            alt=""
-            className="ambient w-32 animate-bob md:w-40"
-          />
+          <PixelCompanion name="robot-astronaut" className="ambient aspect-[29/35] w-32 animate-bob md:w-40" />
           <p className="mt-8 font-mono text-sm text-ocean-400">404</p>
           <h1 className="text-h2-xl mt-3">{de.pages.notFound.title}</h1>
           <p className="text-body-lg mt-4 max-w-md text-muted">{de.pages.notFound.text}</p>

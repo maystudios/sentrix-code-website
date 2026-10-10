@@ -20,13 +20,10 @@ export function ContactCta({ dict, title, text }: { dict: Dictionary; title?: st
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "0px 0px -10% 0px" }}
           transition={{ duration: 0.9, ease: ease.outExpo }}
-          className="relative isolate overflow-hidden rounded-[var(--radius-card)] border border-line"
+          className="relative overflow-hidden rounded-[var(--radius-card)] border border-line"
         >
-          <Mosaic className="absolute inset-0 -z-20" columns={18} rows={8} from={1} to={6} seed={11} />
-          <div aria-hidden="true" className="absolute inset-0 -z-10 bg-gradient-to-r from-base via-base/90 to-base/0" />
-
-          <div className="grid items-center gap-8 p-8 md:grid-cols-[1.4fr_1fr] md:p-14">
-            <div>
+          <div className="grid md:grid-cols-[1.4fr_1fr]">
+            <div className="bg-surface p-8 md:p-14">
               <h2 className="text-h2-xl max-w-xl">{title ?? dict.contact.title}</h2>
               <p className="text-body-lg mt-5 max-w-lg text-muted">{text ?? dict.contact.text}</p>
               <p className="mt-8 text-sm">
@@ -55,14 +52,17 @@ export function ContactCta({ dict, title, text }: { dict: Dictionary; title?: st
                 </span>
               </div>
             </div>
+            <div className="relative flex min-h-[260px] items-center justify-center overflow-hidden">
+            <Mosaic className="absolute inset-0" tile={28} from={1} to={6} direction="horizontal" seed={11} />
             <motion.div
               aria-hidden="true"
-              className="mx-auto w-28 md:w-36"
+              className="relative w-28 md:w-36"
               animate={launch ? { y: -22, rotate: -4 } : { y: 0, rotate: 0 }}
               transition={spring.playful}
             >
               <PixelRocket launching={launch} className="ambient w-full animate-bob" />
             </motion.div>
+            </div>
           </div>
         </motion.div>
       </div>

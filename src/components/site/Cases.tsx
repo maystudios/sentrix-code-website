@@ -3,11 +3,11 @@
 import { AnimatePresence, motion } from "motion/react";
 import { useState } from "react";
 import type { Dictionary } from "@/content/types";
-import { asset } from "@/lib/asset";
 import { ease, spring } from "@/lib/motion";
 import { useRovingTabs } from "@/lib/useRovingTabs";
 import { Mosaic } from "@/components/ui/Mosaic";
 import { TextLink } from "@/components/ui/TextLink";
+import { PixelIcon } from "@/components/brand/PixelIcon";
 
 // Practice examples by sector, laid out like the reference's customer section:
 // sector tabs, the story in the middle, the quote on a coloured panel.
@@ -42,7 +42,7 @@ export function Cases({ dict }: { dict: Dictionary }) {
               {active === index && (
                 <motion.span layoutId="case-active" className="absolute inset-0 bg-surface" transition={spring.ui} />
               )}
-              <img src={asset(entry.sprite)} alt="" className="relative size-7 object-contain" />
+              <PixelIcon name={entry.icon} px={2} className="relative" />
               <span className="relative text-[15px] font-medium">{entry.tab}</span>
             </button>
           ))}
@@ -82,11 +82,11 @@ export function Cases({ dict }: { dict: Dictionary }) {
                 <span aria-hidden="true" className="font-mono text-4xl leading-none text-ocean-400">„</span>
                 <blockquote className="mt-2 text-xl font-medium leading-snug tracking-tight md:text-2xl">{item.quote}</blockquote>
                 <figcaption className="mt-5 flex items-center gap-3 text-sm text-muted">
-                  <img src={asset(item.sprite)} alt="" className="size-8 object-contain" />
+                  <PixelIcon name={item.icon} px={2} />
                   {item.role}
                 </figcaption>
               </div>
-              <Mosaic className="h-6 opacity-80" columns={24} rows={1} from={1} to={6} seed={active + 2} />
+              <Mosaic className="h-6" tile={24} from={1} to={5} direction="horizontal" seed={active + 2} twinkle={false} />
             </motion.figure>
           </AnimatePresence>
         </div>

@@ -43,3 +43,6 @@ next-env.d.ts
 # workflow harness: run artefacts and local reference media stay local (public repo)
 /.harness/runs/
 /.harness/notes/references/
+
+# Python bytecode from the asset scripts
+__pycache__/

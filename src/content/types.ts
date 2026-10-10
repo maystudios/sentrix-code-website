@@ -29,6 +29,9 @@ export type ServiceMockups = {
   example: true;
 };
 
+// Hand-drawn pixel icons (src/components/brand/PixelIcon.tsx).
+export type IconName = "idea" | "concept" | "prototype" | "design" | "code" | "test" | "rocket" | "chip" | "server" | "phone" | "gamepad" | "robot";
+
 export type CaseItem = {
   tab: string;
   client: string;
@@ -36,7 +39,7 @@ export type CaseItem = {
   text: string;
   quote: string;
   role: string;
-  sprite: string;
+  icon: IconName;
   example: true;
 };
 
@@ -73,7 +76,9 @@ export type Dictionary = {
     secondaryCta: string;
   };
   tech: { label: string; items: string[] };
-  statement: { title: string; chips: string[] };
+  // Terms in the brick grid under the statement, read in rows of three. Muted terms
+  // stay grey and hide their icon until they are hovered.
+  statement: { title: string; chips: { label: string; icon: IconName; muted?: true }[] };
   positioning: string;
   services: { title: string; items: ServiceItem[]; mockups: ServiceMockups };
   cases: { title: string; cta: string; items: CaseItem[] };

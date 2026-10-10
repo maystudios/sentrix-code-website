@@ -9,6 +9,7 @@ import { duration, ease, spring, stagger } from "@/lib/motion";
 import { AnimatedPictogram } from "@/components/brand/AnimatedPictogram";
 import { PixelRobot } from "@/components/brand/PixelCharacters";
 import { Button } from "@/components/ui/Button";
+import { PixelIcon } from "@/components/brand/PixelIcon";
 
 type MenuKey = "services" | "company";
 
@@ -82,6 +83,7 @@ export function Header({ dict, alternateHref, isHome = false }: HeaderProps) {
   return (
     <header
       onMouseLeave={scheduleClose}
+      style={{ viewTransitionName: "site-header" }}
       className={`fixed inset-x-0 top-0 z-50 border-b transition-colors duration-300 ${
         solid ? "border-line bg-base/95 backdrop-blur-md" : "border-transparent bg-transparent"
       }`}
@@ -90,6 +92,7 @@ export function Header({ dict, alternateHref, isHome = false }: HeaderProps) {
         <motion.div initial="rest" animate="rest" whileHover="hover" className="flex">
           <Link
             href={pages.routes.home}
+            transitionTypes={["nav-back"]}
             className="flex items-center gap-2.5 border-r border-line px-4 font-medium tracking-tight lg:px-5"
           >
             <AnimatedPictogram className="h-4 w-auto" />
@@ -231,13 +234,13 @@ export function Header({ dict, alternateHref, isHome = false }: HeaderProps) {
                             preview === service.kind ? "border-line-strong bg-surface" : "border-transparent hover:bg-surface"
                           }`}
                         >
-                          <motion.img
-                            src={asset(service.icon)}
-                            alt=""
-                            className="size-9 shrink-0 object-contain"
+                          <motion.span
+                            className="block shrink-0"
                             animate={preview === service.kind ? { rotate: [0, -8, 6, 0], y: -2 } : { rotate: 0, y: 0 }}
                             transition={{ duration: 0.45 }}
-                          />
+                          >
+                            <PixelIcon name={service.icon} px={3} />
+                          </motion.span>
                           <span>
                             <span className="block font-medium">{service.nav}</span>
                             <span className="mt-0.5 block text-sm text-muted">{service.menuText}</span>
@@ -334,7 +337,7 @@ export function Header({ dict, alternateHref, isHome = false }: HeaderProps) {
                   onClick={() => setMobileOpen(false)}
                   className="flex items-center gap-3 border-b border-line px-5 py-3"
                 >
-                  <img src={asset(service.icon)} alt="" className="size-7 object-contain" />
+                  <PixelIcon name={service.icon} px={2} />
                   {service.nav}
                 </Link>
               </motion.div>

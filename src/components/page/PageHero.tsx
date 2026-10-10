@@ -35,7 +35,7 @@ export function PageHero({ breadcrumb, title, intro, scene, sceneAlt, sprite, ac
               {breadcrumb.map((item, index) => (
                 <li key={item.label} className="flex items-center gap-2">
                   {item.href ? (
-                    <Link href={item.href} className="transition-colors duration-150 hover:text-fg">
+                    <Link href={item.href} transitionTypes={["nav-back"]} className="transition-colors duration-150 hover:text-fg">
                       {item.label}
                     </Link>
                   ) : (

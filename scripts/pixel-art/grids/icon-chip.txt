@@ -1,0 +1,22 @@
+# source: .harness/runs/2026-10-10-website-v2/round4/gen/icon-chip.png
+# cell: 51.00px  grid: 14x14
+@ A #ffb703
+@ B #0077b6
+@ D #101013
+@ N #023e8a
+@ O #fb8500
+@ W #ffffff
+....DD.D.D....
+....BDDB.BD...
+...DDDDDDDD...
+..DBWWWWWWWD..
+DBDWBBBBBBBDBD
+..DWBBBBBBBD..
+DDDWBBBBABBDDD
+DDDWBBBAOBBDDD
+..DWBBBOBBBD..
+DBDWBBBBBBBDBD
+..DBNNNNNNND..
+...DDDDDDDD...
+....BDDB.BD...
+....DD.D.D....

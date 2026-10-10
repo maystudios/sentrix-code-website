@@ -1,7 +1,7 @@
 """Turn a generated pixel-art sprite back into its pixel grid, as layered code art.
 
 Usage:
-  python scripts/pixelize-sprite.py SRC.png NAME [--cell N] [--png OUT.webp --scale 12] [--no-ts]
+  python scripts/pixelize-sprite.py SRC.png NAME [--cell N] [--factor K] [--png OUT.webp --scale 12] [--no-ts]
 
 SRC is the raw generation on solid magenta. The script keys the background, finds the
 size of one art pixel, samples each cell, snaps it to the site palette and writes
@@ -45,71 +45,81 @@ def key(image: Image.Image) -> np.ndarray:
     return pixels
 
 
-def estimate_cell(pixels: np.ndarray) -> int:
-    """Most common length of uniform colour runs, read along rows and columns."""
-    runs = collections.Counter()
+def _profile(pixels: np.ndarray, axis: int) -> np.ndarray:
+    """Colour change between neighbouring pixels, summed across the other axis."""
     rgb = pixels[..., :3]
+    return np.abs(np.diff(rgb, axis=axis)).sum(axis=2).sum(axis=1 - axis)
+
+
+def best_offset(profile: np.ndarray, cell: float) -> float:
+    """Grid offset whose lines sit on the strongest colour edges. Cells may be fractional."""
+    best, offset = -1.0, 0.0
+    for candidate in np.arange(0, cell, 1.0):
+        lines = np.round(candidate + np.arange(0, (len(profile) - candidate) / cell) * cell).astype(int)
+        score = profile[lines[lines < len(profile)]].sum()
+        if score > best:
+            best, offset = score, candidate
+    return offset + 1
+
+
+def _rebuild_error(pixels: np.ndarray, cell: float, profiles) -> float:
+    """Mean colour error when the image is rebuilt from one sample per cell."""
+    height, width = pixels.shape[:2]
+    ox, oy = best_offset(profiles[1], cell), best_offset(profiles[0], cell)
+    xs = np.clip((ox + (np.floor((np.arange(width) - ox) / cell) + 0.5) * cell).astype(int), 0, width - 1)
+    ys = np.clip((oy + (np.floor((np.arange(height) - oy) / cell) + 0.5) * cell).astype(int), 0, height - 1)
+    rebuilt = pixels[ys][:, xs]
     opaque = pixels[..., 3] > 0
-    for axis_data, mask in ((rgb, opaque), (rgb.transpose(1, 0, 2), opaque.T)):
-        for line, line_mask in zip(axis_data, mask):
-            start = None
-            for index in range(1, len(line)):
-                if not line_mask[index]:
-                    start = None
-                    continue
-                if start is None:
-                    start = index
-                    continue
-                if np.abs(line[index] - line[index - 1]).sum() > 60:
-                    length = index - start
-                    if 6 <= length <= 90:
-                        runs[length] += 1
-                    start = index
-    # Runs are multiples of the cell; the smallest frequent run is the cell itself.
-    frequent = [length for length, count in runs.most_common(12)]
-    return min(frequent)
+    return float(np.abs(rebuilt[..., :3] - pixels[..., :3]).sum(axis=2)[opaque].mean())
 
 
-def best_offset(pixels: np.ndarray, cell: int, axis: int) -> int:
-    rgb = pixels[..., :3]
-    scores = []
-    for offset in range(cell):
-        edges = np.arange(offset, rgb.shape[axis] - 1, cell)
-        diff = np.abs(np.diff(rgb, axis=axis)).sum(axis=2)
-        scores.append(diff.take(edges, axis=axis).sum())
-    return int(np.argmax(scores)) + 1
+def estimate_cell(pixels: np.ndarray, profiles) -> float:
+    """Cell size where rebuilding from one sample per cell is clearly better than nearby sizes.
+
+    Generated sprites have soft edges, so the absolute error barely moves; the true art pixel
+    shows up as a sharp dip against its neighbours (halves and multiples do not dip as deep).
+    """
+    cells = np.arange(10, 64.01, 0.25)
+    errors = np.array([_rebuild_error(pixels, cell, profiles) for cell in cells])
+    ratios = [errors[i] / np.median(errors[(np.abs(cells - cell) >= 1) & (np.abs(cells - cell) <= 3)]) for i, cell in enumerate(cells)]
+    return float(cells[int(np.argmin(ratios))])
 
 
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("source")
     parser.add_argument("name")
-    parser.add_argument("--cell", type=int, default=0)
+    parser.add_argument("--cell", type=float, default=0)
+    parser.add_argument("--factor", type=float, default=1, help="merge this many detected cells into one, for coarser art")
     parser.add_argument("--png", default="", help="also render the clean grid as an image (WebP or PNG)")
     parser.add_argument("--scale", type=int, default=12, help="pixels per art pixel for --png")
     parser.add_argument("--no-ts", action="store_true", help="skip writing the TypeScript module")
     args = parser.parse_args()
 
     pixels = key(Image.open(args.source))
-    cell = args.cell or estimate_cell(pixels)
-    ox = best_offset(pixels, cell, 1) % cell
-    oy = best_offset(pixels, cell, 0) % cell
+    profiles = (_profile(pixels, 0), _profile(pixels, 1))
+    cell = (args.cell or estimate_cell(pixels, profiles)) * args.factor
+    ox = best_offset(profiles[1], cell) % cell
+    oy = best_offset(profiles[0], cell) % cell
     height, width = pixels.shape[:2]
-    columns = (width - ox) // cell
-    rows = (height - oy) // cell
+    columns = int((width - ox) // cell)
+    rows = int((height - oy) // cell)
 
+    # Each cell takes the most common palette colour of its inner area, so merged cells
+    # (factor > 1) keep clean colours instead of averaging into new ones.
     grid = []
     for row in range(rows):
         line = []
         for column in range(columns):
             y0, x0 = oy + row * cell, ox + column * cell
-            margin = max(1, cell // 4)
-            block = pixels[y0 + margin : y0 + cell - margin, x0 + margin : x0 + cell - margin]
-            if (block[..., 3] > 0).mean() < 0.5:
+            margin = max(1.0, cell / 6)
+            block = pixels[int(y0 + margin) : int(y0 + cell - margin), int(x0 + margin) : int(x0 + cell - margin)]
+            opaque = block[block[..., 3] > 0][:, :3]
+            if len(opaque) < 0.5 * block.shape[0] * block.shape[1] or not len(opaque):
                 line.append(None)
                 continue
-            colour = np.median(block[block[..., 3] > 0][:, :3], axis=0)
-            line.append(NAMES[int(np.argmin(((COLOURS - colour) ** 2).sum(axis=1)))])
+            nearest = np.argmin(((opaque[:, None, :] - COLOURS[None]) ** 2).sum(axis=2), axis=1)
+            line.append(NAMES[int(np.bincount(nearest).argmax())])
         grid.append(line)
 
     # Trim empty borders.
@@ -160,7 +170,7 @@ def main() -> None:
 
     symbols = {"o950": "#", "o900": "N", "o700": "B", "o600": "b", "o500": "c", "o400": "C", "o300": "l",
                "o100": "L", "white": "W", "ink": "k", "grey": "g", "amber": "A", "orange": "O"}
-    print(f"cell={cell}px offset=({ox},{oy}) grid={width_cells}x{height_cells} -> {target}")
+    print(f"cell={cell:.2f}px offset=({ox:.0f},{oy:.0f}) grid={width_cells}x{height_cells} -> {target}")
     for line in grid:
         print("".join(symbols[name] if name else "." for name in line))
 

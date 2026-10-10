@@ -1,4 +1,4 @@
-import type { FaqItem, ServiceVisualKind } from "./types";
+import type { FaqItem, IconName, ServiceVisualKind } from "./types";
 
 // Sub-page content. Same marking rule as the home page: `example: true` is invented
 // placeholder content and needs replacing before launch (WEBSITE.md, "Wahrheit vor Wirkung").
@@ -16,10 +16,10 @@ export type ServiceDetail = {
   kind: ServiceVisualKind;
   nav: string;
   menuText: string;
-  icon: string;
+  icon: IconName;
   meta: { title: string; description: string };
   hero: { title: string; intro: string; scene: string; sceneAlt: string };
-  offer: { title: string; items: { title: string; text: string; icon: string }[] };
+  offer: { title: string; items: { title: string; text: string; icon: IconName }[] };
   stack: { title: string; items: string[] };
   questions: FaqItem[];
   cta: { title: string; text: string };
@@ -34,7 +34,7 @@ export type AboutPage = {
     people: { name: string; initials: string; role: string; text: string; example: true }[];
   };
   location: { title: string; text: string };
-  principles: { title: string; items: { text: string; sprite: string }[]; example: true };
+  principles: { title: string; items: { text: string; icon: IconName }[]; example: true };
 };
 
 export type ContactPage = {

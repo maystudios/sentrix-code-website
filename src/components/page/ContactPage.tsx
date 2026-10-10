@@ -7,7 +7,7 @@ import type { Dictionary } from "@/content/types";
 import { asset } from "@/lib/asset";
 import { duration, ease, spring } from "@/lib/motion";
 import { useMotionPolicy } from "@/components/motion/MotionPolicy";
-import { PixelRobot } from "@/components/brand/PixelCharacters";
+import { PixelProp, PixelRobot } from "@/components/brand/PixelCharacters";
 import { RevealHeading } from "@/components/ui/RevealHeading";
 import { SiteShell } from "@/components/site/SiteShell";
 
@@ -197,7 +197,9 @@ export function ContactPage({ dict, alternateHref }: { dict: Dictionary; alterna
                   className="inline-flex h-11 items-center gap-3 rounded-[var(--radius-control)] bg-ocean-700 px-5 text-[15px] font-medium text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.18)]"
                 >
                   {copy.submit}
-                  <img ref={plane} src={asset("/images/sprites/paper-plane.webp")} alt="" className="h-5 w-auto" />
+                  <span ref={plane} className="inline-block h-5 w-[26px]">
+                    <PixelProp name="paper-plane" className="size-full" />
+                  </span>
                 </motion.button>
               </div>
               <div aria-live="polite">

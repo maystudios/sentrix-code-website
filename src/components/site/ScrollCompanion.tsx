@@ -3,15 +3,15 @@
 import { AnimatePresence, motion, useMotionValueEvent, useScroll } from "motion/react";
 import { useEffect, useState, useSyncExternalStore } from "react";
 import type { Dictionary, ServiceVisualKind } from "@/content/types";
-import { asset } from "@/lib/asset";
 import { spring } from "@/lib/motion";
 import { useMotionPolicy } from "@/components/motion/MotionPolicy";
+import { PixelCompanion, type CompanionName } from "@/components/brand/PixelCharacters";
 
-const ROLE: Record<ServiceVisualKind, string> = {
-  game: "/images/sprites/robot-gamer.webp",
-  software: "/images/sprites/robot-coder.webp",
-  apps: "/images/sprites/robot-phone.webp",
-  ai: "/images/sprites/robot-ai.webp",
+const ROLE: Record<ServiceVisualKind, CompanionName> = {
+  game: "robot-gamer",
+  software: "robot-coder",
+  apps: "robot-phone",
+  ai: "robot-ai",
 };
 
 const LABEL = { de: "Roboter ausblenden", en: "Hide the robot" };
@@ -31,7 +31,7 @@ export function ScrollCompanion({ dict }: { dict: Dictionary }) {
   const [visible, setVisible] = useState(false);
   const [crowded, setCrowded] = useState(false);
   const dismissed = useSyncExternalStore(subscribeDismissed, readDismissed, () => false);
-  const [sprite, setSprite] = useState("/images/sprites/robot-wave.webp");
+  const [sprite, setSprite] = useState<CompanionName>("robot-gamer");
   const { scrollY } = useScroll();
 
   useMotionValueEvent(scrollY, "change", (y) => {
@@ -40,9 +40,9 @@ export function ScrollCompanion({ dict }: { dict: Dictionary }) {
   });
 
   useEffect(() => {
-    const targets: [string, string][] = [
-      ...dict.services.items.map((item) => [item.id, ROLE[item.visual]] as [string, string]),
-      [dict.anchors.cases, "/images/sprites/robot-coder.webp"],
+    const targets: [string, CompanionName][] = [
+      ...dict.services.items.map((item) => [item.id, ROLE[item.visual]] as [string, CompanionName]),
+      [dict.anchors.cases, "robot-coder"],
     ];
     // Sections with a figure of their own: the companion steps aside there.
     const own = [dict.anchors.process, dict.anchors.faq, dict.anchors.contact];
@@ -85,16 +85,16 @@ export function ScrollCompanion({ dict }: { dict: Dictionary }) {
           className="fixed bottom-4 right-4 z-40 hidden w-16 cursor-pointer md:block lg:w-20"
         >
           <AnimatePresence mode="popLayout" initial={false}>
-            <motion.img
+            <motion.div
               key={sprite}
-              src={asset(sprite)}
-              alt=""
-              className="w-full object-contain drop-shadow-[0_6px_0_rgba(3,4,94,0.5)]"
+              className="aspect-square w-full"
               initial={reduced ? false : { y: -24, opacity: 0, scale: 0.8 }}
               animate={{ y: 0, opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.8 }}
               transition={spring.playful}
-            />
+            >
+              <PixelCompanion name={sprite} className="size-full" />
+            </motion.div>
           </AnimatePresence>
         </motion.button>
       )}

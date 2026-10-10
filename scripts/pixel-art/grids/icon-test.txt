@@ -1,0 +1,41 @@
+# source: .harness/runs/2026-10-10-website-v2/round4/gen/icon-test.png
+# cell: 51.25px  grid: 28x34
+@ A #ffb703
+@ B #0077b6
+@ D #101013
+@ W #ffffff
+@ b #0096c7
+..........DDDDDDDD..........
+..........DDDDDDDD..........
+......DDDDDDWWbbDDDDDD......
+......DDDDDDWWbbDDDDDD......
+DDDDDDWWWWWWbbbbbbbbBBDDDDDD
+DDDDDDWWWWWWbbbbbbbbBBDDDDDD
+DDWWWWWWbbbbbbbbbbbbbbbbBBDD
+DDWWWWWWbbbbbbbbbbbbbbbbBBDD
+DDWWbbbbbbbbbbbbbbbbDDbbBBDD
+DDWWbbbbbbbbbbbbbbbbDDbbBBDD
+DDWWbbbbbbbbbbbbbbDDWWDDBBDD
+DDWWbbbbbbbbbbbbbbDDWWDDBBDD
+DDWWbbbbbbbbbbbbDDWWDDbbBBDD
+DDWWbbbbbbbbbbbbDDWWDDbbBBDD
+DDWWbbbbDDDDbbDDWWAADDbbBBDD
+DDWWbbbbDDDDbbDDWWAADDbbBBDD
+DDWWbbDDWWWWDDWWAADDbbbbBBDD
+DDWWbbDDWWWWDDWWAADDbbbbBBDD
+DDWWbbbbDDWWWWAADDbbbbbbBBDD
+DDWWbbbbDDWWWWAADDbbbbbbBBDD
+DDWWbbbbbbDDAADDbbbbbbbbBBDD
+DDWWbbbbbbDDAADDbbbbbbbbBBDD
+..DDWWbbbbbbDDbbbbbbbbBBDD..
+..DDWWbbbbbbDDbbbbbbbbBBDD..
+..DDWWbbbbbbbbbbbbbbbbBBDD..
+..DDWWbbbbbbbbbbbbbbbbBBDD..
+....DDWWbbbbbbbbbbbbBBDD....
+....DDWWbbbbbbbbbbbbBBDD....
+......DDbbbbbbbbbbBBDD......
+......DDbbbbbbbbbbBBDD......
+........DDDDbbBBDDDD........
+........DDDDbbBBDDDD........
+............DDDD............
+............DDDD............
