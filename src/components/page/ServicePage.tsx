@@ -14,13 +14,14 @@ import { ContactCta } from "@/components/site/ContactCta";
 import { SiteShell } from "@/components/site/SiteShell";
 import { PageHero } from "./PageHero";
 import { PixelIcon } from "@/components/brand/PixelIcon";
+import { ReferenceFigure, ReferenceLinks } from "@/components/site/ReferenceFigure";
 
-const CASE_INDEX: Record<ServiceVisualKind, number> = { game: 0, software: 1, apps: 2, ai: 3 };
+const SERVICE_INDEX: Record<ServiceVisualKind, number> = { game: 0, software: 1, apps: 2, ai: 3 };
 
 export function ServicePage({ dict, kind, alternateHref }: { dict: Dictionary; kind: ServiceVisualKind; alternateHref: string }) {
   const { pages } = dict;
   const service = pages.services.find((entry) => entry.kind === kind)!;
-  const example = dict.cases.items[CASE_INDEX[kind]];
+  const cases = dict.cases.items.filter((entry) => entry.kind === kind);
   const others = pages.services.filter((entry) => entry.kind !== kind);
 
   return (
@@ -102,28 +103,49 @@ export function ServicePage({ dict, kind, alternateHref }: { dict: Dictionary; k
         </div>
       </section>
 
-      {/* A matching example from practice. */}
-      <section className="border-b border-line">
-        <div className="mx-auto grid max-w-[1280px] lg:grid-cols-[1.1fr_1fr]">
-          <div className="px-6 py-20 lg:pr-12">
-            <p className="text-sm text-muted">{example.client}</p>
-            <RevealHeading text={example.title} className="text-h2 mt-3" />
-            <p className="mt-5 max-w-xl text-muted">{example.text}</p>
-            <TextLink href={`${pages.routes.home}#${dict.anchors.cases}`} className="mt-8">
-              {dict.cases.cta}
-            </TextLink>
+      {/* Practice: real references with their own images, or an example with a live demo. */}
+      {cases.map((example, index) => (
+        <section key={example.tab} className="border-b border-line">
+          <div className="mx-auto grid max-w-[1280px] lg:grid-cols-[1.1fr_1fr]">
+            <div className="px-6 py-20 lg:pr-12">
+              <p className="text-sm text-muted">{example.client}</p>
+              <RevealHeading text={example.title} className="text-h2 mt-3" />
+              <p className="mt-5 max-w-xl text-muted">{example.text}</p>
+              {example.reference ? (
+                <div className="mt-8">
+                  <ReferenceLinks reference={example.reference} />
+                </div>
+              ) : (
+                <TextLink href={`${pages.routes.home}#${dict.anchors.cases}`} className="mt-8">
+                  {dict.cases.cta}
+                </TextLink>
+              )}
+            </div>
+            <div className="px-6 pb-20 lg:py-20 lg:pr-6">
+              {example.reference ? (
+                <motion.div
+                  initial={{ opacity: 0, y: 28 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true, margin: "0px 0px -15% 0px" }}
+                  transition={{ duration: 0.9, ease: ease.outExpo, delay: index * 0.05 }}
+                >
+                  <ReferenceFigure reference={example.reference} title={example.tab} />
+                </motion.div>
+              ) : (
+                <>
+                  <TiltPanel>
+                    <Visual item={dict.services.items[SERVICE_INDEX[kind]]} mockups={dict.services.mockups} locale={dict.locale} />
+                  </TiltPanel>
+                  <blockquote className="mt-6 border-l-2 border-ocean-400 pl-4 text-fg/85">
+                    {dict.locale === "de" ? `„${example.quote}“` : `“${example.quote}”`}
+                    <footer className="mt-2 text-sm text-muted">{example.role}</footer>
+                  </blockquote>
+                </>
+              )}
+            </div>
           </div>
-          <div className="px-6 pb-20 lg:py-20 lg:pr-6">
-            <TiltPanel>
-              <Visual item={dict.services.items[CASE_INDEX[kind]]} mockups={dict.services.mockups} locale={dict.locale} />
-            </TiltPanel>
-            <blockquote className="mt-6 border-l-2 border-ocean-400 pl-4 text-fg/85">
-              {dict.locale === "de" ? `„${example.quote}“` : `“${example.quote}”`}
-              <footer className="mt-2 text-sm text-muted">{example.role}</footer>
-            </blockquote>
-          </div>
-        </div>
-      </section>
+        </section>
+      ))}
 
       {/* Questions */}
       <section className="border-b border-line">

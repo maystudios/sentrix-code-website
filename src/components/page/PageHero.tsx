@@ -71,13 +71,11 @@ export function PageHero({ breadcrumb, title, intro, scene, sceneAlt, sprite, ac
         <div className="relative">
           <TiltPanel>
             <img
-              src={asset(`${scene}.webp`)}
-              srcSet={`${asset(`${scene}-800.webp`)} 800w, ${asset(`${scene}.webp`)} 1600w`}
-              sizes="(min-width: 1024px) 620px, 92vw"
+              src={asset(`${scene}.png`)}
               alt={sceneAlt}
               width={1600}
               height={900}
-              className="block aspect-video w-full object-cover"
+              className="block aspect-video w-full object-cover [image-rendering:pixelated]"
             />
           </TiltPanel>
           {sprite && (

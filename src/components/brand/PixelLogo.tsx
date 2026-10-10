@@ -1,6 +1,6 @@
 "use client";
 
-import { motion, useMotionValue, useSpring } from "motion/react";
+import { motion } from "motion/react";
 import { useEffect, useRef, useState } from "react";
 import { spring } from "@/lib/motion";
 import { useMotionPolicy } from "@/components/motion/MotionPolicy";
@@ -8,8 +8,9 @@ import { useMotionPolicy } from "@/components/motion/MotionPolicy";
 // The pictogram built from blocks with even, regular steps: the chevron and the x are
 // drawn as diagonals of constant thickness instead of rasterising the vector shape.
 // It assembles in a diagonal wave. Under the pointer the blocks rise out of the screen
-// and rings of the wave run outward from it (owner's idea, round 4); the whole logo
-// tilts toward the pointer. Clicking a block knocks it out and it flies back.
+// and rings of the wave run outward from it (owner's idea, round 4). Blocks rise in steps
+// and cast a hard shadow, the logo itself stays flat so its pixels stay square (review
+// round 5). Clicking a block knocks it out and it flies back.
 
 const ROWS = 21;
 const COLUMNS = 44;
@@ -67,8 +68,8 @@ export function PixelLogo({ className = "" }: { className?: string }) {
   const rings = useRef<Ring[]>([]);
   const lastRing = useRef<{ x: number; y: number; t: number } | null>(null);
   const frame = useRef(0);
-  const tiltX = useSpring(useMotionValue(0), { stiffness: 120, damping: 18 });
-  const tiltY = useSpring(useMotionValue(0), { stiffness: 120, damping: 18 });
+  const dirty = useRef(false);
+  const lifted = useRef<number[]>([]);
 
   useEffect(() => () => cancelAnimationFrame(frame.current), []);
 
@@ -78,7 +79,7 @@ export function PixelLogo({ className = "" }: { className?: string }) {
       const now = performance.now() / 1000;
       rings.current = rings.current.filter((ring) => now - ring.born < RING_LIFE);
       const here = pointer.current;
-      const active = rings.current.length > 0 || here !== null;
+      let moving = false;
       CELLS.forEach(([column, row], index) => {
         const block = blocks.current[index];
         if (!block) return;
@@ -93,10 +94,21 @@ export function PixelLogo({ className = "" }: { className?: string }) {
           const offset = distance - age * RING_SPEED;
           z += 0.7 * Math.exp(-(offset * offset) / (2 * RING_WIDTH ** 2)) * (1 - age / RING_LIFE);
         }
-        z = Math.min(1.4, z);
-        block.style.transform = z > 0.01 ? `translateZ(${(z * LIFT).toFixed(1)}px) scale(${(1 + z * 0.18).toFixed(3)})` : "";
-        block.style.filter = z > 0.05 ? `brightness(${(1 + z * 0.55).toFixed(2)})` : "";
+        // Each block eases towards its target height, so lifting and settling stay smooth;
+        // values are written only while they still change.
+        const target = Math.min(1.4, z);
+        const current = lifted.current[index] ?? 0;
+        const next = current + (target - current) * 0.22;
+        const level = Math.abs(target - next) < 0.002 ? target : next;
+        if (Math.abs(level - current) < 0.0005) return;
+        moving = true;
+        lifted.current[index] = level;
+        block.style.transform = level > 0.003 ? `translateZ(${(level * LIFT).toFixed(2)}px)` : "";
+        block.style.boxShadow = level > 0.003 ? `0 ${(level * 7).toFixed(1)}px 0 rgba(3, 4, 94, ${(0.75 * Math.min(1, level * 3)).toFixed(2)})` : "";
       });
+      // Keep running while rings travel or blocks are still easing.
+      const active = rings.current.length > 0 || moving || dirty.current;
+      dirty.current = false;
       frame.current = active ? requestAnimationFrame(tick) : 0;
     };
     frame.current = requestAnimationFrame(tick);
@@ -108,8 +120,6 @@ export function PixelLogo({ className = "" }: { className?: string }) {
     return {
       x: ((event.clientX - rect.left) / rect.width) * COLUMNS - 0.5,
       y: ((event.clientY - rect.top) / rect.height) * ROWS - 0.5,
-      nx: (event.clientX - rect.left) / rect.width - 0.5,
-      ny: (event.clientY - rect.top) / rect.height - 0.5,
     };
   };
 
@@ -118,8 +128,7 @@ export function PixelLogo({ className = "" }: { className?: string }) {
     const at = toCells(event);
     if (!at) return;
     pointer.current = { x: at.x, y: at.y };
-    tiltX.set(at.ny * -10);
-    tiltY.set(at.nx * 14);
+    dirty.current = true;
     // A new ring whenever the pointer has travelled a bit, so moving makes waves.
     const now = performance.now() / 1000;
     const last = lastRing.current;
@@ -133,8 +142,8 @@ export function PixelLogo({ className = "" }: { className?: string }) {
   const onLeave = () => {
     pointer.current = null;
     lastRing.current = null;
-    tiltX.set(0);
-    tiltY.set(0);
+    dirty.current = true;
+    run();
   };
 
   const knock = (key: string, event: React.PointerEvent) => {
@@ -166,8 +175,6 @@ export function PixelLogo({ className = "" }: { className?: string }) {
           gridTemplateRows: `repeat(${ROWS}, 1fr)`,
           aspectRatio: `${COLUMNS} / ${ROWS}`,
           transformStyle: "preserve-3d",
-          rotateX: tiltX,
-          rotateY: tiltY,
         }}
         initial="hidden"
         whileInView="shown"

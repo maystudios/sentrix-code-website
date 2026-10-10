@@ -295,7 +295,7 @@ export const pagesEn: Pages = {
       intro:
         "Founded in 2026 by Luca Finn Wiegand and Sven Fredrik Maibaum in Monheim am Rhein, Germany. We build games, software, apps and AI on commission.",
       scene: "/images/scenes/team",
-      sceneAlt: "Pixel scene: two developers at desks with the robot between them, a river with a bridge outside the window",
+      sceneAlt: "Pixel scene: a small studio with two desks, the robot waving between them, a river with a bridge outside the window",
     },
     story: {
       title: "Why we exist",

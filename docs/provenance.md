@@ -87,3 +87,11 @@ animieren. Frei gezeichnete Pixelgrafik wurde verworfen.
 Runde 4 hat über die Gemini-Schnittstelle (Nano Banana Pro, 2K) 18 Bilder erzeugt:
 Drohne in zwei Formaten, zwei Funkelsterne, Server, Chip und zwölf Icons. Prompts und
 Rohbilder liegen lokal unter `.harness/runs/2026-10-10-website-v2/round4/gen/`.
+
+## Runde 5 (10.10.2026)
+
+- **Drohne:** neu generiert, isometrisch und mit Würfel im Greifer (Gemini, `drone-carry` Nr. 2). Der Nachbau nutzt 1,5 Quellkacheln je Pixel und liefert 60 × 57 Pixel. Der generierte Würfel wird abgetrennt und nicht gezeigt. Die Seite hängt stattdessen ihren eigenen flachen Block zwischen die Zangen.
+- **Icons:** Konzept und Chip wurden größer neu generiert und nachgebaut (26 × 28 und 30 × 29). Alle Icons zeigen dieselbe Pixelgröße, ein Zweiunddreißigstel der Iconbox.
+- **Szenen der Unterseiten:** `scripts/pixel-art/rebuild-scene.py` baut die Szenen pixelgenau auf ihrem Raster nach, meist 10 px Kachelgröße bei 1600 px Breite. Das Skript bestimmt je Kachel den Medianwert, reduziert auf 36 Farben und setzt nahe Farben auf die Seitenpalette. Die Ergebnisse liegen als kleine PNG unter `public/images/scenes/` und werden mit `image-rendering: pixelated` vergrößert angezeigt. Weiche Leuchteffekte werden dabei zu harten Kacheln.
+- **Über-uns-Szene:** Sie zeigt jetzt den Roboter im Studio und keine Personen mehr. Generiert wurde sie über Antigravity (`gemini-3.8-flash-high`, Bildwerkzeug) mit `ai-lab` und dem Roboter als Vorlage, weil das Gemini-API-Projekt sein Monatsbudget erreicht hatte. Der Nachbau nutzt 5,5 px Kachelgröße.
+- **Entfernt:** die ungenutzten Szenen `meet`, `concept`, `build` und `launch`. Den Ablauf zeigt jetzt der wachsende Prototyp.

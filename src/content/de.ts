@@ -123,17 +123,40 @@ export const de: Dictionary = {
     cta: "Ähnliches Projekt anfragen",
     items: [
       {
-        tab: "Spiele",
-        client: "Lernspiel für einen Bildungsverlag",
-        title: "Ein Mathe-Spiel, das Kinder freiwillig weiterspielen.",
-        text: "Der Verlag wollte Übungsaufgaben spielerischer machen. Wir haben ein Puzzlespiel für Tablets entwickelt, das Aufgaben aus dem Lehrplan in Level verwandelt. Lehrkräfte sehen den Fortschritt ihrer Klasse.",
-        quote: "Die Kinder fragen nach dem nächsten Level, nicht nach dem Ende der Stunde.",
-        role: "Produktleitung, Bildungsverlag",
+        tab: "Heistline",
+        client: "Emotions-Gaming, unabhängiges Studio aus Deutschland",
+        title: "Heistline: Polizei gegen Kriminelle, gespielt von echten Menschen.",
+        text: "Heistline ist ein Heist-MMO: Die einen planen Ausbrüche und Überfälle, die anderen jagen sie, im Koop und gegeneinander. Wir haben an der Entwicklung mitgearbeitet. Das Spiel ist kostenlos spielbar und auf Steam angekündigt.",
         icon: "gamepad",
-        example: true,
+        kind: "game",
+        reference: {
+          facts: ["Multiplayer: Koop und PvP", "Free to Play", "Steam, Windows", "Deutsch und Englisch"],
+          image: { src: "/images/work/heistline-vault.webp", alt: "Szene aus Heistline: Ein maskierter Räuber stapelt Geld im Tresorraum, hinter der offenen Tresortür kommt ein Komplize", width: 1600, height: 517 },
+          links: [
+            { label: "Heistline auf Steam", href: "https://store.steampowered.com/app/3613860/Heistline/" },
+            { label: "heistline.de", href: "https://heistline.de/" },
+          ],
+        },
+      },
+      {
+        tab: "Mr. Dork 3",
+        client: "MayStudios und Simsalabim Studio",
+        title: "Mr. Dork 3: ein Jump'n'Run auf Notizpapier.",
+        text: "Mr. Dork 3: One Last Doodle ist ein 2D-Plattformer mit Rätseln, gebaut mit der Unreal Engine. Eine Strichfigur springt über Lineale und Bleistifte: 30 Level, Koop für zwei, Battles im Splitscreen und endlose Level. Das Spiel ist auf Steam angekündigt, weitere Plattformen folgen.",
+        icon: "gamepad",
+        kind: "game",
+        reference: {
+          facts: ["Unreal Engine", "Koop und Splitscreen", "30 Level", "Steam, Windows"],
+          image: { src: "/images/work/mrdork3-level.webp", alt: "Level aus Mr. Dork 3: Eine Strichfigur springt über Lineale und Bleistifte auf liniertem Papier zur Zielflagge", width: 1600, height: 900 },
+          links: [
+            { label: "Mr. Dork 3 auf Steam", href: "https://store.steampowered.com/app/3274870/Mr_Dork_3_One_Last_Doodle/" },
+            { label: "mrdork3.com", href: "https://mrdork3.com/" },
+          ],
+        },
       },
       {
         tab: "Mittelstand",
+        kind: "software",
         client: "Maschinenbauer aus dem Bergischen Land",
         title: "Ein Kundenportal ersetzt Excel-Listen und Rückfragen am Telefon.",
         text: "Aufträge, Lieferzeiten und Ersatzteile lagen in drei Systemen. Wir haben ein Portal gebaut, das die Daten aus dem ERP holt und Kunden den Stand ihrer Bestellung selbst zeigt.",
@@ -144,6 +167,7 @@ export const de: Dictionary = {
       },
       {
         tab: "Apps",
+        kind: "apps",
         client: "Fitnessstudio-Kette mit zwölf Standorten",
         title: "Kurse buchen mit zwei Fingertipps statt am Tresen.",
         text: "Die Kette wollte eine eigene App statt einer fremden Buchungsplattform. Wir haben sie mit Flutter für iOS und Android gebaut und an die bestehende Mitgliederverwaltung angebunden.",
@@ -154,6 +178,7 @@ export const de: Dictionary = {
       },
       {
         tab: "KI",
+        kind: "ai",
         client: "Onlinehändler für Ersatzteile",
         title: "Ein KI-Assistent beantwortet die Standardfragen im Kundenservice.",
         text: "Viele Anfragen drehten sich um Passform und Lieferung. Unser Assistent antwortet aus Produktdaten und Handbüchern und gibt schwierige Fälle mit allen Angaben an das Team weiter.",
@@ -166,7 +191,7 @@ export const de: Dictionary = {
   },
   process: {
     title: "So arbeiten wir.",
-    prototype: { live: "Live", build: "Build läuft" },
+    prototype: { live: "Live", build: "Build läuft", thanks: "Danke!", play: "Automatischen Wechsel fortsetzen", pause: "Automatischen Wechsel anhalten" },
     intro: "Sie sehen Zwischenergebnisse und entscheiden mit, was als Nächstes kommt.",
     steps: [
       {

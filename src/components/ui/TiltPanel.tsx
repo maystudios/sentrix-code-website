@@ -5,13 +5,15 @@ import type { PointerEvent, ReactNode } from "react";
 import { ease, spring } from "@/lib/motion";
 import { useMotionPolicy } from "@/components/motion/MotionPolicy";
 
-// Panel that leans gently towards the pointer: direct feedback, no light following it.
+// Panel that drifts a few pixels towards the pointer and lifts while hovered. It no longer
+// rotates or scales: its contents are pixel art, which must stay on a square grid
+// (review round 5).
 export function TiltPanel({ children, className = "" }: { children: ReactNode; className?: string }) {
   const { reduced } = useMotionPolicy();
   const px = useMotionValue(0.5);
   const py = useMotionValue(0.5);
-  const rotateX = useSpring(useTransform(py, [0, 1], [4, -4]), spring.ui);
-  const rotateY = useSpring(useTransform(px, [0, 1], [-5, 5]), spring.ui);
+  const x = useSpring(useTransform(px, [0, 1], [-5, 5]), spring.ui);
+  const y = useSpring(useTransform(py, [0, 1], [-4, 4]), spring.ui);
 
   function handleMove(event: PointerEvent<HTMLDivElement>) {
     if (reduced) return;
@@ -21,22 +23,24 @@ export function TiltPanel({ children, className = "" }: { children: ReactNode; c
   }
 
   return (
-    <div className="[perspective:1200px]">
+    <motion.div
+      initial={{ opacity: 0, y: 32 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: "0px 0px -15% 0px" }}
+      transition={{ duration: 0.9, ease: ease.outExpo }}
+    >
       <motion.div
         onPointerMove={handleMove}
         onPointerLeave={() => {
           px.set(0.5);
           py.set(0.5);
         }}
-        style={{ rotateX, rotateY }}
-        initial={{ opacity: 0, scale: 0.94, y: 32 }}
-        whileInView={{ opacity: 1, scale: 1, y: 0 }}
-        viewport={{ once: true, margin: "0px 0px -15% 0px" }}
-        transition={{ duration: 0.9, ease: ease.outExpo }}
-        className={`relative overflow-hidden rounded-[var(--radius-card)] border border-line bg-surface ${className}`}
+        style={{ x, y }}
+        whileHover={reduced ? undefined : { y: -4 }}
+        className={`relative overflow-hidden rounded-[var(--radius-card)] border border-line bg-surface transition-colors duration-200 hover:border-line-strong ${className}`}
       >
         {children}
       </motion.div>
-    </div>
+    </motion.div>
   );
 }

@@ -5,7 +5,8 @@ import { ease } from "@/lib/motion";
 // Every element has one look per step (0 sketch, 1 wireframe, 2 working build, 3 live).
 // A change of step is a small staged sequence: each element animates to its new look with
 // the timing of the hop that changes it, so the eye follows one object. Jumps play the last
-// hop in full and everything before it quickly; going back rewinds fast, bottom to top.
+// hop in full and everything before it quickly; going back rebuilds in reverse (see undoAt).
+// Once a sequence has played, the change ends explicitly and the cue rests again.
 
 export type Step = 0 | 1 | 2 | 3;
 export type Trans = { from: Step; to: Step; id: number };
@@ -37,11 +38,62 @@ export function at(cue: Cue, byStep: Partial<Record<Step, Transition>>, back: Tr
   return byStep[cue.trans!.to] ?? QUICK;
 }
 
-// Seconds after a change until its sequence has played and ambient loops may start.
+// Going back rebuilds the product in reverse, newest change first: the live status goes
+// (undo of step 3), the colour gives way to the wireframe (undo of 2), and the sketch strokes
+// return last (undo of 1). Each undo starts UNDO_GAP after the one before; inside an undo the
+// blocks run bottom to top (backDelay in Block.tsx). 3 → 0 takes about 0.58 s, one step 0.35 s.
+export type Undo = 1 | 2 | 3;
+export const UNDO_GAP = 0.09;
+
+// Start of the undo of step `k` in the current rewind. A change that this rewind does not
+// pass falls back to the nearest undo it does pass.
+export function undoAt(cue: Cue, k: Undo) {
+  if (cue.mode !== "back" || !cue.trans) return 0;
+  const { from, to } = cue.trans;
+  return (from - Math.min(from, Math.max(to + 1, k))) * UNDO_GAP;
+}
+
+// Timing of one property in the undo of step `k`, `lag` seconds after that undo starts.
+export function undo(cue: Cue, k: Undo, lag = 0, duration = 0.14): Transition {
+  return { delay: undoAt(cue, k) + lag, duration, ease: stepped(3) };
+}
+
+// A property with a different look in several steps. Going back over more than one of them,
+// it passes through every look in between, each change in its own undo, so a jump from live
+// to sketch still shows the wireframe for a moment. Returns the target and its timing
+// (null while not rewinding: use the forward timing).
+export function rewound<T extends string | number>(
+  cue: Cue,
+  looks: readonly [T, T, T, T],
+  step: Step,
+  lag: number | Partial<Record<Undo, number>> = 0,
+  duration = 0.14,
+): [T | (T | null)[], Transition | null] {
+  if (cue.mode !== "back" || !cue.trans) return [looks[step], null];
+  const values: (T | null)[] = [null];
+  const times: number[] = [];
+  for (let k = cue.trans.from; k > cue.trans.to; k--) {
+    if (looks[k] === looks[k - 1]) continue;
+    const extra = typeof lag === "number" ? lag : (lag[k as Undo] ?? 0);
+    const start = Math.max(undoAt(cue, k as Undo) + extra, times[times.length - 1] ?? 0);
+    if (times.length) values.push(looks[k]);
+    times.push(start);
+    values.push(looks[k - 1]);
+    times.push(start + duration);
+  }
+  if (!times.length) return [looks[step], { duration: 0 }];
+  const first = times[0];
+  if (times.length === 2) return [looks[step], { delay: first, duration, ease: stepped(3) }];
+  const total = times[times.length - 1] - first;
+  return [values, { delay: first, duration: total, times: times.map((t) => (t - first) / total), ease: stepped(3) }];
+}
+
+// Seconds after a change until its sequence has played; then the change ends and ambient
+// loops may start. Every one-off animation of a change finishes within this time.
 export function settleTime(cue: Cue) {
   if (cue.mode === "rest") return 0;
-  if (cue.mode === "back") return 0.9;
-  return [0, 3.0, 2.5, 2.9][cue.trans!.to];
+  if (cue.mode === "back") return undoAt(cue, (cue.trans!.to + 1) as Undo) + 0.45;
+  return [0, 3.2, 2.5, 3.15][cue.trans!.to];
 }
 
 // The device is drawn in units: 100 wide, 136 high (1 unit = 1cqw of the stage).

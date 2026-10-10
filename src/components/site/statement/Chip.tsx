@@ -1,28 +1,37 @@
 "use client";
 
 import { motion } from "motion/react";
-import type { PointerEvent as ReactPointerEvent } from "react";
+import type { DOMAttributes, PointerEvent as ReactPointerEvent } from "react";
 import type { IconName } from "@/content/types";
 import { PixelIcon } from "@/components/brand/PixelIcon";
 import { ease, spring } from "@/lib/motion";
 
 const POP = { scale: [0, 1.9, 1], opacity: 1 };
 
+export type ChipButtonHandlers = Pick<
+  DOMAttributes<HTMLButtonElement>,
+  "onPointerDown" | "onPointerMove" | "onClick" | "onKeyDown" | "onFocus" | "onBlur"
+>;
+
 type ChipProps = {
   label: string;
   icon: IconName;
   muted: boolean;
   lit: boolean;
+  pressed: boolean;
+  raised: boolean;
   shown: boolean;
   reduced: boolean;
   delay: number;
+  tabIndex: 0 | -1;
   className: string;
   chipRef: (el: HTMLLIElement | null) => void;
   liftRef: (el: HTMLDivElement | null) => void;
+  buttonRef: (el: HTMLButtonElement | null) => void;
   blinkRef: (side: 0 | 1) => (el: HTMLSpanElement | null) => void;
   onEnter: (event: ReactPointerEvent) => void;
   onLeave: (event: ReactPointerEvent) => void;
-  onDown: (event: ReactPointerEvent) => void;
+  button: ChipButtonHandlers;
 };
 
 function Node({ side, lit, strong, shown, reduced, delay, blinkRef }: {
@@ -52,10 +61,32 @@ function Node({ side, lit, strong, shown, reduced, delay, blinkRef }: {
   );
 }
 
-export function Chip({ label, icon, muted, lit, shown, reduced, delay, className, chipRef, liftRef, blinkRef, onEnter, onLeave, onDown }: ChipProps) {
+// One term of the grid: a list item whose chip is a button. Pointer, Enter and Space
+// all play the same feedback; the chip can be pulled on its strings (touch only after a
+// clear sideways move, so vertical page scrolling stays with the browser).
+export function Chip({
+  label,
+  icon,
+  muted,
+  lit,
+  pressed,
+  raised,
+  shown,
+  reduced,
+  delay,
+  tabIndex,
+  className,
+  chipRef,
+  liftRef,
+  buttonRef,
+  blinkRef,
+  onEnter,
+  onLeave,
+  button,
+}: ChipProps) {
   const active = lit || !muted;
   return (
-    <li ref={chipRef} className={`relative my-2 md:my-3 ${className}`} onPointerEnter={onEnter} onPointerLeave={onLeave} onPointerDown={onDown}>
+    <li ref={chipRef} className={`relative my-2 md:my-3 ${raised ? "z-10" : ""} ${className}`} onPointerEnter={onEnter} onPointerLeave={onLeave}>
       <div ref={liftRef} className="relative">
         <Node side={0} lit={lit} strong={!muted} shown={shown} reduced={reduced} delay={delay} blinkRef={blinkRef(0)} />
         {/* Entry: rises out of its slot with a small spring, right after its nodes pop. */}
@@ -64,11 +95,18 @@ export function Chip({ label, icon, muted, lit, shown, reduced, delay, className
           animate={shown ? { opacity: 1, y: 0, scale: 1 } : undefined}
           transition={{ ...spring.playful, delay: delay + 0.08, opacity: { duration: 0.3, delay: delay + 0.08 } }}
         >
-          {/* Press: a quick, tactile squeeze. */}
-          <motion.div
-            whileTap={reduced ? undefined : { scale: 0.95 }}
+          {/* Press: a quick, tactile squeeze, held while the chip is pulled. */}
+          <motion.button
+            ref={buttonRef}
+            type="button"
+            tabIndex={tabIndex}
+            initial={false}
+            animate={{ scale: pressed && !reduced ? 0.95 : 1 }}
             transition={spring.ui}
-            className={`flex select-none items-center whitespace-nowrap rounded-[var(--radius-control)] border px-3.5 py-2 text-[15px] leading-6 transition-[border-color,background-color,color] duration-150 md:px-4 md:py-2.5 md:text-[17px] md:leading-7 lg:px-5 lg:text-[20px] lg:leading-8 ${
+            {...button}
+            className={`flex touch-pan-y touch-pinch-zoom select-none items-center whitespace-nowrap rounded-[var(--radius-control)] border px-3.5 py-2 text-[15px] leading-6 transition-[border-color,background-color,color] duration-150 [-webkit-tap-highlight-color:transparent] md:px-4 md:py-2.5 md:text-[17px] md:leading-7 lg:px-5 lg:text-[20px] lg:leading-8 ${
+              reduced ? "cursor-default" : "cursor-grab active:cursor-grabbing"
+            } ${
               lit
                 ? "border-ocean-400 bg-raised text-fg"
                 : muted
@@ -110,7 +148,7 @@ export function Chip({ label, icon, muted, lit, shown, reduced, delay, className
                 </motion.span>
               </span>
             </span>
-          </motion.div>
+          </motion.button>
         </motion.div>
         <Node side={1} lit={lit} strong={!muted} shown={shown} reduced={reduced} delay={delay + 0.04} blinkRef={blinkRef(1)} />
       </div>

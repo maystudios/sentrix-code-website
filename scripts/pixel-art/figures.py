@@ -60,41 +60,90 @@ def shifted(cells, dx=0, dy=0):
     return {(x + dx, y + dy): ch for (x, y), ch in cells.items()}
 
 
+def backfill(figure, cells, letter):
+    """Fill the base under a moving layer, so moving or hiding it never leaves a hole."""
+    for cell in cells:
+        figure.base[cell] = letter
+
+
+def mirrored(cells):
+    """The same cells mirrored inside their own bounding box (a whole-cell alternate frame)."""
+    xs = [x for x, _ in cells]
+    left, right = min(xs), max(xs)
+    return {(left + right - x, y): ch for (x, y), ch in cells.items()}
+
+
+def lids(eyes):
+    """Closed eyes: per eye, one horizontal line on the lower of its widest rows."""
+    rows = {}
+    for (x, y) in eyes:
+        rows.setdefault(y, []).append(x)
+    widest = max(len(xs) for xs in rows.values())
+    row = max(y for y, xs in rows.items() if len(xs) == widest)
+    return {(x, row): eyes[(x, row)] for x in rows[row]}
+
+
 FIGURES = {}
 
 # --- Robot (Flow generation "robot-wave" #2) ---------------------------------------------
 robot = Figure(load("robot-wave"))
 robot.take("antenna", (9, 0, 14, 2))
-robot.take("eyes", (5, 12, 16, 15), letters="l")
-# The raised arm (viewer's right) is frame 2; frame 3 is the same arm one cell inward and
-# down, so alternating them waves.
-raised = robot.take("arm2", (18, 13, 24, 23))
-raised.update(robot.take("arm2", (17, 19, 17, 20), letters="LWlgC"))
-robot.add("arm3", shifted(raised, dx=-1, dy=1))
-# Frame 1, the idle pose: the hanging left arm mirrored onto the right side.
-hanging = {(x, y): ch for (x, y), ch in robot.base.items() if x <= 4 and 21 <= y <= 29}
+eyes = robot.take("eyes", (5, 12, 16, 15), letters="l")
+backfill(robot, eyes, "k")
+robot.add("lids", lids(eyes))
+# The raised arm (viewer's right), cut out row by row so the head keeps all its cells
+# (round 4 feedback: a rectangle had taken part of the head with it). Frame 2 is the arm
+# as generated, frame 3 tips the hand one cell inward, so alternating them waves.
+ARM_ROWS = {14: (22, 23), 15: (22, 24), 16: (21, 24), 17: (20, 24), 18: (19, 23), 19: (18, 23), 20: (17, 22), 21: (17, 21), 22: (17, 20), 23: (17, 18)}
+raised = {}
+for y, (x0, x1) in ARM_ROWS.items():
+    raised.update(robot.take("arm2", (x0, y, x1, y)))
+robot.add("arm3", {((x - 1) if y <= 18 else x, y): ch for (x, y), ch in raised.items()})
+# Frame 1, the idle pose: the left shoulder and hanging arm mirrored onto the right side
+# (the torso outline runs at x = 5 and x = 17, so x mirrors to 22 - x).
+hanging = {(x, y): ch for (x, y), ch in robot.base.items() if (2 <= x <= 5 and 20 <= y <= 23) or (x <= 4 and 24 <= y <= 29)}
 robot.add("arm1", {(22 - x, y): ch for (x, y), ch in hanging.items()})
 FIGURES["robot"] = robot.export()
 
 # --- Rocket (sprite-rocket from round 1) ---------------------------------------------------
 rocket = Figure(load("rocket"))
-rocket.take("flame", (7, 28, 14, 34), letters="AWpqr")
+flame = rocket.take("flame", (7, 28, 14, 34), letters="AWpqr")
+rocket.add("flame-b", mirrored(flame))
 rocket.take("window", (8, 10, 13, 15), letters="lLc")
 FIGURES["rocket"] = rocket.export()
 
-# --- Drone with claw (Gemini, round 4) --------------------------------------------------------
-drone = Figure(load("drone"), pad=(0, 0, 1, 0))
-drone.base[(61, 5)] = "D"  # the source cut off the outline at the right blade tip
-blades = drone.take("blade1", (0, 4, 61, 6), letters="LD")
-for hub in [(9, 4), (10, 4), (11, 4), (9, 5), (11, 5), (50, 4), (51, 4), (52, 4), (50, 5), (52, 5)]:
-    if hub in blades:
-        drone.base[hub] = blades.pop(hub)
-drone.add("blade2", {(x, y): ch for (x, y), ch in blades.items() if 5 <= x <= 15 or 46 <= x <= 56})
-drone.take("light", (28, 0, 33, 2), letters="pAO")
-drone.take("pupil", (27, 10, 34, 14), letters="lL")
-claw = drone.take("claw1", (25, 25, 37, 33))
-drone.add("claw2", {((x + 1 if x <= 30 else x - 1) if y >= 28 else x, y): ch for (x, y), ch in claw.items()})
+# --- Drone with claw, isometric (Gemini, round 4, drone-carry #2 at 1.5 source cells) --------
+# The generated cube is split off and not drawn; the site hangs its own flat block between
+# the prongs (prongs in front, block behind).
+drone = Figure(load("drone-carry"))
+rotor_spin = {}
+for name, rect in [("back", (18, 0, 30, 3)), ("left", (0, 13, 11, 16)), ("right", (48, 13, 59, 16)), ("front", (33, 28, 44, 31))]:
+    disc = drone.take(f"rotor-{name}", rect)
+    rotor_spin.update(mirrored(disc))
+drone.add("rotor-spin", rotor_spin)
+drone.take("light", (25, 14, 29, 16), letters="pOqr")
+pupil = drone.take("pupil", (21, 21, 24, 25), letters="CW")
+backfill(drone, pupil, "k")
+RIGHT_PRONG = {37: (29, 31), 38: (29, 32), 39: (30, 33), 40: (30, 34), 41: (31, 34), 42: (32, 34), 43: (32, 34),
+               44: (32, 34), 45: (32, 34), 46: (31, 34), 47: (31, 33), 48: (31, 32)}
+LEFT_PRONG = {38: (22, 25), 39: (22, 25), 40: (22, 25), 41: (22, 23)}
+head = drone.take("claw-head", (23, 31, 31, 37))
+right = {}
+for y, (x0, x1) in RIGHT_PRONG.items():
+    right.update(drone.take("claw-right", (x0, y, x1, y)))
+left = {}
+for y, (x0, x1) in LEFT_PRONG.items():
+    left.update(drone.take("claw-left", (x0, y, x1, y)))
+cube = drone.take("cube", (20, 38, 37, 56))
+# Claw frames: 1 gripping (as generated), 2 open (both prongs two cells outward).
+drone.layers.pop("claw-right")
+drone.layers.pop("claw-left")
+drone.add("claw1", {**right, **left})
+drone.add("claw2", {**shifted(right, dx=2), **shifted(left, dx=-2)})
 FIGURES["drone"] = drone.export()
+# Layer order: the claw must be drawn after (in front of) the cube.
+order = ["base", "rotor-back", "rotor-left", "rotor-right", "rotor-spin", "light", "pupil", "claw-head", "cube", "claw1", "claw2", "rotor-front"]
+FIGURES["drone"]["layers"] = {name: FIGURES["drone"]["layers"][name] for name in order}
 
 # --- Gamepad, laptop, cloud, sparkle (Gemini, round 3b props) ---------------------------------
 gamepad = Figure(load("gamepad"))
@@ -106,13 +155,17 @@ FIGURES["gamepad"] = gamepad.export()
 
 laptop = Figure(load("laptop"))
 for index, (y0, y1) in enumerate([(4, 4), (6, 6), (8, 9), (11, 11), (13, 14)], start=1):
-    laptop.take(f"code-{'abcde'[index - 1]}", (6, y0, 31, y1), exclude="b")
+    code = laptop.take(f"code-{'abcde'[index - 1]}", (6, y0, 31, y1), exclude="b")
+    backfill(laptop, code, "b")
 laptop.take("lights", (26, 18, 31, 18), letters="A")
 laptop.add("caret", {(6, 4): "W"})
 FIGURES["laptop"] = laptop.export()
 
 cloud = Figure(load("cloud"))
-cloud.take("stars", (0, 0, 50, 17), letters="Apq")
+# The yellow dots inside the cloud body were a generation artefact (Gemini video review).
+for cell, ch in list(cloud.base.items()):
+    if ch in "Apq":
+        cloud.base[cell] = "N"
 FIGURES["cloud"] = cloud.export()
 
 sparkle = Figure(load("sparkle"))
@@ -153,7 +206,9 @@ def take_eyes(figure, top_share=0.5):
 # --- Companions, props and the 404 astronaut (Flow and Gemini generations) ---------------------
 for name in ["robot-gamer", "robot-coder", "robot-phone", "robot-ai", "robot-astronaut"]:
     companion = Figure(load(name))
-    take_eyes(companion)
+    eyes = take_eyes(companion)
+    backfill(companion, eyes, "k")
+    companion.add("lids", lids(eyes))
     companion.take("sparks", (0, 0, companion.width, companion.height), letters="AO")
     FIGURES[name] = companion.export()
 

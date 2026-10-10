@@ -3,7 +3,7 @@
 import { motion, type Transition } from "motion/react";
 import { spring } from "@/lib/motion";
 import { PencilArt } from "./art";
-import { arriving, at, crumbSpots, pencilTrace, PENCIL_POSE, type Cue, type Step } from "./choreo";
+import { arriving, at, crumbSpots, pencilTrace, PENCIL_POSE, undoAt, type Cue, type Step } from "./choreo";
 
 const TRACE = pencilTrace();
 const CRUMBS = crumbSpots(9);
@@ -24,7 +24,11 @@ export function Pencil({ step, cue, ambient }: { step: Step; cue: Cue; ambient: 
   } else {
     target = { x: pose.x, y: pose.y, opacity: step <= 1 ? 1 : 0 };
     if (cue.mode === "rest") move = { duration: 0 };
-    else if (step <= 1) move = { ...spring.playful, delay: cue.mode === "back" ? 0.12 : 0, opacity: { duration: 0.15, delay: 0.12 } };
+    else if (step <= 1) {
+      // Going back it returns with the sketch (step 0) or parks with the wireframe (step 1).
+      const delay = cue.mode === "back" ? undoAt(cue, step === 0 ? 1 : 2) + 0.06 : 0;
+      move = { ...spring.playful, delay, opacity: { duration: 0.15, delay } };
+    }
     else move = { duration: 0.45, ease: [0.5, 0, 0.75, 0], opacity: { duration: 0.2, delay: 0.25 } };
   }
 
@@ -36,7 +40,7 @@ export function Pencil({ step, cue, ambient }: { step: Step; cue: Cue; ambient: 
           style={{ originX: 0, originY: 1 }}
           initial={false}
           animate={{ rotate: step === 0 ? 2.5 : 0 }}
-          transition={at(cue, { 1: { ...spring.playful, delay: 0.05 } }, { ...spring.ui, delay: 0.3 })}
+          transition={at(cue, { 1: { ...spring.playful, delay: 0.05 } }, { ...spring.ui, delay: undoAt(cue, 1) + 0.06 })}
         >
           {/* Idle: it hovers and doodles little loops in the air, ready to draw. Translation
               only, so the pixels stay square. */}

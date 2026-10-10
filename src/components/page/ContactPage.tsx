@@ -224,11 +224,11 @@ export function ContactPage({ dict, alternateHref }: { dict: Dictionary; alterna
           <aside className="lg:pt-24">
             <div className="sticky top-24 overflow-hidden rounded-[var(--radius-card)] border border-line bg-surface">
               <img
-                src={asset(`${page.scene}-800.webp`)}
+                src={asset(`${page.scene}.png`)}
                 alt={page.sceneAlt}
                 width={800}
                 height={450}
-                className="block aspect-video w-full object-cover"
+                className="block aspect-video w-full object-cover [image-rendering:pixelated]"
               />
               <div className="p-6">
                 <h2 className="text-lg font-medium">{page.aside.title}</h2>

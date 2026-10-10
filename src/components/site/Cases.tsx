@@ -8,9 +8,10 @@ import { useRovingTabs } from "@/lib/useRovingTabs";
 import { Mosaic } from "@/components/ui/Mosaic";
 import { TextLink } from "@/components/ui/TextLink";
 import { PixelIcon } from "@/components/brand/PixelIcon";
+import { ReferenceFigure, ReferenceLinks } from "./ReferenceFigure";
 
-// Practice examples by sector, laid out like the reference's customer section:
-// sector tabs, the story in the middle, the quote on a coloured panel.
+// Practice by project, laid out like the reference's customer section: tabs, the story in
+// the middle, on the right the project's image (real references) or the quote (examples).
 export function Cases({ dict }: { dict: Dictionary }) {
   const items = dict.cases.items;
   const [active, setActive] = useState(0);
@@ -61,6 +62,11 @@ export function Cases({ dict }: { dict: Dictionary }) {
               <p className="text-sm text-ocean-300">{item.client}</p>
               <h3 className="text-h3 mt-2">{item.title}</h3>
               <p className="mt-4 text-muted">{item.text}</p>
+              {item.reference && (
+                <div className="mt-6">
+                  <ReferenceLinks reference={item.reference} />
+                </div>
+              )}
               <TextLink href={`#${dict.anchors.contact}`} className="mt-auto pt-8">
                 {dict.cases.cta}
               </TextLink>
@@ -70,24 +76,37 @@ export function Cases({ dict }: { dict: Dictionary }) {
 
         <div className="flex items-center p-6 lg:border-l lg:border-line lg:p-10">
           <AnimatePresence mode="wait">
-            <motion.figure
-              key={active}
-              initial={{ opacity: 0, y: 14, scale: 0.98 }}
-              animate={{ opacity: 1, y: 0, scale: 1 }}
-              exit={{ opacity: 0, y: -10 }}
-              transition={{ duration: 0.45, ease: ease.outExpo }}
-              className="relative w-full overflow-hidden rounded-[var(--radius-card)] border border-ocean-400/30 bg-surface shadow-[inset_0_0_0_1px_rgba(72,202,228,0.08)]"
-            >
-              <div className="p-7">
-                <span aria-hidden="true" className="font-mono text-4xl leading-none text-ocean-400">„</span>
-                <blockquote className="mt-2 text-xl font-medium leading-snug tracking-tight md:text-2xl">{item.quote}</blockquote>
-                <figcaption className="mt-5 flex items-center gap-3 text-sm text-muted">
-                  <PixelIcon name={item.icon} px={2} />
-                  {item.role}
-                </figcaption>
-              </div>
-              <Mosaic className="h-6" tile={24} from={1} to={5} direction="horizontal" seed={active + 2} twinkle={false} />
-            </motion.figure>
+            {item.reference ? (
+              <motion.div
+                key={active}
+                initial={{ opacity: 0, y: 14 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                transition={{ duration: 0.45, ease: ease.outExpo }}
+                className="w-full"
+              >
+                <ReferenceFigure reference={item.reference} title={item.tab} />
+              </motion.div>
+            ) : (
+              <motion.figure
+                key={active}
+                initial={{ opacity: 0, y: 14, scale: 0.98 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                exit={{ opacity: 0, y: -10 }}
+                transition={{ duration: 0.45, ease: ease.outExpo }}
+                className="relative w-full overflow-hidden rounded-[var(--radius-card)] border border-ocean-400/30 bg-surface shadow-[inset_0_0_0_1px_rgba(72,202,228,0.08)]"
+              >
+                <div className="p-7">
+                  <span aria-hidden="true" className="font-mono text-4xl leading-none text-ocean-400">„</span>
+                  <blockquote className="mt-2 text-xl font-medium leading-snug tracking-tight md:text-2xl">{item.quote}</blockquote>
+                  <figcaption className="mt-5 flex items-center gap-3 text-sm text-muted">
+                    <PixelIcon name={item.icon} px={2} />
+                    {item.role}
+                  </figcaption>
+                </div>
+                <Mosaic className="h-6" tile={24} from={1} to={5} direction="horizontal" seed={active + 2} twinkle={false} />
+              </motion.figure>
+            )}
           </AnimatePresence>
         </div>
       </div>

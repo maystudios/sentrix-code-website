@@ -9,7 +9,8 @@ import { createContext, useContext, useEffect, useSyncExternalStore, type ReactN
 // - "full" and "reduced" are the visitor's own choice from the footer switch,
 // - "?motion=full" forces full motion for reviews.
 // Server render and hydration always assume full motion; the real policy applies right
-// after hydration and remounts the animated tree once, so Motion picks it up everywhere.
+// after hydration. Changing it keeps the page as it is (form input, focus, scroll): Motion
+// reads the setting for every new animation and components react to `reduced`.
 
 export type MotionPreference = "system" | "full" | "reduced";
 
@@ -40,9 +41,28 @@ function subscribe(callback: () => void) {
   };
 }
 
+// Storage can be blocked (privacy settings); the choice then lasts for this page view only.
+let memoryPreference: string | null = null;
+function readStored() {
+  try {
+    return window.localStorage.getItem(STORAGE_KEY);
+  } catch {
+    return memoryPreference;
+  }
+}
+function writeStored(value: string | null) {
+  memoryPreference = value;
+  try {
+    if (value === null) window.localStorage.removeItem(STORAGE_KEY);
+    else window.localStorage.setItem(STORAGE_KEY, value);
+  } catch {
+    // Kept in memory only.
+  }
+}
+
 function readSnapshot(): string {
   if (new URLSearchParams(window.location.search).get("motion") === "full") return "full|0";
-  const stored = window.localStorage.getItem(STORAGE_KEY);
+  const stored = readStored();
   const preference = stored === "full" || stored === "reduced" ? stored : "system";
   const system = window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "1" : "0";
   return `${preference}|${system}`;
@@ -57,19 +77,36 @@ export function MotionPolicyProvider({ children }: { children: ReactNode }) {
     document.documentElement.dataset.motion = reduced ? "reduced" : "full";
   }, [reduced]);
 
+  // Browser back and forward: the page slide runs the other way (globals.css,
+  // "Seitenwechsel"); any click on the page returns to the forward direction.
+  useEffect(() => {
+    const root = document.documentElement;
+    const onPop = () => {
+      root.dataset.nav = "back";
+    };
+    const onClick = () => {
+      delete root.dataset.nav;
+    };
+    window.addEventListener("popstate", onPop);
+    document.addEventListener("click", onClick, true);
+    return () => {
+      window.removeEventListener("popstate", onPop);
+      document.removeEventListener("click", onClick, true);
+    };
+  }, []);
+
   const policy: MotionPolicy = {
     preference,
     reduced,
     setPreference: (next) => {
-      if (next === "system") window.localStorage.removeItem(STORAGE_KEY);
-      else window.localStorage.setItem(STORAGE_KEY, next);
+      writeStored(next === "system" ? null : next);
       window.dispatchEvent(new Event(CHANGE_EVENT));
     },
   };
 
   return (
     <MotionPolicyContext.Provider value={policy}>
-      <MotionConfig key={reduced ? "reduced" : "full"} reducedMotion={reduced ? "always" : "never"}>
+      <MotionConfig reducedMotion={reduced ? "always" : "never"}>
         <ReactLenis
           root
           options={{ lerp: reduced ? 1 : 0.1, anchors: { offset: -72 }, autoRaf: true, respectReducedMotion: false }}

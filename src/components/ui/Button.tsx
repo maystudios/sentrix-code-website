@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { motion } from "motion/react";
 import type { ReactNode } from "react";
-import { ease, spring } from "@/lib/motion";
+import { spring } from "@/lib/motion";
 
 const MotionLink = motion.create(Link);
 
@@ -17,7 +17,7 @@ type ButtonProps = {
 };
 
 const variants = {
-  primary: "bg-ocean-700 text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.18)]",
+  primary: "bg-ocean-700 text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.18)] hover:bg-ocean-600",
   secondary: "border border-line-strong bg-surface text-fg hover:bg-raised",
 };
 
@@ -48,16 +48,17 @@ export function Button({
       transition={spring.ui}
       onHoverStart={() => onHoverChange?.(true)}
       onHoverEnd={() => onHoverChange?.(false)}
+      onFocus={() => onHoverChange?.(true)}
+      onBlur={() => onHoverChange?.(false)}
       className={`relative inline-flex select-none items-center gap-2 overflow-hidden rounded-[var(--radius-control)] font-medium transition-colors duration-150 ${variants[variant]} ${sizes[size]} ${className}`}
     >
-      {variant === "primary" && (
-        <motion.span
-          aria-hidden="true"
-          className="pointer-events-none absolute inset-y-0 left-0 w-1/2 -skew-x-12 bg-gradient-to-r from-transparent via-white/30 to-transparent"
-          variants={{ rest: { x: "-150%" }, hover: { x: "260%" }, tap: { x: "260%" } }}
-          transition={{ duration: 0.75, ease: ease.outExpo }}
-        />
-      )}
+      {/* Hover and focus: a pixel bar fills along the bottom edge in eight steps. */}
+      <motion.span
+        aria-hidden="true"
+        className={`pointer-events-none absolute inset-x-0 bottom-0 h-[3px] origin-left ${variant === "primary" ? "bg-ocean-300" : "bg-ocean-400"}`}
+        variants={{ rest: { scaleX: 0 }, hover: { scaleX: 1 }, tap: { scaleX: 1 } }}
+        transition={{ duration: 0.24, ease: (t: number) => Math.ceil(t * 8) / 8 }}
+      />
       <span className="relative">{children}</span>
     </MotionLink>
   );

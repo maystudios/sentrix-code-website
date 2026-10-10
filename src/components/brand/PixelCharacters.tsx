@@ -1,15 +1,16 @@
 "use client";
 
-import { motion, useAnimate, useInView, useMotionValue, useSpring } from "motion/react";
-import { useEffect, useRef, useState } from "react";
+import { motion, useAnimate, useInView, useMotionValue, useSpring, useTransform } from "motion/react";
+import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { spring } from "@/lib/motion";
 import { useMotionPolicy } from "@/components/motion/MotionPolicy";
 import { PixelArt } from "./PixelArt";
 import { FIGURES } from "./figures";
 
 // The site's cast: pixel-perfect rebuilds of generated images (scripts/pixel-art), split
-// into layers so each part can move. Loops only run while a figure is on screen and
-// motion is on.
+// into layers so each part can move. Shapes change only in whole art pixels: eyes jump by
+// one cell, blinking shows a closed-lid frame, rotors and flames swap between two frames
+// in CSS. Loops run only while a figure is on screen, the tab is visible and motion is on.
 
 // Figure sizes in art pixels, for callers that size boxes by the shared pixel size.
 export const FIGURE_SIZE = Object.fromEntries(Object.entries(FIGURES).map(([name, figure]) => [name, [figure.width, figure.height]])) as Record<
@@ -17,7 +18,25 @@ export const FIGURE_SIZE = Object.fromEntries(Object.entries(FIGURES).map(([name
   [number, number]
 >;
 
-// A counter that ticks while `active`; figures derive their frames from it.
+// Two-frame swap in CSS (globals.css, "frame-swap"): frame A and frame B alternate.
+const swapA = (seconds: number) => ({ className: "ambient", style: { animation: `frame-swap ${seconds}s steps(1) infinite` } });
+const swapB = (seconds: number) => ({ className: "ambient", style: { animation: `frame-swap ${seconds}s steps(1) ${-seconds / 2}s infinite reverse` } });
+
+function subscribeVisibility(callback: () => void) {
+  document.addEventListener("visibilitychange", callback);
+  return () => document.removeEventListener("visibilitychange", callback);
+}
+
+// On screen, tab visible and motion allowed.
+function useLive<T extends Element>() {
+  const ref = useRef<T>(null);
+  const inView = useInView(ref, { margin: "120px" });
+  const { reduced } = useMotionPolicy();
+  const visible = useSyncExternalStore(subscribeVisibility, () => !document.hidden, () => true);
+  return { ref, live: inView && visible && !reduced, reduced };
+}
+
+// A counter that ticks while `active`; figures derive slow frame changes from it.
 function useTick(ms: number, active: boolean) {
   const [tick, setTick] = useState(0);
   useEffect(() => {
@@ -28,7 +47,8 @@ function useTick(ms: number, active: boolean) {
   return tick;
 }
 
-// Blinks at irregular intervals, sometimes twice in a row.
+// Blinks at irregular intervals, sometimes twice in a row. Opens the eyes again whenever
+// the figure stops being live, so it never stays frozen mid-blink.
 function useBlink(active: boolean) {
   const [closed, setClosed] = useState(false);
   useEffect(() => {
@@ -52,16 +72,12 @@ function useBlink(active: boolean) {
       }, 2200 + Math.random() * 3600);
     };
     schedule();
-    return () => window.clearTimeout(timer);
+    return () => {
+      window.clearTimeout(timer);
+      setClosed(false);
+    };
   }, [active]);
   return closed;
-}
-
-function useLive<T extends Element>() {
-  const ref = useRef<T>(null);
-  const inView = useInView(ref, { margin: "120px" });
-  const { reduced } = useMotionPolicy();
-  return { ref, live: inView && !reduced, reduced };
 }
 
 // ---------------------------------------------------------------------------------------
@@ -74,20 +90,23 @@ type PixelRobotProps = {
   watching?: boolean;
 };
 
-// The mascot: blinks, looks at the pointer, its antenna glows, it waves now and then and
-// while hovered, squints happily and hops when tapped.
+// The mascot: blinks, looks at the pointer (eyes move in whole art pixels), its antenna
+// glows, it waves now and then and while hovered, and hops when tapped.
 export function PixelRobot({ className, waves = false, watching = false }: PixelRobotProps) {
   const [scope, animate] = useAnimate<HTMLDivElement>();
   const inView = useInView(scope, { margin: "120px" });
   const { reduced } = useMotionPolicy();
-  const live = inView && !reduced;
+  const visible = useSyncExternalStore(subscribeVisibility, () => !document.hidden, () => true);
+  const live = inView && visible && !reduced;
   const blink = useBlink(live);
   const [waving, setWaving] = useState(false);
-  const [happy, setHappy] = useState(false);
-  const wave = waving || (happy && live);
-  const tick = useTick(170, live && wave);
-  const eyeX = useSpring(useMotionValue(0), { stiffness: 300, damping: 24 });
-  const eyeY = useSpring(useMotionValue(0), { stiffness: 300, damping: 24 });
+  const [hover, setHover] = useState(false);
+  const wave = live && (waving || hover);
+  const tick = useTick(170, wave);
+  const lookX = useMotionValue(0);
+  const lookY = useMotionValue(0);
+  const eyeX = useTransform(useSpring(lookX, { stiffness: 300, damping: 26 }), (value) => Math.round(value));
+  const eyeY = useTransform(useSpring(lookY, { stiffness: 300, damping: 26 }), (value) => Math.round(value));
 
   useEffect(() => {
     if (!waves || !live) return;
@@ -102,7 +121,10 @@ export function PixelRobot({ className, waves = false, watching = false }: Pixel
       }, 4200 + Math.random() * 3600);
     };
     loop();
-    return () => window.clearTimeout(timer);
+    return () => {
+      window.clearTimeout(timer);
+      setWaving(false);
+    };
   }, [waves, live]);
 
   useEffect(() => {
@@ -114,23 +136,27 @@ export function PixelRobot({ className, waves = false, watching = false }: Pixel
       const dy = event.clientY - (rect.top + rect.height * 0.35);
       const distance = Math.max(1, Math.hypot(dx, dy));
       const reach = Math.min(1, distance / 140);
-      eyeX.set((dx / distance) * reach * 1.4);
-      eyeY.set((dy / distance) * reach * 0.8);
+      lookX.set((dx / distance) * reach * 1.4);
+      lookY.set((dy / distance) * reach * 0.9);
     };
     window.addEventListener("pointermove", onMove);
-    return () => window.removeEventListener("pointermove", onMove);
-  }, [watching, live, eyeX, eyeY, scope]);
+    return () => {
+      window.removeEventListener("pointermove", onMove);
+      lookX.set(0);
+      lookY.set(0);
+    };
+  }, [watching, live, lookX, lookY, scope]);
 
   return (
     <motion.div
       ref={scope}
       className={className}
       whileHover={reduced ? undefined : { y: -4, transition: spring.ui }}
-      onHoverStart={() => setHappy(true)}
-      onHoverEnd={() => setHappy(false)}
+      onHoverStart={() => setHover(true)}
+      onHoverEnd={() => setHover(false)}
       onTap={() => {
         if (reduced || !scope.current) return;
-        animate(scope.current, { y: [0, -26, 0], scaleY: [1, 1.08, 0.9, 1] }, { duration: 0.55, ease: "easeOut" });
+        animate(scope.current, { y: [0, -26, 0] }, { duration: 0.5, ease: "easeOut" });
       }}
     >
       <PixelArt
@@ -139,11 +165,8 @@ export function PixelRobot({ className, waves = false, watching = false }: Pixel
         frames={{ arm: wave ? 2 + (tick % 2) : 1 }}
         parts={{
           antenna: { className: "ambient animate-glow" },
-          eyes: {
-            style: { x: eyeX, y: eyeY },
-            animate: { scaleY: blink ? 0.15 : happy ? 0.5 : 1 },
-            transition: { duration: 0.07 },
-          },
+          eyes: { hidden: blink, style: { x: eyeX, y: eyeY } },
+          lids: { hidden: !blink },
         }}
       />
     </motion.div>
@@ -152,27 +175,25 @@ export function PixelRobot({ className, waves = false, watching = false }: Pixel
 
 // ---------------------------------------------------------------------------------------
 
-// The rocket. The flame flickers; when `launching` it roars and the hull shakes.
+// The rocket. Its flame swaps between two frames; when `launching` it roars and the hull
+// shakes.
 export function PixelRocket({ className, launching = false }: { className?: string; launching?: boolean }) {
-  const { ref, live } = useLive<HTMLDivElement>();
-  const tick = useTick(launching ? 60 : 120, live);
-  const flicker = live ? [1, 0.82, 1.08, 0.9][tick % 4] : 1;
+  const { ref, live, reduced } = useLive<HTMLDivElement>();
+  const roar = { style: { originY: 0 }, animate: { scaleY: launching ? 2 : 1, scaleX: launching ? 1.2 : 1 }, transition: spring.ui };
+  const speed = launching ? 0.1 : 0.2;
   return (
     <motion.div
       ref={ref}
       className={className}
-      animate={launching && live ? { x: [0, -1, 1, -1, 0] } : { x: 0 }}
-      transition={launching ? { duration: 0.18, repeat: Infinity } : { duration: 0.2 }}
+      animate={launching && live ? { x: [0, -1.2, 0, 1.2, 0] } : { x: 0 }}
+      transition={launching ? { duration: 0.16, repeat: Infinity, ease: "easeInOut" } : { duration: 0.3, ease: "easeOut" }}
     >
       <PixelArt
         figure={FIGURES.rocket}
         className="size-full"
         parts={{
-          flame: {
-            style: { originY: 0 },
-            animate: { scaleY: (launching ? 2 : 1) * flicker, scaleX: launching ? 1.2 : 1 },
-            transition: { duration: 0.06 },
-          },
+          flame: { ...roar, ...swapA(speed), style: { ...roar.style, ...swapA(speed).style } },
+          "flame-b": reduced ? { hidden: true } : { ...roar, ...swapB(speed), style: { ...roar.style, ...swapB(speed).style } },
           window: { className: launching ? "ambient animate-glow" : undefined },
         }}
       />
@@ -182,20 +203,36 @@ export function PixelRocket({ className, launching = false }: { className?: stri
 
 // ---------------------------------------------------------------------------------------
 
-// The delivery drone: rotors spin, its camera eye looks around, the top light pulses and
-// the claw opens when `open`.
-export function PixelDrone({ className, open = false }: { className?: string; open?: boolean }) {
-  const { ref, live } = useLive<HTMLDivElement>();
-  const tick = useTick(70, live);
-  const look = live ? [0, 1, 1, 0, -1, -1, 0][Math.floor(tick / 20) % 7] : 0;
+const DRONE_LOOK = [0, 1, 1, 0, -1, -1, 0];
+
+// The isometric delivery drone. Rotors spin (two frames in CSS), the camera pupil looks
+// around in whole art pixels and the top light pulses; `open` spreads the claw's prongs.
+// `part` draws the body ("back") or only the prongs ("front"), so a block can hang
+// between them.
+export function PixelDrone({ className, open = false, part = "all" }: { className?: string; open?: boolean; part?: "all" | "back" | "front" }) {
+  const { ref, live, reduced } = useLive<HTMLDivElement>();
+  const tick = useTick(1400, live && part !== "front");
+  const look = live ? DRONE_LOOK[tick % DRONE_LOOK.length] : 0;
+  const disc = swapA(0.1);
+  const include = (layer: string) => {
+    if (layer === "cube") return false;
+    const prong = layer.startsWith("claw") && layer !== "claw-head";
+    return part === "all" || (part === "front" ? prong : !prong);
+  };
   return (
     <div ref={ref} className={className}>
       <PixelArt
         figure={FIGURES.drone}
         className="size-full"
-        frames={{ blade: live ? (tick % 2) + 1 : 1, claw: open ? 1 : 2 }}
+        include={include}
+        frames={{ claw: open ? 2 : 1 }}
         parts={{
-          pupil: { animate: { x: look }, transition: spring.ui },
+          "rotor-back": disc,
+          "rotor-left": disc,
+          "rotor-right": disc,
+          "rotor-front": disc,
+          "rotor-spin": reduced ? { hidden: true } : swapB(0.1),
+          pupil: { animate: { x: look }, transition: { duration: 0 } },
           light: { className: "ambient animate-glow" },
         }}
       />
@@ -205,26 +242,24 @@ export function PixelDrone({ className, open = false }: { className?: string; op
 
 // ---------------------------------------------------------------------------------------
 
-// A gamepad that plays itself: d-pad and buttons go down in a game-like rhythm, faster and
-// with a little wiggle while hovered.
+const GAMEPAD_PATTERN = ["dpad", "", "buttons", "buttons", "", "dpad", "select", "", "buttons", "dpad", "", ""];
+
+// A gamepad that plays itself: d-pad and buttons darken when pressed, in a game-like
+// rhythm, faster and with little hops while hovered.
 export function PixelGamepad({ className }: { className?: string }) {
   const { ref, live } = useLive<HTMLDivElement>();
   const [hover, setHover] = useState(false);
   const tick = useTick(hover ? 110 : 240, live);
-  const pattern = ["dpad", "", "buttons", "buttons", "", "dpad", "select", "", "buttons", "dpad", "", ""];
-  const pressed = live ? pattern[tick % pattern.length] : "";
-  const press = (name: string) => ({
-    animate: { y: pressed === name ? 0.6 : 0, opacity: pressed === name ? 0.7 : 1 },
-    transition: { duration: 0.05 },
-  });
+  const pressed = live ? GAMEPAD_PATTERN[tick % GAMEPAD_PATTERN.length] : "";
+  const press = (name: string) => ({ animate: { filter: pressed === name ? "brightness(0.55)" : "brightness(1)" }, transition: { duration: 0 } });
   return (
     <motion.div
       ref={ref}
       className={className}
       onHoverStart={() => setHover(true)}
       onHoverEnd={() => setHover(false)}
-      animate={hover && live ? { rotate: [0, -3, 3, 0] } : { rotate: 0 }}
-      transition={hover ? { duration: 0.4, repeat: Infinity } : spring.ui}
+      animate={hover && live ? { y: [0, -3, 0, -2, 0] } : { y: 0 }}
+      transition={hover ? { duration: 0.5, repeat: Infinity, ease: "easeOut" } : spring.ui}
     >
       <PixelArt
         figure={FIGURES.gamepad}
@@ -281,7 +316,7 @@ export function PixelCloud({ className }: { className?: string }) {
   return <PixelArt figure={FIGURES.cloud} className={className} parts={{ stars: { className: "ambient animate-twinkle" } }} />;
 }
 
-// A four-point star whose bright core pulses.
+// A four-point star that twinkles.
 export function PixelSparkle({ className, delay = 0 }: { className?: string; delay?: number }) {
   return (
     <span className={`ambient block animate-twinkle ${className ?? ""}`} style={{ animationDelay: `${delay}s` }} aria-hidden="true">
@@ -294,7 +329,7 @@ export function PixelSparkle({ className, delay = 0 }: { className?: string; del
 
 export type CompanionName = "robot-gamer" | "robot-coder" | "robot-phone" | "robot-ai" | "robot-astronaut";
 
-// A robot holding the tool of a section: its eyes blink and its sparks twinkle.
+// A robot holding the tool of a section: it blinks and its sparks twinkle.
 export function PixelCompanion({ name, className }: { name: CompanionName; className?: string }) {
   const { ref, live } = useLive<HTMLDivElement>();
   const blink = useBlink(live);
@@ -303,10 +338,7 @@ export function PixelCompanion({ name, className }: { name: CompanionName; class
       <PixelArt
         figure={FIGURES[name]}
         className="size-full"
-        parts={{
-          eyes: { animate: { scaleY: blink ? 0.15 : 1 }, transition: { duration: 0.07 } },
-          sparks: { className: "ambient animate-twinkle" },
-        }}
+        parts={{ eyes: { hidden: blink }, lids: { hidden: !blink }, sparks: { className: "ambient animate-twinkle" } }}
       />
     </div>
   );

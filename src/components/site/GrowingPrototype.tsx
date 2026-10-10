@@ -1,7 +1,7 @@
 "use client";
 
 import { animate, AnimatePresence, motion, useInView, useSpring, type Transition } from "motion/react";
-import { useCallback, useEffect, useMemo, useRef, useState, type MouseEvent, type PointerEvent } from "react";
+import { useEffect, useMemo, useRef, useState, type MouseEvent, type PointerEvent } from "react";
 import { spring } from "@/lib/motion";
 import { Mosaic } from "@/components/ui/Mosaic";
 import { PixelIcon } from "@/components/brand/PixelIcon";
@@ -18,14 +18,18 @@ import {
   cueOf,
   DEVICE_H,
   FRAME_PATH,
+  rewound,
   roughRect,
   settleTime,
   stepped,
   TRACE,
+  undo,
+  undoAt,
   WIRE_CONTENT,
   type Cue,
   type Step,
   type Trans,
+  type Undo,
 } from "./process/choreo";
 
 // One product grows through the four process steps (idea from the GPT-6.1 Sol review):
@@ -38,9 +42,12 @@ import {
 //   cursor types <Game /> which compiles into the gamepad, rows type their content;
 // - build → live: the button's progress fills, it flips to "live" with a check that draws
 //   itself, square confetti falls with gravity, the robot boards the rocket and it launches;
-// - going back rewinds quickly from the bottom up.
+// - going back rebuilds in reverse: the status goes, the colour gives way to the wireframe,
+//   and the sketch strokes return last.
+// Live, the product answers where it is clicked: a row opens a small detail, the button
+// sends one short message. Confetti belongs to the release alone.
 
-type Labels = { live: string; build: string };
+type Labels = { live: string; build: string; thanks: string };
 
 const CODE_AT = 0.74;
 const GAMEPAD_AT = 1.6;
@@ -68,47 +75,58 @@ const SCRIBBLES = {
 
 const FRAME_SKETCH = [roughRect(100, DEVICE_H, 41, 2.2), roughRect(100, DEVICE_H, 43, 2.2)];
 
-type Burst = { id: number; x: number; y: number; count: number; power: number };
+const BUTTON = BLOCKS[5];
+
+// True once `seconds` have passed in change `id` while `when` holds.
+function useLater(when: boolean, seconds: number, id: number) {
+  const [doneId, setDoneId] = useState(-1);
+  useEffect(() => {
+    if (!when) return;
+    const timer = setTimeout(() => setDoneId(id), seconds * 1000);
+    return () => clearTimeout(timer);
+  }, [when, seconds, id]);
+  return when && doneId === id;
+}
 
 export function GrowingPrototype({ step, labels }: { step: number; labels: Labels }) {
   const s = Math.max(0, Math.min(3, step)) as Step;
   const { reduced } = useMotionPolicy();
   const root = useRef<HTMLDivElement>(null);
   const stage = useRef<HTMLDivElement>(null);
-  const scrub = useRef<HTMLDivElement>(null);
+  const nudge = useRef<HTMLDivElement>(null);
   const inView = useInView(root, { margin: "0px 0px -10% 0px" });
 
-  // The change of step that is playing right now.
+  // The change of step that is playing right now. A change closes what was open live.
   const [shown, setShown] = useState<Step>(s);
   const [trans, setTrans] = useState<Trans | null>(null);
+  const [openRow, setOpenRow] = useState<number | null>(null);
+  const [note, setNote] = useState<{ id: number; x: number } | null>(null);
   if (s !== shown) {
     setShown(s);
     setTrans({ from: shown, to: s, id: (trans?.id ?? 0) + 1 });
+    setOpenRow(null);
+    setNote(null);
   }
-  const cue = useMemo(() => cueOf(trans, reduced), [trans, reduced]);
   const id = trans?.id ?? 0;
+  const change = useMemo(() => cueOf(trans, reduced), [trans, reduced]);
 
-  // Ambient loops start once the sequence has played, and only while the panel is visible.
+  // Each change ends explicitly once its sequence has played: the cue rests, one-off effects
+  // unmount, and ambient loops may start, only while the panel is visible.
   const [settledId, setSettledId] = useState(0);
   useEffect(() => {
-    const timer = setTimeout(() => setSettledId(id), settleTime(cue) * 1000);
+    const timer = setTimeout(() => setSettledId(id), settleTime(change) * 1000);
     return () => clearTimeout(timer);
-  }, [cue, id]);
-  const ambient = inView && !reduced && settledId === id;
+  }, [change, id]);
+  const settled = settledId === id;
+  const cue = useMemo<Cue>(() => (settled ? { ...change, mode: "rest" } : change), [change, settled]);
+  const ambient = inView && !reduced && settled;
 
-  // Square confetti bursts: one when it goes live, one per click on the live app.
-  const [bursts, setBursts] = useState<Burst[]>([]);
-  const burstId = useRef(0);
-  const addBurst = useCallback((burst: Omit<Burst, "id">) => {
-    const next = { ...burst, id: ++burstId.current };
-    setBursts((list) => [...list.slice(-3), next]);
-    setTimeout(() => setBursts((list) => list.filter((entry) => entry.id !== next.id)), 1900);
-  }, []);
-  useEffect(() => {
-    if (!arriving(cue, 3)) return;
-    const timer = setTimeout(() => addBurst({ x: 50, y: 118, count: 40, power: 1 }), LAUNCH_AT * 1000);
-    return () => clearTimeout(timer);
-  }, [cue, addBurst]);
+  // The build phase runs from the moment "Build läuft" shows until the button flips to live.
+  // Only then, and only on screen with full motion, does the spinner turn.
+  const labelIn = useLater(arriving(cue, 2), snapDelay(5) + 0.12, id);
+  const flipped = useLater(arriving(cue, 3), LIVE_AT - 0.06, id);
+  const building = arriving(cue, 2) ? labelIn : arriving(cue, 3) ? !flipped : s === 2;
+  const spinning = building && inView && !reduced;
 
   // Live: users join now and then, each with a notification badge on a row.
   const [joined, setJoined] = useState(3);
@@ -119,18 +137,12 @@ export function GrowingPrototype({ step, labels }: { step: number; labels: Label
     return () => clearInterval(timer);
   }, [liveLoop]);
 
-  // Whole-stage nudges: a VHS-like scrub when rewinding, a small snap when it gets built.
+  // A small snap of the whole stage when it gets built.
   useEffect(() => {
-    const element = scrub.current;
-    if (!element) return;
-    if (cue.mode === "back") {
-      const scrubbing = animate(element, { x: [0, -5, 4, -3, 2, 0] }, { duration: 0.42, ease: "linear" });
-      return () => scrubbing.complete();
-    }
-    if (arriving(cue, 2)) {
-      const snap = animate(element, { scale: [1, 1.025, 1] }, { delay: 0.3, duration: 0.3, ease: "easeOut" });
-      return () => snap.complete();
-    }
+    const element = nudge.current;
+    if (!element || !arriving(cue, 2)) return;
+    const snap = animate(element, { scale: [1, 1.025, 1] }, { delay: 0.3, duration: 0.3, ease: "easeOut" });
+    return () => snap.complete();
   }, [cue]);
 
   // The device leans towards the pointer.
@@ -147,18 +159,29 @@ export function GrowingPrototype({ step, labels }: { step: number; labels: Label
     tiltY.set(0);
   };
 
-  // A click on the live app: confetti from the pointer, a hop and one more user.
-  const celebrate = (event: MouseEvent<HTMLDivElement>) => {
-    if (s !== 3 || reduced || !stage.current) return;
-    const rect = stage.current.getBoundingClientRect();
-    const x = ((event.clientX - rect.left) / rect.width) * 100;
-    const y = ((event.clientY - rect.top) / rect.width) * 100;
-    addBurst({ x, y, count: 16, power: 0.75 });
-    setJoined((count) => count + 1);
-    if (scrub.current) animate(scrub.current, { y: [0, -9, 0] }, { duration: 0.42, ease: "easeOut" });
+  // Live, the product answers where it is clicked: a row opens its detail right below it,
+  // the button sends one short message from the spot it was pressed.
+  const live = s === 3;
+  const noteId = useRef(0);
+  const noteTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
+  useEffect(() => () => clearTimeout(noteTimer.current), []);
+  const pressRow = (row: number) => (event: MouseEvent<HTMLDivElement>) => {
+    event.stopPropagation();
+    setOpenRow((open) => (open === row ? null : row));
+  };
+  const pressButton = (event: MouseEvent<HTMLDivElement>) => {
+    event.stopPropagation();
+    const box = stage.current?.getBoundingClientRect();
+    const x = box ? ((event.clientX - box.left) / box.width) * 100 : 50;
+    noteId.current += 1;
+    setNote({ id: noteId.current, x: Math.min(74, Math.max(26, x)) });
+    clearTimeout(noteTimer.current);
+    noteTimer.current = setTimeout(() => setNote(null), 1700);
   };
 
-  const building = (s === 2 && ambient) || arriving(cue, 3);
+  // The device face: see-through on paper, half dark as a wireframe, solid once built.
+  const [faceFill, faceFillBack] = rewound(cue, ["rgba(11,15,23,0)", "rgba(11,15,23,0.55)", "rgba(11,15,23,1)", "rgba(11,15,23,1)"], s, { 2: 0.12, 1: 0.06 });
+  const [faceLine, faceLineBack] = rewound(cue, ["rgba(43,54,74,0)", "rgba(43,54,74,0)", "rgba(43,54,74,1)", "rgba(72,202,228,1)"], s, { 3: 0, 2: 0.12 });
 
   return (
     <div
@@ -173,19 +196,19 @@ export function GrowingPrototype({ step, labels }: { step: number; labels: Label
         className="absolute inset-0 -z-10 bg-[#f3f6fa]/[0.035]"
         initial={false}
         animate={{ opacity: s === 0 ? 1 : 0 }}
-        transition={at(cue, { 1: { delay: 0.6, duration: 0.8 } })}
+        transition={at(cue, { 1: { delay: 0.6, duration: 0.8 } }, undo(cue, 1, 0.06, 0.24))}
       />
       <motion.div
         className="absolute inset-0 -z-10 bg-[linear-gradient(to_right,rgba(144,224,239,0.08)_1px,transparent_1px),linear-gradient(to_bottom,rgba(144,224,239,0.08)_1px,transparent_1px)] bg-[size:24px_24px]"
         initial={false}
         animate={{ opacity: s <= 1 ? 1 : 0 }}
-        transition={at(cue, { 2: { delay: 0.18, duration: 0.5, ease: stepped(4) } })}
+        transition={at(cue, { 2: { delay: 0.18, duration: 0.5, ease: stepped(4) } }, undo(cue, 2, 0.04, 0.24))}
       />
       <motion.div
         className="absolute inset-0 -z-10"
         initial={false}
         animate={{ opacity: s >= 2 ? 1 : 0 }}
-        transition={at(cue, { 2: { delay: 0.18, duration: 0.6, ease: stepped(5) } })}
+        transition={at(cue, { 2: { delay: 0.18, duration: 0.6, ease: stepped(5) } }, undo(cue, 2, 0, 0.24))}
       >
         <Mosaic className="size-full" tile={28} from={0} to={3} seed={33} />
       </motion.div>
@@ -193,14 +216,14 @@ export function GrowingPrototype({ step, labels }: { step: number; labels: Label
       {/* The device sits a little low, leaving headroom for the pencil on the top edge. */}
       <div className="absolute inset-0 flex items-start justify-center pt-[15%] sm:pt-[7.6%]">
         <div ref={stage} className="@container relative aspect-[100/136] w-[56%] sm:w-[33%]">
-          <div ref={scrub} className="absolute inset-0">
+          <div ref={nudge} className="absolute inset-0">
             {/* The idea, while it is still a sketch. */}
             <motion.div
               className="absolute"
               style={{ left: u(-34), top: u(8), width: u(24) }}
               initial={false}
               animate={{ opacity: s === 0 ? 1 : 0, scale: s === 0 ? 1 : 0.4, y: s === 0 ? 0 : -24 }}
-              transition={at(cue, { 1: { duration: 0.35, ease: [0.5, 0, 0.75, 0] } }, { ...spring.playful, delay: 0.35 })}
+              transition={at(cue, { 1: { duration: 0.35, ease: [0.5, 0, 0.75, 0] } }, { ...spring.playful, delay: undoAt(cue, 1) + 0.12 })}
             >
               <motion.div
                 animate={ambient && s === 0 ? { y: [0, -5, 0] } : { y: 0 }}
@@ -228,7 +251,7 @@ export function GrowingPrototype({ step, labels }: { step: number; labels: Label
                   2: { x: { ...spring.playful, delay: 0.05 }, y: { delay: 0.05, duration: 0.5, ease: "easeOut" }, opacity: { delay: 0.05, duration: 0.15 } },
                   3: { delay: LAUNCH_AT - 0.05, duration: 0.3, ease: [0.5, 0, 0.75, 0] },
                 },
-                { duration: 0.25, delay: 0.05 },
+                { duration: 0.25, delay: undoAt(cue, 2) + 0.05 },
               )}
             >
               {/* Bobs along while it types the code. */}
@@ -266,18 +289,18 @@ export function GrowingPrototype({ step, labels }: { step: number; labels: Label
               </motion.div>
             )}
 
-            {/* The device. */}
+            {/* The device. A click beside the rows closes an open detail. */}
             <motion.div
-              className={`absolute inset-0 ${s === 3 ? "cursor-pointer" : ""}`}
+              className="absolute inset-0"
               style={{ rotateX: tiltX, rotateY: tiltY, transformPerspective: 900 }}
               initial={false}
               animate={{ rotate: s === 0 ? -2.5 : 0, y: s === 3 ? -8 : 0, scale: s === 3 ? 1.03 : 1 }}
               transition={{
-                rotate: at(cue, { 1: { ...spring.playful, delay: 0.05 } }, { ...spring.ui, delay: 0.3 }),
-                y: at(cue, { 3: { ...spring.playful, delay: LIVE_AT } }, spring.ui),
-                scale: at(cue, { 3: { ...spring.playful, delay: LIVE_AT } }, spring.ui),
+                rotate: at(cue, { 1: { ...spring.playful, delay: 0.05 } }, { ...spring.ui, delay: undoAt(cue, 1) + 0.06 }),
+                y: at(cue, { 3: { ...spring.playful, delay: LIVE_AT } }, { ...spring.ui, delay: undoAt(cue, 3) }),
+                scale: at(cue, { 3: { ...spring.playful, delay: LIVE_AT } }, { ...spring.ui, delay: undoAt(cue, 3) }),
               }}
-              onClick={celebrate}
+              onClick={live && openRow !== null ? () => setOpenRow(null) : undefined}
             >
               {/* Hard pixel shadow that grows as it lifts off. */}
               <motion.div
@@ -285,17 +308,22 @@ export function GrowingPrototype({ step, labels }: { step: number; labels: Label
                 style={{ borderRadius: u(8) }}
                 initial={false}
                 animate={{ opacity: s >= 2 ? 1 : 0, x: s === 3 ? "3.5%" : "0%", y: s === 3 ? "2.6%" : "0%" }}
-                transition={at(cue, { 2: { delay: 0.3, duration: 0 }, 3: { ...spring.playful, delay: LIVE_AT } }, { delay: 0.3, duration: 0.12, ease: stepped(2) })}
+                transition={at(
+                  cue,
+                  { 2: { delay: 0.3, duration: 0 }, 3: { ...spring.playful, delay: LIVE_AT } },
+                  { ...undo(cue, 3), opacity: undo(cue, 2, 0.12, 0) },
+                )}
               />
               <motion.div
                 className="absolute inset-0 border-solid"
                 style={{ borderRadius: u(8), borderWidth: u(0.9) }}
                 initial={false}
-                animate={{
-                  backgroundColor: s === 0 ? "rgba(11,15,23,0)" : s === 1 ? "rgba(11,15,23,0.55)" : "rgba(11,15,23,1)",
-                  borderColor: s <= 1 ? "rgba(43,54,74,0)" : s === 2 ? "rgba(43,54,74,1)" : "rgba(72,202,228,1)",
-                }}
-                transition={at(cue, { 1: { delay: 0.7, duration: 0.6 }, 2: { delay: 0.3, duration: 0 }, 3: { delay: LIVE_AT, duration: 0 } }, { delay: 0.3, duration: 0.12, ease: stepped(2) })}
+                animate={{ backgroundColor: faceFill, borderColor: faceLine }}
+                transition={
+                  faceFillBack && faceLineBack
+                    ? { backgroundColor: faceFillBack, borderColor: faceLineBack }
+                    : at(cue, { 1: { delay: 0.7, duration: 0.6 }, 2: { delay: 0.3, duration: 0 }, 3: { delay: LIVE_AT, duration: 0 } })
+                }
               />
 
               {/* Wireframe: a faint scan line passes now and then. */}
@@ -311,35 +339,42 @@ export function GrowingPrototype({ step, labels }: { step: number; labels: Label
                 </motion.div>
               </div>
 
-              {BLOCKS.map((spec, index) => (
-                <Block
-                  key={spec.id}
-                  spec={spec}
-                  index={index}
-                  step={s}
-                  cue={cue}
-                  boil={ambient && s === 0}
-                  build={spec.id === "hero" ? "#023e8a" : spec.id.startsWith("row") ? "#1a2231" : "#0077b6"}
-                  live={spec.id === "button" ? "#48cae4" : undefined}
-                  liveAt={LIVE_AT}
-                  flips={spec.id === "button"}
-                  scribble={spec.id === "header" ? SCRIBBLES.header : spec.id === "hero" ? SCRIBBLES.hero : spec.id === "button" ? SCRIBBLES.button : SCRIBBLES.rows[index - 2]}
-                >
-                  {spec.id === "header" && <HeaderContent step={s} cue={cue} ambient={liveLoop} joined={joined} />}
-                  {spec.id === "hero" && <HeroContent step={s} cue={cue} id={id} />}
-                  {spec.id.startsWith("row") && (
-                    <RowContent row={index - 2} step={s} cue={cue} ambient={ambient} joined={liveLoop && joined > 3 ? joined : 0} />
-                  )}
-                  {spec.id === "button" && <ButtonContent step={s} cue={cue} labels={labels} spinning={building} id={id} />}
-                </Block>
-              ))}
+              {BLOCKS.map((spec, index) => {
+                const row = spec.id.startsWith("row") ? index - 2 : null;
+                return (
+                  <Block
+                    key={spec.id}
+                    spec={spec}
+                    index={index}
+                    step={s}
+                    cue={cue}
+                    boil={ambient && s === 0}
+                    build={spec.id === "hero" ? "#023e8a" : row !== null ? "#1a2231" : "#0077b6"}
+                    live={spec.id === "button" ? "#48cae4" : undefined}
+                    liveAt={LIVE_AT}
+                    flips={spec.id === "button"}
+                    scribble={spec.id === "header" ? SCRIBBLES.header : spec.id === "hero" ? SCRIBBLES.hero : spec.id === "button" ? SCRIBBLES.button : SCRIBBLES.rows[index - 2]}
+                    onPress={!live ? undefined : row !== null ? pressRow(row) : spec.id === "button" ? pressButton : undefined}
+                    pressed={live && row !== null && openRow === row}
+                  >
+                    {spec.id === "header" && <HeaderContent step={s} cue={cue} ambient={liveLoop} joined={joined} />}
+                    {spec.id === "hero" && <HeroContent step={s} cue={cue} id={id} />}
+                    {row !== null && <RowContent row={row} step={s} cue={cue} ambient={ambient} joined={liveLoop && joined > 3 ? joined : 0} />}
+                    {spec.id === "button" && <ButtonContent step={s} cue={cue} labels={labels} spinning={spinning} id={id} />}
+                  </Block>
+                );
+              })}
+
+              {/* Live: the detail of the clicked row, and the button's message. */}
+              <AnimatePresence>{live && openRow !== null && <RowDetail key={`detail-${openRow}`} row={openRow} />}</AnimatePresence>
+              <AnimatePresence>{live && note && <Note key={`note-${note.id}`} x={note.x} text={labels.thanks} />}</AnimatePresence>
 
               {/* Device outline, effects and the pencil, in device units. */}
               <svg viewBox={`0 0 100 ${DEVICE_H}`} className="pointer-events-none absolute inset-0 size-full overflow-visible" aria-hidden="true">
                 <motion.g
                   initial={false}
                   animate={{ opacity: s === 0 ? 1 : 0 }}
-                  transition={at(cue, { 1: { delay: TRACE.start, duration: TRACE.duration } }, { duration: 0.2, delay: 0.3 })}
+                  transition={at(cue, { 1: { delay: TRACE.start, duration: TRACE.duration } }, undo(cue, 1, 0.14, 0.1))}
                   fill="none"
                   stroke="#caf0f8"
                   strokeOpacity={0.75}
@@ -364,8 +399,8 @@ export function GrowingPrototype({ step, labels }: { step: number; labels: Label
                   initial={false}
                   animate={{ pathLength: s >= 1 ? 1 : 0, opacity: s >= 2 ? 0 : 1, stroke: arriving(cue, 1) ? ["#caf0f8", "#caf0f8", WIRE] : WIRE }}
                   transition={{
-                    pathLength: at(cue, { 1: { delay: TRACE.start, duration: TRACE.duration, ease: "linear" } }, { duration: 0.3, delay: 0.3 }),
-                    opacity: at(cue, { 2: { delay: 0.3, duration: 0 } }, { duration: 0.1, delay: 0.3 }),
+                    pathLength: at(cue, { 1: { delay: TRACE.start, duration: TRACE.duration, ease: "linear" } }, undo(cue, 1, 0.04, 0.2)),
+                    opacity: at(cue, { 2: { delay: 0.3, duration: 0 } }, undo(cue, 2, 0.12, 0)),
                     stroke: arriving(cue, 1) ? { delay: TRACE.start, duration: TRACE.duration + 0.8, times: [0, 0.6, 1] } : { duration: 0 },
                   }}
                 />
@@ -377,28 +412,26 @@ export function GrowingPrototype({ step, labels }: { step: number; labels: Label
               </svg>
             </motion.div>
 
-            {/* Confetti and smoke over everything, not tilted with the device. */}
+            {/* Release confetti and smoke over everything, not tilted with the device. */}
             <svg viewBox={`0 0 100 ${DEVICE_H}`} className="pointer-events-none absolute inset-0 size-full overflow-visible" aria-hidden="true">
               {arriving(cue, 3) && <Smoke key={`smoke-${id}`} x={117.5} y={132} delay={LAUNCH_AT + 0.3} seed={id} />}
               {arriving(cue, 3) && <Smoke key={`lift-${id}`} x={117.5} y={132} delay={LAUNCH_AT + 0.74} seed={id + 7} />}
-              {bursts.map((burst) => (
-                <Confetti key={burst.id} x={burst.x} y={burst.y} seed={burst.id * 31} count={burst.count} power={burst.power} />
-              ))}
+              {arriving(cue, 3) && <Confetti key={`release-${id}`} x={50} y={118} seed={id * 31} count={40} delay={LAUNCH_AT} />}
             </svg>
           </div>
         </div>
       </div>
 
-      {/* Rewind sign while it runs back to an earlier step. */}
+      {/* Rewind sign while it rebuilds back to an earlier step. */}
       {cue.mode === "back" && (
         <motion.div
           key={`rewind-${id}`}
           className="absolute left-3 top-3 flex items-center rounded-[var(--radius-control)] border border-line-strong bg-raised px-2 py-1.5"
           initial={{ opacity: 0, x: -6 }}
           animate={{ opacity: [0, 1, 1, 0], x: [-6, 0, 0, 0] }}
-          transition={{ duration: 0.9, times: [0, 0.15, 0.75, 1] }}
+          transition={{ duration: settleTime(cue) - 0.02, times: [0, 0.2, 0.75, 1] }}
         >
-          <motion.span animate={{ x: [0, -3, 0, -3, 0] }} transition={{ duration: 0.6, ease: stepped(4) }} className="block">
+          <motion.span animate={{ x: [0, -3, 0, -3, 0] }} transition={{ duration: 0.4, ease: stepped(4) }} className="block">
             <PixelRewind className="block h-[15px] w-[27px]" />
           </motion.span>
         </motion.div>
@@ -409,14 +442,14 @@ export function GrowingPrototype({ step, labels }: { step: number; labels: Label
 
 type PartProps = { step: Step; cue: Cue };
 
-// Small helper for a placeholder that exists only in the wireframe.
+// Wireframe placeholders come in with the trace and go again when the sketch returns.
 function wireIn(cue: Cue, delay: number, block: number): Transition {
-  return at(cue, { 1: { delay, duration: 0.24, ease: stepped(4) } }, rewind(block, 0.04));
+  return at(cue, { 1: { delay, duration: 0.24, ease: stepped(4) } }, rewind(cue, 1, block));
 }
 
-// Going back, contents run back together with their block, bottom to top.
-function rewind(block: number, extra = 0): Transition {
-  return { delay: backDelay(block) + extra, duration: 0.12, ease: stepped(3) };
+// Going back, contents change in the undo of step `k`, together with their block.
+function rewind(cue: Cue, k: Undo, block: number, extra = 0): Transition {
+  return undo(cue, k, backDelay(block) + extra, 0.12);
 }
 
 function HeaderContent({ step, cue, ambient, joined }: PartProps & { ambient: boolean; joined: number }) {
@@ -435,8 +468,8 @@ function HeaderContent({ step, cue, ambient, joined }: PartProps & { ambient: bo
         }}
         transition={{
           opacity: wireIn(cue, WIRE_CONTENT, 0),
-          scale: at(cue, { 1: { ...spring.playful, delay: WIRE_CONTENT }, 2: { delay: snap + 0.08, duration: 0.3 } }, rewind(0)),
-          backgroundColor: at(cue, { 2: { delay: snap + 0.08, duration: 0 } }, rewind(0)),
+          scale: at(cue, { 1: { ...spring.playful, delay: WIRE_CONTENT }, 2: { delay: snap + 0.08, duration: 0.3 } }, rewind(cue, 1, 0)),
+          backgroundColor: at(cue, { 2: { delay: snap + 0.08, duration: 0 } }, rewind(cue, 2, 0)),
         }}
       />
       <motion.span
@@ -448,22 +481,22 @@ function HeaderContent({ step, cue, ambient, joined }: PartProps & { ambient: bo
           backgroundColor: step >= 2 ? "rgba(243,246,250,0.85)" : WIRE,
         }}
         transition={{
-          scaleX: at(cue, { 1: { delay: WIRE_CONTENT + 0.04, duration: 0.24, ease: stepped(4) }, 2: { delay: snap + 0.12, duration: 0.3, ease: stepped(5) } }, rewind(0)),
-          backgroundColor: at(cue, { 2: { delay: snap + 0.1, duration: 0 } }, rewind(0)),
+          scaleX: at(cue, { 1: { delay: WIRE_CONTENT + 0.04, duration: 0.24, ease: stepped(4) }, 2: { delay: snap + 0.12, duration: 0.3, ease: stepped(5) } }, rewind(cue, 1, 0)),
+          backgroundColor: at(cue, { 2: { delay: snap + 0.1, duration: 0 } }, rewind(cue, 2, 0)),
         }}
       />
 
-      {/* Live: an online light and the people using it. */}
+      {/* Live: an online light and the people using it. Both go first when it rewinds. */}
       <motion.span
         className="absolute"
         style={{ left: u(79), top: u(3.5), width: u(3), height: u(3) }}
         initial={false}
         animate={{ opacity: step === 3 ? 1 : 0, scale: step === 3 ? 1 : 0 }}
-        transition={at(cue, { 3: { ...spring.playful, delay: LAUNCH_AT + 0.2 } })}
+        transition={at(cue, { 3: { ...spring.playful, delay: LAUNCH_AT + 0.2 } }, undo(cue, 3, 0, 0.1))}
       >
-        <span className="absolute inset-0 bg-success" />
+        <span className="absolute inset-0 bg-ocean-300" />
         <motion.span
-          className="absolute inset-0 border-success"
+          className="absolute inset-0 border-ocean-300"
           style={{ borderWidth: u(0.5) }}
           animate={ambient ? { scale: [1, 2.4], opacity: [0.9, 0] } : { scale: 1, opacity: 0 }}
           transition={ambient ? { duration: 1.4, repeat: Infinity, ease: "easeOut" } : { duration: 0 }}
@@ -474,7 +507,7 @@ function HeaderContent({ step, cue, ambient, joined }: PartProps & { ambient: bo
         style={{ right: u(9.5), top: u(2), height: u(6) }}
         initial={false}
         animate={{ opacity: step === 3 ? 1 : 0 }}
-        transition={at(cue, { 3: { delay: LAUNCH_AT + 0.45, duration: 0.2 } })}
+        transition={at(cue, { 3: { delay: LAUNCH_AT + 0.45, duration: 0.2 } }, undo(cue, 3, 0, 0.1))}
       >
         <AnimatePresence initial={false} mode="popLayout">
           {users.map((user, index) => (
@@ -499,6 +532,8 @@ function HeaderContent({ step, cue, ambient, joined }: PartProps & { ambient: bo
 
 function HeroContent({ step, cue, id }: PartProps & { id: number }) {
   const snap = snapDelay(1);
+  // The placeholder cross belongs to the wireframe alone, so a rewind from colour shows it once.
+  const [cross, crossBack] = rewound(cue, [0, 1, 0, 0], step, backDelay(1));
   return (
     <>
       {/* Wireframe image placeholder. */}
@@ -511,10 +546,10 @@ function HeroContent({ step, cue, id }: PartProps & { id: number }) {
             strokeOpacity={0.6}
             strokeWidth={0.6}
             initial={false}
-            animate={{ pathLength: step >= 1 ? 1 : 0, opacity: step === 1 ? 1 : 0 }}
+            animate={{ pathLength: step >= 1 ? 1 : 0, opacity: cross }}
             transition={{
-              pathLength: at(cue, { 1: { delay: WIRE_CONTENT + index * 0.1, duration: 0.3, ease: "easeOut" } }, rewind(1, 0.04)),
-              opacity: at(cue, { 1: { duration: 0 }, 2: { delay: snap, duration: 0 } }, rewind(1, 0.04)),
+              pathLength: at(cue, { 1: { delay: WIRE_CONTENT + index * 0.1, duration: 0.3, ease: "easeOut" } }, rewind(cue, 1, 1, 0.02)),
+              opacity: crossBack ?? at(cue, { 1: { duration: 0 }, 2: { delay: snap, duration: 0 } }),
             }}
           />
         ))}
@@ -527,7 +562,7 @@ function HeroContent({ step, cue, id }: PartProps & { id: number }) {
         className="absolute inset-0 flex items-center justify-center"
         initial={false}
         animate={{ opacity: step >= 2 ? 1 : 0, scale: step >= 2 ? 1 : 0 }}
-        transition={at(cue, { 2: { type: "spring", stiffness: 480, damping: 17, delay: GAMEPAD_AT, opacity: { duration: 0.05, delay: GAMEPAD_AT } } }, rewind(1))}
+        transition={at(cue, { 2: { type: "spring", stiffness: 480, damping: 17, delay: GAMEPAD_AT, opacity: { duration: 0.05, delay: GAMEPAD_AT } } }, rewind(cue, 2, 1))}
       >
         <PixelIcon name="gamepad" className="h-[78%] w-auto" />
       </motion.span>
@@ -574,6 +609,7 @@ function RowContent({ row, step, cue, ambient, joined }: PartProps & { row: numb
   const typeAt = ROWS_AT + row * 0.1;
   const last = words[words.length - 1];
   const end = last[0] + last[1];
+  const [bar, barBack] = rewound(cue, [1, 0.75, 0, 0], step, backDelay(blockIndex));
   return (
     <>
       <motion.span
@@ -587,8 +623,8 @@ function RowContent({ row, step, cue, ambient, joined }: PartProps & { row: numb
         }}
         transition={{
           opacity: wireIn(cue, WIRE_CONTENT + 0.1 + row * 0.06, blockIndex),
-          scale: at(cue, { 2: { delay: typeAt - 0.06, duration: 0.3 } }, rewind(blockIndex)),
-          backgroundColor: at(cue, { 2: { delay: typeAt - 0.06, duration: 0 } }, { duration: 0, delay: backDelay(blockIndex) }),
+          scale: at(cue, { 2: { delay: typeAt - 0.06, duration: 0.3 } }, rewind(cue, 2, blockIndex)),
+          backgroundColor: at(cue, { 2: { delay: typeAt - 0.06, duration: 0 } }, rewind(cue, 2, blockIndex)),
         }}
       />
       {/* Wireframe text bar, typed over by the real words. */}
@@ -596,10 +632,10 @@ function RowContent({ row, step, cue, ambient, joined }: PartProps & { row: numb
         className="absolute origin-left"
         style={{ left: u(12), top: u(4.5), width: u(end - 12), height: u(2), backgroundColor: WIRE }}
         initial={false}
-        animate={{ scaleX: step >= 1 ? 1 : 0, opacity: step === 1 ? 0.75 : step === 0 ? 1 : 0 }}
+        animate={{ scaleX: step >= 1 ? 1 : 0, opacity: bar }}
         transition={{
           scaleX: wireIn(cue, WIRE_CONTENT + 0.12 + row * 0.06, blockIndex),
-          opacity: at(cue, { 2: { delay: snap + 0.02, duration: 0.15, ease: stepped(2) } }, rewind(blockIndex, 0.04)),
+          opacity: barBack ?? at(cue, { 2: { delay: snap + 0.02, duration: 0.15, ease: stepped(2) } }),
         }}
       />
       {words.map(([x, w], index) => (
@@ -609,7 +645,7 @@ function RowContent({ row, step, cue, ambient, joined }: PartProps & { row: numb
           style={{ left: u(x), top: u(4.5), width: u(w), height: u(2) }}
           initial={false}
           animate={{ scaleX: step >= 2 ? 1 : 0 }}
-          transition={at(cue, { 2: { delay: typeAt + index * 0.08, duration: 0.2, ease: stepped(3) } }, rewind(blockIndex))}
+          transition={at(cue, { 2: { delay: typeAt + index * 0.08, duration: 0.2, ease: stepped(3) } }, rewind(cue, 2, blockIndex))}
         />
       ))}
 
@@ -652,14 +688,15 @@ function RowContent({ row, step, cue, ambient, joined }: PartProps & { row: numb
 
 function ButtonContent({ step, cue, labels, spinning, id }: PartProps & { labels: Labels; spinning: boolean; id: number }) {
   const snap = snapDelay(5);
+  const [bar, barBack] = rewound(cue, [1, 0.8, 0, 0], step, backDelay(5));
   return (
     <>
       <motion.span
         className="absolute origin-left"
         style={{ left: u(30), top: u(5.3), width: u(26), height: u(2.4), backgroundColor: WIRE }}
         initial={false}
-        animate={{ scaleX: step >= 1 ? 1 : 0, opacity: step === 1 ? 0.8 : step === 0 ? 1 : 0 }}
-        transition={{ scaleX: wireIn(cue, WIRE_CONTENT + 0.32, 5), opacity: at(cue, { 2: { delay: snap + 0.05, duration: 0 } }, rewind(5, 0.04)) }}
+        animate={{ scaleX: step >= 1 ? 1 : 0, opacity: bar }}
+        transition={{ scaleX: wireIn(cue, WIRE_CONTENT + 0.32, 5), opacity: barBack ?? at(cue, { 2: { delay: snap + 0.05, duration: 0 } }) }}
       />
 
       {/* The build fills up before it flips to live. */}
@@ -679,7 +716,7 @@ function ButtonContent({ step, cue, labels, spinning, id }: PartProps & { labels
         style={{ fontSize: u(4.4), gap: u(2) }}
         initial={false}
         animate={{ opacity: step === 2 ? 1 : 0, y: step === 2 ? "0%" : step < 2 ? "60%" : "0%" }}
-        transition={at(cue, { 2: { ...spring.ui, delay: snap + 0.12 }, 3: { delay: LIVE_AT - 0.06, duration: 0 } })}
+        transition={at(cue, { 2: { ...spring.ui, delay: snap + 0.12 }, 3: { delay: LIVE_AT - 0.06, duration: 0 } }, undo(cue, 2, 0.06, 0.12))}
       >
         <Spinner spinning={spinning} />
         {labels.build}
@@ -690,7 +727,7 @@ function ButtonContent({ step, cue, labels, spinning, id }: PartProps & { labels
         style={{ fontSize: u(4.6), gap: u(2) }}
         initial={false}
         animate={{ opacity: step === 3 ? 1 : 0 }}
-        transition={at(cue, { 3: { delay: LIVE_AT - 0.06, duration: 0 } })}
+        transition={at(cue, { 3: { delay: LIVE_AT - 0.06, duration: 0 } }, undo(cue, 3, 0, 0))}
       >
         <svg viewBox="0 0 8 6" shapeRendering="crispEdges" style={{ width: u(5), height: u(3.75) }} aria-hidden="true">
           {CHECK_PIXELS.map(({ x, y }) => (
@@ -733,5 +770,90 @@ function Spinner({ spinning }: { spinning: boolean }) {
         />
       ))}
     </span>
+  );
+}
+
+// Live: the detail of a row unfolds right below it, over the rows beneath. It shows the
+// row's item larger: its icon, two lines of text, who is on it and how far it has come.
+const DETAIL_LINES = [
+  { y: 3.6, w: 34, tone: "bg-fg/70" },
+  { y: 7.4, w: 22, tone: "bg-fg/35" },
+];
+
+function RowDetail({ row }: { row: number }) {
+  const spec = BLOCKS[row + 2];
+  const { icon } = ROWS[row];
+  return (
+    <motion.div
+      className="absolute origin-top border-solid border-ocean-300 bg-raised"
+      style={{
+        left: u(spec.x + 1.5),
+        top: u(spec.y + spec.h + 1.4),
+        width: u(spec.w - 3),
+        height: u(17),
+        borderWidth: u(0.5),
+        borderRadius: u(2.4),
+        boxShadow: `${u(1.2)} ${u(1.2)} 0 #03045e`,
+      }}
+      initial={{ scaleY: 0, opacity: 0 }}
+      animate={{ scaleY: 1, opacity: 1 }}
+      exit={{ scaleY: 0, opacity: 0, transition: { duration: 0.12, ease: stepped(2) } }}
+      transition={{ scaleY: spring.ui, opacity: { duration: 0.08 } }}
+      onClick={(event) => event.stopPropagation()}
+    >
+      <motion.span
+        className="absolute"
+        style={{ left: u(3), top: u(3), width: u(7), height: u(7), backgroundColor: icon }}
+        initial={{ scale: 0 }}
+        animate={{ scale: 1 }}
+        transition={{ ...spring.playful, delay: 0.06 }}
+      />
+      {DETAIL_LINES.map(({ y, w, tone }, index) => (
+        <motion.span
+          key={index}
+          className={`absolute origin-left ${tone}`}
+          style={{ left: u(13), top: u(y), width: u(w), height: u(2) }}
+          initial={{ scaleX: 0 }}
+          animate={{ scaleX: 1 }}
+          transition={{ delay: 0.08 + index * 0.06, duration: 0.18, ease: stepped(3) }}
+        />
+      ))}
+      <span className="absolute block bg-ocean-950" style={{ right: u(3), top: u(3), width: u(7), height: u(7), outline: `${u(0.5)} solid #0077b6` }}>
+        <PixelUser look={row + 1} className="block size-full" />
+      </span>
+      <span className="absolute bg-line-strong" style={{ left: u(3), right: u(3), top: u(12.6), height: u(1.6) }}>
+        <motion.span
+          className="absolute inset-y-0 left-0 w-full origin-left"
+          style={{ backgroundColor: icon }}
+          initial={{ scaleX: 0 }}
+          animate={{ scaleX: [0.35, 0.6, 0.85][row] }}
+          transition={{ delay: 0.14, duration: 0.36, ease: stepped(6) }}
+        />
+      </span>
+    </motion.div>
+  );
+}
+
+// Live: one short message pops up from the spot where the button was pressed.
+function Note({ x, text }: { x: number; text: string }) {
+  return (
+    <div className="pointer-events-none absolute -translate-x-1/2 -translate-y-full" style={{ left: u(x), top: u(BUTTON.y - 1.6) }}>
+      <motion.div
+        className="relative flex origin-bottom items-center whitespace-nowrap bg-ocean-100 font-semibold text-ocean-950"
+        style={{ fontSize: u(4.2), gap: u(1.6), padding: `${u(1.4)} ${u(2.4)} ${u(1.4)} ${u(1.6)}`, borderRadius: u(1.6) }}
+        initial={{ opacity: 0, y: "40%", scale: 0.6 }}
+        animate={{ opacity: 1, y: "0%", scale: 1 }}
+        exit={{ opacity: 0, y: "-30%", transition: { duration: 0.16, ease: "easeIn" } }}
+        transition={spring.playful}
+      >
+        <span className="block bg-ocean-950" style={{ width: u(5), height: u(5) }}>
+          <PixelUser look={2} className="block size-full" />
+        </span>
+        {text}
+        {/* A stepped pixel tail points down at the spot. */}
+        <span className="absolute left-1/2 top-full -translate-x-1/2 bg-ocean-100" style={{ width: u(2.4), height: u(1.2) }} />
+        <span className="absolute left-1/2 -translate-x-1/2 bg-ocean-100" style={{ top: `calc(100% + ${u(1.2)})`, width: u(1.2), height: u(1.2) }} />
+      </motion.div>
+    </div>
   );
 }

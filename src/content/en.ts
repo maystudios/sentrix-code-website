@@ -123,17 +123,40 @@ export const en: Dictionary = {
     cta: "Ask about a similar project",
     items: [
       {
-        tab: "Games",
-        client: "Learning game for an educational publisher",
-        title: "A maths game children keep playing on their own.",
-        text: "The publisher wanted practice exercises to feel like play. We built a tablet puzzle game that turns curriculum tasks into levels, and teachers can follow their class's progress.",
-        quote: "The kids ask for the next level, not for the end of the lesson.",
-        role: "Head of product, educational publisher",
+        tab: "Heistline",
+        client: "Emotions-Gaming, an independent studio from Germany",
+        title: "Heistline: cops against criminals, played by real people.",
+        text: "Heistline is a heist MMO: one side plans breakouts and robberies, the other hunts them down, in co-op and head to head. We worked on its development. The game is free to play and announced on Steam.",
         icon: "gamepad",
-        example: true,
+        kind: "game",
+        reference: {
+          facts: ["Multiplayer: co-op and PvP", "Free to play", "Steam, Windows", "German and English"],
+          image: { src: "/images/work/heistline-vault.webp", alt: "Scene from Heistline: a masked robber stacks cash in the vault while an accomplice comes through the open vault door", width: 1600, height: 517 },
+          links: [
+            { label: "Heistline on Steam", href: "https://store.steampowered.com/app/3613860/Heistline/" },
+            { label: "heistline.de", href: "https://heistline.de/" },
+          ],
+        },
+      },
+      {
+        tab: "Mr. Dork 3",
+        client: "MayStudios and Simsalabim Studio",
+        title: "Mr. Dork 3: a platformer on notebook paper.",
+        text: "Mr. Dork 3: One Last Doodle is a 2D platformer with puzzles, built in Unreal Engine. A stick figure jumps across rulers and pencils: 30 levels, two-player co-op, split-screen battles and endless levels. The game is announced on Steam, more platforms will follow.",
+        icon: "gamepad",
+        kind: "game",
+        reference: {
+          facts: ["Unreal Engine", "Co-op and split screen", "30 levels", "Steam, Windows"],
+          image: { src: "/images/work/mrdork3-level.webp", alt: "Level from Mr. Dork 3: a stick figure jumps across rulers and pencils on lined paper towards the goal flag", width: 1600, height: 900 },
+          links: [
+            { label: "Mr. Dork 3 on Steam", href: "https://store.steampowered.com/app/3274870/Mr_Dork_3_One_Last_Doodle/" },
+            { label: "mrdork3.com", href: "https://mrdork3.com/" },
+          ],
+        },
       },
       {
         tab: "Mid-sized",
+        kind: "software",
         client: "Machine builder from the Bergisches Land region",
         title: "A customer portal replaces spreadsheets and status calls.",
         text: "Orders, delivery dates and spare parts lived in three systems. We built a portal that pulls the data from the ERP and lets customers check their order status themselves.",
@@ -144,6 +167,7 @@ export const en: Dictionary = {
       },
       {
         tab: "Apps",
+        kind: "apps",
         client: "Gym chain with twelve locations",
         title: "Booking a class takes two taps instead of a queue at the desk.",
         text: "The chain wanted its own app rather than a third-party booking platform. We built it with Flutter for iOS and Android and connected it to the existing membership system.",
@@ -154,6 +178,7 @@ export const en: Dictionary = {
       },
       {
         tab: "AI",
+        kind: "ai",
         client: "Online retailer for spare parts",
         title: "An AI assistant handles the routine questions in customer service.",
         text: "Many requests were about fit and delivery. Our assistant answers from product data and manuals and hands difficult cases to the team with everything they need.",
@@ -166,7 +191,7 @@ export const en: Dictionary = {
   },
   process: {
     title: "How we work.",
-    prototype: { live: "Live", build: "Building" },
+    prototype: { live: "Live", build: "Building", thanks: "Thanks!", play: "Resume automatic steps", pause: "Pause automatic steps" },
     intro: "You see interim results and help decide what comes next.",
     steps: [
       {

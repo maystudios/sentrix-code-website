@@ -32,15 +32,27 @@ export type ServiceMockups = {
 // Hand-drawn pixel icons (src/components/brand/PixelIcon.tsx).
 export type IconName = "idea" | "concept" | "prototype" | "design" | "code" | "test" | "rocket" | "chip" | "server" | "phone" | "gamepad" | "robot";
 
+// A real project we worked on: facts from public sources, official images, links.
+export type CaseReference = {
+  facts: string[];
+  image: { src: string; alt: string; width: number; height: number };
+  links: { label: string; href: string }[];
+};
+
+// Practice cases. Invented examples carry `example: true` and a quote; real references
+// carry `reference` and never an invented quote (WEBSITE.md, "Wahrheit vor Wirkung").
 export type CaseItem = {
   tab: string;
   client: string;
   title: string;
   text: string;
-  quote: string;
-  role: string;
   icon: IconName;
-  example: true;
+  // Which service page shows this case.
+  kind: ServiceVisualKind;
+  quote?: string;
+  role?: string;
+  reference?: CaseReference;
+  example?: true;
 };
 
 export type ProcessStep = {
@@ -82,7 +94,7 @@ export type Dictionary = {
   positioning: string;
   services: { title: string; items: ServiceItem[]; mockups: ServiceMockups };
   cases: { title: string; cta: string; items: CaseItem[] };
-  process: { title: string; intro: string; steps: ProcessStep[]; prototype: { live: string; build: string } };
+  process: { title: string; intro: string; steps: ProcessStep[]; prototype: { live: string; build: string; thanks: string; play: string; pause: string } };
   faq: { title: string; items: FaqItem[]; more: { title: string; text: string; cta: string } };
   contact: {
     title: string;

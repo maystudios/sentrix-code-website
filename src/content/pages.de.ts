@@ -295,7 +295,7 @@ export const pagesDe: Pages = {
       intro:
         "Gegründet 2026 von Luca Finn Wiegand und Sven Fredrik Maibaum in Monheim am Rhein. Wir entwickeln Spiele, Software, Apps und KI im Auftrag.",
       scene: "/images/scenes/team",
-      sceneAlt: "Pixel-Szene: zwei Entwickler an Schreibtischen, dazwischen der Roboter, im Fenster ein Fluss mit Brücke",
+      sceneAlt: "Pixel-Szene: ein kleines Studio mit zwei Schreibtischen, dazwischen winkt der Roboter, im Fenster ein Fluss mit Brücke",
     },
     story: {
       title: "Warum es uns gibt",

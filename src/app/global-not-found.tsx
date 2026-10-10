@@ -20,9 +20,9 @@ export default function GlobalNotFound() {
       <body className="min-h-full font-sans">
         <main className="relative flex min-h-[100svh] flex-col items-center justify-center overflow-hidden px-6 py-24 text-center">
           <img
-            src={asset("/images/scenes/404.webp")}
+            src={asset("/images/scenes/404.png")}
             alt=""
-            className="absolute inset-0 -z-10 size-full object-cover opacity-25"
+            className="absolute inset-0 -z-10 size-full object-cover opacity-25 [image-rendering:pixelated]"
           />
           <PixelCompanion name="robot-astronaut" className="ambient aspect-[29/35] w-32 animate-bob md:w-40" />
           <p className="mt-8 font-mono text-sm text-ocean-400">404</p>

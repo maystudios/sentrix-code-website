@@ -15,7 +15,7 @@ const BANDS = ["#00b4d8", "#0096c7", "#0077b6", "#023e8a"];
 type FooterProps = { dict: Dictionary; alternateHref?: string };
 
 // The big pixel logo rises out of the ocean bands as the page end comes into view and
-// sinks again when scrolling back up, with the robot sitting in the chevron.
+// sinks again when scrolling back up; the robot stands on the top line of the bands.
 export function Footer({ dict, alternateHref }: FooterProps) {
   const { pages } = dict;
   const { reduced } = useMotionPolicy();
@@ -79,20 +79,20 @@ export function Footer({ dict, alternateHref }: FooterProps) {
         </div>
       </div>
 
-      {/* Stage: the logo rises from behind the bands. */}
-      {/* Headroom above the logo for the robot and for blocks lifted by the wave. */}
-      <div ref={stage} aria-hidden="true" className="relative mt-4 h-[calc(min(78vw,640px)*0.477+clamp(64px,9vw,110px))] overflow-hidden">
+      {/* Stage: the logo rises from behind the bands, with a little headroom for blocks
+          lifted by the wave. */}
+      <div ref={stage} aria-hidden="true" className="relative mt-4 h-[calc(min(78vw,640px)*0.477+40px)] overflow-hidden">
         <motion.div className="absolute inset-x-0 bottom-0 flex justify-center" style={{ y: riseY }}>
           <div className="relative w-[min(78vw,640px)]">
             <PixelLogo />
-            {/* The robot keeps watch on the tip of the chevron's upper arm. */}
-            <div className="absolute bottom-full left-[21.6%] w-[9%]">
-              <PixelRobot className="aspect-[25/35] w-full" waves watching />
-            </div>
           </div>
         </motion.div>
       </div>
       <div aria-hidden="true" className="relative">
+        {/* The robot stands on the top line of the bands, beside the logo. */}
+        <div className="absolute bottom-full right-[9%] z-10 w-[clamp(34px,3.6vw,52px)] md:right-[14%]">
+          <PixelRobot className="aspect-[25/35] w-full" waves watching />
+        </div>
         {BANDS.map((color) => (
           <div key={color} className="h-6 md:h-7" style={{ background: color }} />
         ))}

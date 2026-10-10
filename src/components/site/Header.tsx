@@ -21,10 +21,10 @@ type HeaderProps = {
 };
 
 const SCENES: Record<ServiceVisualKind, string> = {
-  game: "/images/scenes/games-studio-800.webp",
-  software: "/images/scenes/server-room-800.webp",
-  apps: "/images/scenes/app-world-800.webp",
-  ai: "/images/scenes/ai-lab-800.webp",
+  game: "/images/scenes/games-studio.png",
+  software: "/images/scenes/server-room.png",
+  apps: "/images/scenes/app-world.png",
+  ai: "/images/scenes/ai-lab.png",
 };
 
 // Header with Mistral-style mega menus: hover or keyboard opens a panel, items carry
@@ -259,11 +259,11 @@ export function Header({ dict, alternateHref, isHome = false }: HeaderProps) {
                         key={preview}
                         src={asset(SCENES[preview])}
                         alt=""
-                        initial={{ opacity: 0, scale: 1.06 }}
-                        animate={{ opacity: 1, scale: 1 }}
+                        initial={{ opacity: 0, y: 8 }}
+                        animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0 }}
-                        transition={{ duration: 0.5, ease: ease.outExpo }}
-                        className="aspect-video w-full object-cover"
+                        transition={{ duration: 0.4, ease: ease.outExpo }}
+                        className="aspect-video w-full object-cover [image-rendering:pixelated]"
                       />
                     </AnimatePresence>
                     <span className="absolute inset-x-0 bottom-0 flex items-center justify-between bg-gradient-to-t from-base/95 to-transparent p-4 pt-10 text-sm">
