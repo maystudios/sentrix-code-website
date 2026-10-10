@@ -98,7 +98,7 @@ export type Dictionary = {
   positioning: string;
   services: { title: string; items: ServiceItem[]; mockups: ServiceMockups; apps: { title: string; items: AppShowcase[] } };
   cases: { title: string; cta: string; items: CaseItem[] };
-  process: { title: string; intro: string; steps: ProcessStep[]; prototype: { live: string; build: string; thanks: string; play: string; pause: string } };
+  process: { title: string; intro: string; steps: ProcessStep[]; prototype: { live: string; build: string; thanks: string; revenue: string; play: string; pause: string } };
   faq: { title: string; items: FaqItem[]; more: { title: string; text: string; cta: string } };
   contact: {
     title: string;

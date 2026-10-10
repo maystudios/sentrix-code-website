@@ -1,16 +1,28 @@
 "use client";
 
-import { animate, AnimatePresence, motion, useInView, useSpring, type Transition } from "motion/react";
-import { useEffect, useMemo, useRef, useState, type MouseEvent, type PointerEvent } from "react";
+import {
+  animate,
+  AnimatePresence,
+  motion,
+  useInView,
+  useMotionValue,
+  useSpring,
+  useTransform,
+  useVelocity,
+  type AnimationPlaybackControls,
+  type Transition,
+} from "motion/react";
+import { useCallback, useEffect, useMemo, useRef, useState, type MouseEvent, type PointerEvent } from "react";
 import { spring } from "@/lib/motion";
 import { Mosaic } from "@/components/ui/Mosaic";
 import { PixelIcon } from "@/components/brand/PixelIcon";
-import { PixelRobot, PixelRocket } from "@/components/brand/PixelCharacters";
+import { PixelRobot } from "@/components/brand/PixelCharacters";
 import { useMotionPolicy } from "@/components/motion/MotionPolicy";
-import { CHECK_PIXELS, PixelBadge, PixelRewind, PixelUser } from "./process/art";
+import { CHECK_PIXELS, PixelBadge, PixelJet, PixelRewind, PixelUser } from "./process/art";
 import { backDelay, Block, snapDelay, WIRE } from "./process/Block";
-import { Confetti, Smoke, Sparkle } from "./process/Bursts";
+import { Confetti, Sparkle } from "./process/Bursts";
 import { Pencil } from "./process/Pencil";
+import { RevenueCard } from "./process/Revenue";
 import {
   arriving,
   at,
@@ -38,22 +50,68 @@ import {
 // Each change is a short staged sequence (process/choreo.ts):
 // - sketch → wireframe: the pixel pencil traces the outline, boxes ink in as it passes,
 //   then it turns round and rubs the scribbles out;
-// - wireframe → build: the robot hops in, blocks snap into colour top to bottom, a code
-//   cursor types <Game /> which compiles into the gamepad, rows type their content;
+// - wireframe → build: the robot flies in on jet boots and sweeps down the device, its beam
+//   snapping the blocks into colour top to bottom; it flies back up and types <Game />, which
+//   compiles into the gamepad, then beams the rows' content in and lands;
 // - build → live: the button's progress fills, it flips to "live" with a check that draws
-//   itself, square confetti falls with gravity, the robot boards the rocket and it launches;
+//   itself, square confetti falls with gravity, a revenue card pops out with rising bars and a
+//   counting total, and the robot jumps for joy;
 // - going back rebuilds in reverse: the status goes, the colour gives way to the wireframe,
 //   and the sketch strokes return last.
-// Live, the product answers where it is clicked: a row opens a small detail, the button
-// sends one short message. Confetti belongs to the release alone.
+// While the build runs, the robot keeps working: it flies from block to block and beams
+// at each one, which glows and takes small knocks. Live, every user who joins brings a new
+// month to the revenue card and the robot cheers. A row opens a small detail when clicked,
+// the button sends one short message. Confetti belongs to the release alone.
 
-type Labels = { live: string; build: string; thanks: string };
+type Labels = { live: string; build: string; thanks: string; revenue: string };
 
-const CODE_AT = 0.74;
-const GAMEPAD_AT = 1.6;
-const ROWS_AT = 1.74;
+const CODE_AT = 1.25;
+const GAMEPAD_AT = 2.0;
+const ROWS_AT = 2.12;
 const LIVE_AT = 1.0;
-const LAUNCH_AT = 1.12;
+const RELEASE_AT = 1.12;
+const CARD_AT = 1.3;
+
+// The robot stands to the right of the device, facing it, feet on the device's baseline.
+// Its raised hand (and the beam) sits `hand` units below its top.
+const ROBOT = { x: 109, top: 94, w: 30, h: 42, hand: 18.6 };
+const REST = -1;
+// Where the beam meets a block: its right edge.
+const BEAM_TO = BLOCKS[0].x + BLOCKS[0].w;
+
+// Flight height, in % of the robot's height (0 = standing), that levels its hand with a block.
+function levelOf(block: number) {
+  if (block === REST) return 0;
+  const spec = BLOCKS[block];
+  return Math.min(0, ((spec.y + spec.h / 2 - ROBOT.hand - ROBOT.top) / ROBOT.h) * 100);
+}
+
+// The robot's flight while the build arrives: [seconds, block, ease into this point].
+// It sweeps down level with each block as it snaps into colour, flies back up to type the
+// code, beams the rows' content in one after the other and lands.
+const BUILD_FLIGHT: [number, number, Transition["ease"]][] = [
+  [0, 0, "linear"],
+  [snapDelay(0), 0, "linear"],
+  [snapDelay(1), 1, "linear"],
+  [snapDelay(2), 2, "linear"],
+  [snapDelay(3), 3, "linear"],
+  [snapDelay(4), 4, "linear"],
+  [snapDelay(5), REST, "linear"],
+  [CODE_AT - 0.08, 1, [0.3, 0, 0.2, 1]],
+  [GAMEPAD_AT, 1, "linear"],
+  [ROWS_AT, 2, [0.4, 0, 0.2, 1]],
+  [ROWS_AT + 0.1, 3, "linear"],
+  [ROWS_AT + 0.2, 4, "linear"],
+  [ROWS_AT + 0.6, REST, [0.2, 0.6, 0.3, 1]],
+];
+// When the beam is on during the build: the sweep, the code and the rows.
+const BUILD_BEAM: [number, number][] = [
+  [snapDelay(0) - 0.05, snapDelay(5) + 0.04],
+  [CODE_AT, GAMEPAD_AT - 0.12],
+  [ROWS_AT - 0.04, ROWS_AT + 0.34],
+];
+// Blocks the robot visits while the build runs on (REST: a short break on the ground).
+const ROUNDS = [1, 3, 2, 4, REST];
 
 const u = (value: number) => `${value}cqw`;
 
@@ -88,7 +146,7 @@ function useLater(when: boolean, seconds: number, id: number) {
   return when && doneId === id;
 }
 
-export function GrowingPrototype({ step, labels }: { step: number; labels: Labels }) {
+export function GrowingPrototype({ step, labels, locale }: { step: number; labels: Labels; locale: string }) {
   const s = Math.max(0, Math.min(3, step)) as Step;
   const { reduced } = useMotionPolicy();
   const root = useRef<HTMLDivElement>(null);
@@ -128,14 +186,113 @@ export function GrowingPrototype({ step, labels }: { step: number; labels: Label
   const building = arriving(cue, 2) ? labelIn : arriving(cue, 3) ? !flipped : s === 2;
   const spinning = building && inView && !reduced;
 
-  // Live: users join now and then, each with a notification badge on a row.
+  // The robot. `fly` lifts it on its jet boots (in % of its height, 0 = standing), `hop` is
+  // its body for small jumps; it beams at a block, or cheers with its arm going.
+  const fly = useMotionValue(0);
+  const flyY = useTransform(fly, (value) => `${value}%`);
+  const jets = useTransform(fly, (value) => (value < -3 ? 1 : 0));
+  const stretch = useTransform(useVelocity(fly), (speed) => 1 + Math.min(0.07, Math.abs(speed) / 5000));
+  const squeeze = useTransform(stretch, (value) => 2 - value);
+  const hop = useRef<HTMLDivElement>(null);
+  const [beaming, setBeaming] = useState(false);
+  const [worked, setWorked] = useState<number | null>(null);
+  const [cheering, setCheering] = useState(false);
+  const cheerTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
+  useEffect(() => () => clearTimeout(cheerTimer.current), []);
+  const cheer = useCallback(() => {
+    const body = hop.current;
+    if (!body) return;
+    animate(body, { y: ["0%", "-24%", "0%", "-7%", "0%"], scaleY: [1, 1.05, 0.9, 1.02, 1] }, { duration: 0.72, times: [0, 0.36, 0.62, 0.8, 1], ease: "easeOut" });
+    setCheering(true);
+    clearTimeout(cheerTimer.current);
+    cheerTimer.current = setTimeout(() => setCheering(false), 900);
+  }, []);
+
+  // Build arrives: the flight down the device and back, with the beam on in between.
+  const buildArrives = arriving(cue, 2);
+  useEffect(() => {
+    if (!buildArrives) return;
+    const end = BUILD_FLIGHT[BUILD_FLIGHT.length - 1][0];
+    const flight = animate(
+      fly,
+      BUILD_FLIGHT.map(([, block]) => levelOf(block)),
+      { duration: end, times: BUILD_FLIGHT.map(([t]) => t / end), ease: BUILD_FLIGHT.slice(1).map(([, , curve]) => curve) as never },
+    );
+    const typing = hop.current ? animate(hop.current, { y: ["0%", "-4%", "0%"] }, { delay: CODE_AT, duration: 0.24, repeat: 2, ease: "easeInOut" }) : undefined;
+    const timers = BUILD_BEAM.flatMap(([from, to]) => [setTimeout(() => setBeaming(true), from * 1000), setTimeout(() => setBeaming(false), to * 1000)]);
+    return () => {
+      flight.stop();
+      typing?.stop();
+      timers.forEach(clearTimeout);
+      setBeaming(false);
+    };
+  }, [buildArrives, id, fly]);
+
+  // While the build runs on, the robot flies from block to block and works on each.
+  const working = ambient && s === 2;
+  useEffect(() => {
+    if (!working) return;
+    let stopped = false;
+    let flight: AnimationPlaybackControls | undefined;
+    let timer: ReturnType<typeof setTimeout> | undefined;
+    const wait = (ms: number) => new Promise<void>((resolve) => (timer = setTimeout(resolve, ms)));
+    (async () => {
+      await wait(450);
+      for (let round = 0; !stopped; round++) {
+        const block = ROUNDS[round % ROUNDS.length];
+        flight = animate(fly, levelOf(block), { type: "spring", duration: 0.6, bounce: 0.28 });
+        await flight;
+        if (stopped) return;
+        if (block === REST) {
+          await wait(1300);
+          continue;
+        }
+        setBeaming(true);
+        setWorked(block);
+        await wait(1150);
+        if (stopped) return;
+        setBeaming(false);
+        setWorked(null);
+        await wait(180);
+      }
+    })();
+    return () => {
+      stopped = true;
+      flight?.stop();
+      clearTimeout(timer);
+      setBeaming(false);
+      setWorked(null);
+    };
+  }, [working, fly]);
+
+  // Outside the build the robot stands on the ground.
+  const grounded = s !== 2;
+  useEffect(() => {
+    if (!grounded) return;
+    const landing = animate(fly, 0, { type: "spring", duration: 0.5, bounce: 0.2 });
+    return () => landing.stop();
+  }, [grounded, fly]);
+
+  // Release: it jumps for joy when the button flips and again when the record bar is up.
+  const releaseArrives = arriving(cue, 3);
+  useEffect(() => {
+    if (!releaseArrives) return;
+    const timers = [setTimeout(cheer, (LIVE_AT + 0.02) * 1000), setTimeout(cheer, (CARD_AT + 0.95) * 1000)];
+    return () => timers.forEach(clearTimeout);
+  }, [releaseArrives, id, cheer]);
+
+  // Live: users join now and then, each with a notification badge on a row, a new month on
+  // the revenue card and a cheer from the robot.
   const [joined, setJoined] = useState(3);
   const liveLoop = ambient && s === 3;
   useEffect(() => {
     if (!liveLoop) return;
-    const timer = setInterval(() => setJoined((count) => count + 1), 2300);
+    const timer = setInterval(() => {
+      setJoined((count) => count + 1);
+      cheer();
+    }, 2300);
     return () => clearInterval(timer);
-  }, [liveLoop]);
+  }, [liveLoop, cheer]);
 
   // A small snap of the whole stage when it gets built.
   useEffect(() => {
@@ -233,61 +390,25 @@ export function GrowingPrototype({ step, labels }: { step: number; labels: Label
               </motion.div>
             </motion.div>
 
-            {/* The robot builds it, then boards the rocket. */}
+            {/* The robot builds it on jet boots, then cheers at the release. Its beam reaches over the device. */}
             <motion.div
-              className="absolute"
-              style={{ left: u(103), top: u(90), width: u(30) }}
+              className="absolute z-10"
+              style={{ left: u(ROBOT.x), top: u(ROBOT.top), width: u(ROBOT.w) }}
               initial={false}
-              animate={
-                s === 2
-                  ? { opacity: 1, x: "0%", y: arriving(cue, 2) ? ["0%", "-34%", "0%"] : "0%", scale: 1 }
-                  : s === 3
-                    ? { opacity: 0, x: "0%", y: "-36%", scale: 0.45 }
-                    : { opacity: 0, x: "70%", y: "0%", scale: 1 }
-              }
-              transition={at(
-                cue,
-                {
-                  2: { x: { ...spring.playful, delay: 0.05 }, y: { delay: 0.05, duration: 0.5, ease: "easeOut" }, opacity: { delay: 0.05, duration: 0.15 } },
-                  3: { delay: LAUNCH_AT - 0.05, duration: 0.3, ease: [0.5, 0, 0.75, 0] },
-                },
-                { duration: 0.25, delay: undoAt(cue, 2) + 0.05 },
-              )}
+              animate={s >= 2 ? { opacity: 1, x: "0%" } : { opacity: 0, x: "70%" }}
+              transition={at(cue, { 2: { x: { ...spring.playful, delay: 0.05 }, opacity: { delay: 0.05, duration: 0.15 } } }, { duration: 0.25, delay: undoAt(cue, 2) + 0.05 })}
             >
-              {/* Bobs along while it types the code. */}
-              <motion.div
-                initial={false}
-                animate={arriving(cue, 2) ? { y: ["0%", "0%", "-5%", "0%", "-5%", "0%", "-5%", "0%"] } : { y: "0%" }}
-                transition={arriving(cue, 2) ? { delay: CODE_AT, duration: GAMEPAD_AT - CODE_AT, ease: "easeInOut" } : { duration: 0 }}
-              >
-                <PixelRobot className="w-full" waves={s === 2 && ambient} watching={s === 2 && !reduced} />
+              <motion.div style={{ y: flyY, scaleY: stretch, scaleX: squeeze, originY: 1 }}>
+                <div ref={hop} className="relative" style={{ transformOrigin: "50% 100%" }}>
+                  <Beam on={beaming} />
+                  <motion.span className="absolute flex justify-between" style={{ left: u(10.8), top: u(ROBOT.h - 0.6), width: u(10.8), opacity: jets }}>
+                    <PixelJet className="aspect-[3/4] w-1/3" />
+                    <PixelJet className="aspect-[3/4] w-1/3" />
+                  </motion.span>
+                  <PixelRobot className="w-full" mirrored busy={beaming || cheering} waves={s === 3 && ambient} watching={s >= 2 && !reduced} />
+                </div>
               </motion.div>
             </motion.div>
-
-            {arriving(cue, 3) && (
-              <motion.div
-                key={`rocket-${id}`}
-                className="absolute"
-                style={{ left: u(105), top: u(93), width: u(25) }}
-                initial={{ y: "0%" }}
-                animate={{ y: "-600%" }}
-                transition={{ delay: LAUNCH_AT + 0.72, duration: 0.85, ease: [0.55, 0, 0.9, 0.3] }}
-              >
-                <motion.div
-                  initial={{ x: 0 }}
-                  animate={{ x: [0, -1.5, 1.5, -1.5, 1.5, -1, 1, 0] }}
-                  transition={{ delay: LAUNCH_AT + 0.32, duration: 0.42, ease: "linear" }}
-                >
-                  <motion.div
-                    initial={{ scale: 0, opacity: 0 }}
-                    animate={{ scale: [0, 1.18, 1], opacity: 1 }}
-                    transition={{ delay: LAUNCH_AT + 0.08, duration: 0.32, ease: "easeOut" }}
-                  >
-                    <PixelRocket className="w-full" engine="roar" />
-                  </motion.div>
-                </motion.div>
-              </motion.div>
-            )}
 
             {/* The device. A click beside the rows closes an open detail. */}
             <motion.div
@@ -356,6 +477,7 @@ export function GrowingPrototype({ step, labels }: { step: number; labels: Label
                     scribble={spec.id === "header" ? SCRIBBLES.header : spec.id === "hero" ? SCRIBBLES.hero : spec.id === "button" ? SCRIBBLES.button : SCRIBBLES.rows[index - 2]}
                     onPress={!live ? undefined : row !== null ? pressRow(row) : spec.id === "button" ? pressButton : undefined}
                     pressed={live && row !== null && openRow === row}
+                    worked={worked === index}
                   >
                     {spec.id === "header" && <HeaderContent step={s} cue={cue} ambient={liveLoop} joined={joined} />}
                     {spec.id === "hero" && <HeroContent step={s} cue={cue} id={id} />}
@@ -412,11 +534,25 @@ export function GrowingPrototype({ step, labels }: { step: number; labels: Label
               </svg>
             </motion.div>
 
-            {/* Release confetti and smoke over everything, not tilted with the device. */}
+            {/* Live: the revenue card pops out of the device, to its left (on phones over its lower left, clear of the button's label). */}
+            <AnimatePresence>
+              {s === 3 && (
+                <motion.div
+                  key="revenue"
+                  className="absolute left-[-37cqw] top-[84cqw] w-[66cqw] sm:left-[-96cqw] sm:top-[34cqw] sm:w-[90cqw]"
+                  initial={arriving(cue, 3) ? { opacity: 0, x: "45%", scale: 0.5, rotate: 5 } : false}
+                  animate={{ opacity: 1, x: "0%", scale: 1, rotate: 0 }}
+                  exit={{ opacity: 0, scale: 0.85, transition: { duration: 0.14, ease: stepped(3) } }}
+                  transition={{ type: "spring", stiffness: 320, damping: 24, delay: CARD_AT, opacity: { delay: CARD_AT, duration: 0.1 } }}
+                >
+                  <RevenueCard month={joined} enter={arriving(cue, 3)} delay={CARD_AT} label={labels.revenue} locale={locale} reduced={reduced} />
+                </motion.div>
+              )}
+            </AnimatePresence>
+
+            {/* Release confetti over everything, not tilted with the device. */}
             <svg viewBox={`0 0 100 ${DEVICE_H}`} className="pointer-events-none absolute inset-0 size-full overflow-visible" aria-hidden="true">
-              {arriving(cue, 3) && <Smoke key={`smoke-${id}`} x={117.5} y={132} delay={LAUNCH_AT + 0.3} seed={id} />}
-              {arriving(cue, 3) && <Smoke key={`lift-${id}`} x={117.5} y={132} delay={LAUNCH_AT + 0.74} seed={id + 7} />}
-              {arriving(cue, 3) && <Confetti key={`release-${id}`} x={50} y={118} seed={id * 31} count={40} delay={LAUNCH_AT} />}
+              {arriving(cue, 3) && <Confetti key={`release-${id}`} x={50} y={118} seed={id * 31} count={40} delay={RELEASE_AT} />}
             </svg>
           </div>
         </div>
@@ -492,7 +628,7 @@ function HeaderContent({ step, cue, ambient, joined }: PartProps & { ambient: bo
         style={{ left: u(79), top: u(3.5), width: u(3), height: u(3) }}
         initial={false}
         animate={{ opacity: step === 3 ? 1 : 0, scale: step === 3 ? 1 : 0 }}
-        transition={at(cue, { 3: { ...spring.playful, delay: LAUNCH_AT + 0.2 } }, undo(cue, 3, 0, 0.1))}
+        transition={at(cue, { 3: { ...spring.playful, delay: RELEASE_AT + 0.2 } }, undo(cue, 3, 0, 0.1))}
       >
         <span className="absolute inset-0 bg-ocean-300" />
         <motion.span
@@ -507,7 +643,7 @@ function HeaderContent({ step, cue, ambient, joined }: PartProps & { ambient: bo
         style={{ right: u(9.5), top: u(2), height: u(6) }}
         initial={false}
         animate={{ opacity: step === 3 ? 1 : 0 }}
-        transition={at(cue, { 3: { delay: LAUNCH_AT + 0.45, duration: 0.2 } }, undo(cue, 3, 0, 0.1))}
+        transition={at(cue, { 3: { delay: RELEASE_AT + 0.45, duration: 0.2 } }, undo(cue, 3, 0, 0.1))}
       >
         <AnimatePresence initial={false} mode="popLayout">
           {users.map((user, index) => (
@@ -831,6 +967,62 @@ function RowDetail({ row }: { row: number }) {
         />
       </span>
     </motion.div>
+  );
+}
+
+// The robot's beam: pixels flow from its raised hand into the block, sparks fly where it hits.
+const SPARKS = [
+  { x: 2.2, y: -2.6, at: 0 },
+  { x: 2.8, y: 2.2, at: 0.09 },
+  { x: 1.2, y: -3.4, at: 0.17 },
+  { x: 3.2, y: 0.4, at: 0.25 },
+];
+
+function Beam({ on }: { on: boolean }) {
+  const length = ROBOT.x - BEAM_TO + 1.6;
+  return (
+    <AnimatePresence>
+      {on && (
+        <motion.svg
+          viewBox={`0 0 ${length} 1.6`}
+          className="pointer-events-none absolute overflow-visible"
+          style={{ left: u(BEAM_TO - ROBOT.x), top: u(ROBOT.hand - 0.8), width: u(length), height: u(1.6), originX: 1 }}
+          initial={{ scaleX: 0 }}
+          animate={{ scaleX: 1 }}
+          exit={{ scaleX: 0, transition: { duration: 0.08, ease: stepped(2) } }}
+          transition={{ duration: 0.1, ease: stepped(3) }}
+          shapeRendering="crispEdges"
+          aria-hidden="true"
+        >
+          <rect x={0} y={0} width={length} height={1.6} fill="#0096c7" />
+          <motion.line
+            x1={0}
+            y1={0.8}
+            x2={length}
+            y2={0.8}
+            stroke="#caf0f8"
+            strokeWidth={1.6}
+            strokeDasharray="1.2 1.2"
+            initial={{ strokeDashoffset: 0 }}
+            animate={{ strokeDashoffset: 2.4 }}
+            transition={{ duration: 0.18, repeat: Infinity, ease: stepped(2) }}
+          />
+          {SPARKS.map((spark, index) => (
+            <motion.rect
+              key={index}
+              x={-0.5}
+              y={0.3}
+              width={1}
+              height={1}
+              fill={index % 2 ? "#ffb703" : "#ffffff"}
+              initial={{ x: 0, y: 0, opacity: 0 }}
+              animate={{ x: [0, spark.x], y: [0, spark.y], opacity: [1, 1, 0] }}
+              transition={{ duration: 0.34, delay: spark.at, repeat: Infinity, repeatDelay: 0.04, ease: "easeOut" }}
+            />
+          ))}
+        </motion.svg>
+      )}
+    </AnimatePresence>
   );
 }
 

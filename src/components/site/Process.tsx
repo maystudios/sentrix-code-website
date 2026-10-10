@@ -268,7 +268,7 @@ export function Process({ dict }: { dict: Dictionary }) {
             onPointerLeave={() => setHoverPanel(false)}
           >
             <p className="sr-only">{step.sceneAlt}</p>
-            <GrowingPrototype step={reduced ? active : stage} labels={labels} />
+            <GrowingPrototype step={reduced ? active : stage} labels={labels} locale={dict.locale} />
           </div>
         </div>
       </div>

@@ -116,3 +116,37 @@ export function PixelRewind(props: SVGProps<SVGSVGElement>) {
     </svg>
   );
 }
+
+// Jet flame under the robot's boots: two frames swap in CSS (globals.css, "frame-swap").
+const JET = { W: "#ffffff", q: "#fbd26d", A: "#ffb703", o: "#fb8500" };
+const JET_RUNS = [toRuns(["qWq", "AqA", ".A.", ".o."], JET), toRuns(["qWq", "AqA", ".o.", "..."], JET)];
+
+export function PixelJet({ className }: { className?: string }) {
+  return (
+    <span className={`relative block ${className ?? ""}`}>
+      {JET_RUNS.map((runs, index) => (
+        <svg
+          key={index}
+          viewBox="0 0 3 4"
+          shapeRendering="crispEdges"
+          aria-hidden="true"
+          className="ambient absolute inset-0 size-full"
+          style={{ animation: `frame-swap 0.14s steps(1) ${index ? "-0.07s infinite reverse" : "infinite"}` }}
+        >
+          <Runs runs={runs} />
+        </svg>
+      ))}
+    </span>
+  );
+}
+
+// Small arrow pointing up, for the growth badge.
+const ARROW_RUNS = toRuns(["..#..", ".###.", "#####", "..#..", "..#.."], { "#": "#48cae4" });
+
+export function PixelArrowUp(props: SVGProps<SVGSVGElement>) {
+  return (
+    <svg viewBox="0 0 5 5" shapeRendering="crispEdges" aria-hidden="true" {...props}>
+      <Runs runs={ARROW_RUNS} />
+    </svg>
+  );
+}

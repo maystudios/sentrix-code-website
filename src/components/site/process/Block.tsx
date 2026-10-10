@@ -52,12 +52,14 @@ type BlockProps = {
   // Live only: the block reacts to a click, and stays highlighted while it is open.
   onPress?: (event: MouseEvent<HTMLDivElement>) => void;
   pressed?: boolean;
+  // The robot works on it: it glows softly and takes small knocks.
+  worked?: boolean;
   children?: ReactNode;
 };
 
 // One element of the app screen. It keeps its place through all four steps and only its
 // look changes: dashed sketch, traced wireframe, coloured build. Hovering lifts it.
-export function Block({ spec, index, step, cue, build, live, liveAt = 1, scribble, boil, flips, onPress, pressed, children }: BlockProps) {
+export function Block({ spec, index, step, cue, build, live, liveAt = 1, scribble, boil, flips, onPress, pressed, worked, children }: BlockProps) {
   const popper = useRef<HTMLDivElement>(null);
   const flash = useRef<HTMLDivElement>(null);
   const mask = useId();
@@ -87,6 +89,20 @@ export function Block({ spec, index, step, cue, build, live, liveAt = 1, scribbl
     }
     return () => running.forEach((animation) => animation.complete());
   }, [cue, snapAt, flips, liveAt]);
+
+  useEffect(() => {
+    const box = popper.current;
+    const light = flash.current;
+    if (!worked || !box || !light) return;
+    const glow = animate(light, { opacity: [0, 0.16, 0.04, 0.12, 0] }, { duration: 0.44, repeat: Infinity, ease: "linear" });
+    const knock = animate(box, { x: [0, -2, 0] }, { duration: 0.22, repeat: Infinity, ease: "easeOut" });
+    return () => {
+      glow.stop();
+      knock.stop();
+      animate(light, { opacity: 0 }, { duration: 0.1 });
+      animate(box, { x: 0 }, { duration: 0.1 });
+    };
+  }, [worked]);
 
   const [fill, fillBack] = rewound(cue, ["rgba(134,145,166,0)", "rgba(134,145,166,0.12)", build, live ?? build], step, lag);
   const fillTransition =

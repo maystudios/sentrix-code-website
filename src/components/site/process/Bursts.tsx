@@ -2,7 +2,7 @@
 
 import { motion } from "motion/react";
 import { useMemo } from "react";
-import { burst, random } from "./choreo";
+import { burst } from "./choreo";
 
 // Square-pixel effects drawn in SVG units (1 unit = 1cqw of the stage). No circles.
 
@@ -24,34 +24,6 @@ export function Confetti({ x, y, seed, count, power = 1, delay = 0 }: { x: numbe
           >
             <rect x={-particle.size / 2} y={-particle.size / 2} width={particle.size} height={particle.size} fill={particle.colour} shapeRendering="crispEdges" />
           </motion.g>
-        </motion.g>
-      ))}
-    </g>
-  );
-}
-
-// Smoke puffs under a launching rocket: squares that swell, drift and fade.
-export function Smoke({ x, y, delay, seed }: { x: number; y: number; delay: number; seed: number }) {
-  const puffs = useMemo(() => {
-    const r = random(seed);
-    return Array.from({ length: 8 }, (_, index) => ({
-      dx: (index % 2 ? 1 : -1) * (3 + r() * 7),
-      dy: 1 + r() * 4,
-      size: 2.4 + r() * 2.2,
-      at: delay + index * 0.06,
-      colour: index % 3 === 0 ? "#caf0f8" : "#97a3b8",
-    }));
-  }, [delay, seed]);
-  return (
-    <g transform={`translate(${x} ${y})`}>
-      {puffs.map((puff, index) => (
-        <motion.g
-          key={index}
-          initial={{ opacity: 0, x: 0, y: 0, scale: 0.4 }}
-          animate={{ opacity: [0, 0.9, 0], x: puff.dx, y: puff.dy, scale: [0.4, 1.4, 1.8] }}
-          transition={{ duration: 0.8, delay: puff.at, ease: "easeOut" }}
-        >
-          <rect x={-puff.size / 2} y={-puff.size / 2} width={puff.size} height={puff.size} fill={puff.colour} shapeRendering="crispEdges" />
         </motion.g>
       ))}
     </g>

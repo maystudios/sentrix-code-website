@@ -88,11 +88,15 @@ type PixelRobotProps = {
   waves?: boolean;
   // Eyes follow the pointer.
   watching?: boolean;
+  // Faces left instead of right.
+  mirrored?: boolean;
+  // Works with its raised arm: the arm frames alternate quickly, as with a tool.
+  busy?: boolean;
 };
 
 // The mascot: blinks, looks at the pointer (eyes move in whole art pixels), its antenna
 // glows, it waves now and then and while hovered, and hops when tapped.
-export function PixelRobot({ className, waves = false, watching = false }: PixelRobotProps) {
+export function PixelRobot({ className, waves = false, watching = false, mirrored = false, busy = false }: PixelRobotProps) {
   const [scope, animate] = useAnimate<HTMLDivElement>();
   const inView = useInView(scope, { margin: "120px" });
   const { reduced } = useMotionPolicy();
@@ -101,8 +105,8 @@ export function PixelRobot({ className, waves = false, watching = false }: Pixel
   const blink = useBlink(live);
   const [waving, setWaving] = useState(false);
   const [hover, setHover] = useState(false);
-  const wave = live && (waving || hover);
-  const tick = useTick(170, wave);
+  const wave = live && (waving || hover || busy);
+  const tick = useTick(busy ? 110 : 170, wave);
   const lookX = useMotionValue(0);
   const lookY = useMotionValue(0);
   const eyeX = useTransform(useSpring(lookX, { stiffness: 300, damping: 26 }), (value) => Math.round(value));
@@ -136,7 +140,7 @@ export function PixelRobot({ className, waves = false, watching = false }: Pixel
       const dy = event.clientY - (rect.top + rect.height * 0.35);
       const distance = Math.max(1, Math.hypot(dx, dy));
       const reach = Math.min(1, distance / 140);
-      lookX.set((dx / distance) * reach * 1.4);
+      lookX.set((mirrored ? -1 : 1) * (dx / distance) * reach * 1.4);
       lookY.set((dy / distance) * reach * 0.9);
     };
     window.addEventListener("pointermove", onMove);
@@ -145,7 +149,7 @@ export function PixelRobot({ className, waves = false, watching = false }: Pixel
       lookX.set(0);
       lookY.set(0);
     };
-  }, [watching, live, lookX, lookY, scope]);
+  }, [watching, live, mirrored, lookX, lookY, scope]);
 
   return (
     <motion.div
@@ -161,7 +165,7 @@ export function PixelRobot({ className, waves = false, watching = false }: Pixel
     >
       <PixelArt
         figure={FIGURES.robot}
-        className="size-full"
+        className={mirrored ? "size-full -scale-x-100" : "size-full"}
         frames={{ arm: wave ? 2 + (tick % 2) : 1 }}
         parts={{
           antenna: { className: "ambient animate-glow" },

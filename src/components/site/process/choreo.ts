@@ -93,7 +93,7 @@ export function rewound<T extends string | number>(
 export function settleTime(cue: Cue) {
   if (cue.mode === "rest") return 0;
   if (cue.mode === "back") return undoAt(cue, (cue.trans!.to + 1) as Undo) + 0.45;
-  return [0, 3.2, 2.5, 3.15][cue.trans!.to];
+  return [0, 3.2, 3.0, 3.15][cue.trans!.to];
 }
 
 // The device is drawn in units: 100 wide, 136 high (1 unit = 1cqw of the stage).

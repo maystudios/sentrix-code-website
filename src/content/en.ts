@@ -201,7 +201,7 @@ export const en: Dictionary = {
   },
   process: {
     title: "How we work.",
-    prototype: { live: "Live", build: "Building", thanks: "Thanks!", play: "Resume automatic steps", pause: "Pause automatic steps" },
+    prototype: { live: "Live", build: "Building", thanks: "Thanks!", revenue: "Revenue", play: "Resume automatic steps", pause: "Pause automatic steps" },
     intro: "You see interim results and help decide what comes next.",
     steps: [
       {
@@ -228,7 +228,7 @@ export const en: Dictionary = {
         title: "Launch and handover",
         text: "We take the product live, hand over code and documentation, and stay on as your partner for the next versions if you like.",
         scene: "/images/scenes/launch",
-        sceneAlt: "The finished product lights up and a rocket lifts off.",
+        sceneAlt: "The finished product lights up, and revenue rises in bars beside it.",
       },
     ],
   },

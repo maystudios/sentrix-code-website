@@ -201,7 +201,7 @@ export const de: Dictionary = {
   },
   process: {
     title: "So arbeiten wir.",
-    prototype: { live: "Live", build: "Build läuft", thanks: "Danke!", play: "Automatischen Wechsel fortsetzen", pause: "Automatischen Wechsel anhalten" },
+    prototype: { live: "Live", build: "Build läuft", thanks: "Danke!", revenue: "Umsatz", play: "Automatischen Wechsel fortsetzen", pause: "Automatischen Wechsel anhalten" },
     intro: "Sie sehen Zwischenergebnisse und entscheiden mit, was als Nächstes kommt.",
     steps: [
       {
@@ -228,7 +228,7 @@ export const de: Dictionary = {
         title: "Start und Übergabe",
         text: "Wir bringen das Produkt live, übergeben Code und Dokumentation und bleiben auf Wunsch Ihr Partner für die nächsten Versionen.",
         scene: "/images/scenes/launch",
-        sceneAlt: "Das fertige Produkt leuchtet auf, eine Rakete startet.",
+        sceneAlt: "Das fertige Produkt leuchtet auf, daneben steigt der Umsatz in Balken.",
       },
     ],
   },
