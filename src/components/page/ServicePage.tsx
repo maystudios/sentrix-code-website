@@ -17,7 +17,6 @@ import { PageHero } from "./PageHero";
 import { PixelIcon } from "@/components/brand/PixelIcon";
 import { ReferenceFigure, ReferenceLinks } from "@/components/site/ReferenceFigure";
 
-const SERVICE_INDEX: Record<ServiceVisualKind, number> = { game: 0, software: 1, apps: 2, ai: 3 };
 
 export function ServicePage({ dict, kind, alternateHref }: { dict: Dictionary; kind: ServiceVisualKind; alternateHref: string }) {
   const { pages } = dict;
@@ -174,7 +173,7 @@ export function ServicePage({ dict, kind, alternateHref }: { dict: Dictionary; k
               ) : (
                 <>
                   <TiltPanel>
-                    <Visual item={dict.services.items[SERVICE_INDEX[kind]]} mockups={dict.services.mockups} apps={dict.services.apps.items} locale={dict.locale} />
+                    <Visual kind={kind} mockups={dict.services.mockups} apps={dict.services.apps.items} locale={dict.locale} />
                   </TiltPanel>
                   <blockquote className="mt-6 border-l-2 border-ocean-400 pl-4 text-fg/85">
                     {dict.locale === "de" ? `„${example.quote}“` : `“${example.quote}”`}
