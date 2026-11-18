@@ -1,7 +1,7 @@
 "use client";
 
-import { motion, useAnimate, useMotionValue, useScroll, useSpring, useTransform } from "motion/react";
-import { useCallback, useEffect, useRef, useState, type PointerEvent, type ReactNode } from "react";
+import { motion, useAnimate, useScroll, useTransform } from "motion/react";
+import { useCallback, useEffect, useRef, useState, type ReactNode } from "react";
 import type { Dictionary } from "@/content/types";
 import { duration, ease, spring } from "@/lib/motion";
 import { useMotionPolicy } from "@/components/motion/MotionPolicy";
@@ -9,6 +9,7 @@ import { AnimatedPictogram } from "@/components/brand/AnimatedPictogram";
 import { PixelCloud, PixelGamepad, PixelLaptop, PixelRobot, PixelRocket, PixelSparkle } from "@/components/brand/PixelCharacters";
 import { BlockShape, LiveBlock, type Shape } from "./hero/LiveBlock";
 import { DroneScene } from "./hero/DroneScene";
+import { HeroSegment } from "./hero/HeroTitle";
 import { fallEase } from "./hero/physics";
 import { Button } from "@/components/ui/Button";
 
@@ -116,16 +117,6 @@ function Smoke({ burst }: { burst: number }) {
   );
 }
 
-function Word({ children, delay }: { children: ReactNode; delay: number }) {
-  return (
-    <span className="-mb-[0.18em] inline-block overflow-hidden pb-[0.18em] align-bottom">
-      <motion.span className="inline-block" initial={{ y: "110%" }} animate={{ y: 0 }} transition={{ duration: 0.9, ease: ease.outExpo, delay }}>
-        {children}
-      </motion.span>
-    </span>
-  );
-}
-
 const CLOUDS = [
   { top: "6%", seconds: 96, delay: -30 },
   { top: "6%", seconds: 96, delay: -78 },
@@ -142,13 +133,6 @@ const SPARKLES = [
 
 export function Hero({ dict }: { dict: Dictionary }) {
   const { reduced } = useMotionPolicy();
-  const pointerX = useMotionValue(0);
-  const pointerY = useMotionValue(0);
-  const smoothX = useSpring(pointerX, { stiffness: 80, damping: 20 });
-  const smoothY = useSpring(pointerY, { stiffness: 80, damping: 20 });
-  const leftX = useTransform(smoothX, (value) => value * -18);
-  const rightX = useTransform(smoothX, (value) => value * 18);
-  const stackY = useTransform(smoothY, (value) => value * -10);
   // Scroll depth: as the hero scrolls away, the sky lags furthest, the blocks a little and
   // the text runs slightly ahead.
   const hero = useRef<HTMLElement>(null);
@@ -204,19 +188,8 @@ export function Hero({ dict }: { dict: Dictionary }) {
     if (decoScope.current) animateDeco(decoScope.current, { y: [0, 4, -3, 2, 0] }, { duration: 0.35 });
   }, [animateDeco, decoScope]);
 
-  function handlePointer(event: PointerEvent<HTMLElement>) {
-    if (reduced) return;
-    const rect = event.currentTarget.getBoundingClientRect();
-    pointerX.set((event.clientX - rect.left) / rect.width - 0.5);
-    pointerY.set((event.clientY - rect.top) / rect.height - 0.5);
-  }
-
-  const wordsA = dict.hero.headlineA.split(" ");
-  const wordsB = dict.hero.headlineB.split(" ");
-  const textDelay = 0.08;
-
   return (
-    <section ref={hero} onPointerMove={handlePointer} className="relative isolate flex min-h-[100svh] flex-col overflow-hidden [--u:clamp(26px,4.4vw,64px)]">
+    <section ref={hero} className="relative isolate flex min-h-[100svh] flex-col overflow-hidden [--u:clamp(26px,4.4vw,64px)]">
       {/* Sky: drifting pixel clouds and twinkling stars. */}
       <motion.div aria-hidden="true" className="ambient pointer-events-none absolute inset-0 -z-10" style={{ y: reduced ? 0 : skyDepth }}>
         {/* Deep-blue pixel clouds, opaque so they read as shapes, not haze. */}
@@ -243,19 +216,12 @@ export function Hero({ dict }: { dict: Dictionary }) {
         style={reduced ? undefined : { y: textDepth, opacity: textFade }}
       >
         <h1 className="text-display flex max-w-5xl flex-wrap items-center justify-center gap-x-[0.28em]">
-          {wordsA.map((word, index) => (
-            <Word key={`a-${index}`} delay={textDelay + index * 0.05}>
-              {word}
-            </Word>
-          ))}
+          <span className="sr-only">{`${dict.hero.headlineA} ${dict.hero.headlineB}`}</span>
+          <HeroSegment text={dict.hero.headlineA} start={0.05} />
           <span className="inline-flex h-[0.62em] items-center px-[0.06em]" aria-hidden="true">
-            <AnimatedPictogram mode="intro" idle delay={textDelay + 0.16} className="h-full w-auto" />
+            <AnimatedPictogram mode="intro" idle delay={0.22} className="h-full w-auto" />
           </span>
-          {wordsB.map((word, index) => (
-            <Word key={`b-${index}`} delay={textDelay + 0.2 + index * 0.05}>
-              {word}
-            </Word>
-          ))}
+          <HeroSegment text={dict.hero.headlineB} start={0.3} />
         </h1>
 
         <motion.p
@@ -299,7 +265,7 @@ export function Hero({ dict }: { dict: Dictionary }) {
       {/* Falling blocks with pixel figures, framed like the reference but in ocean blues. */}
       <motion.div aria-hidden="true" className="pointer-events-none absolute inset-0" style={{ y: reduced ? 0 : blockDepth }}>
       <div ref={decoScope} className="absolute inset-0">
-        <motion.div className="absolute inset-y-0 left-0 w-1/2" style={{ x: leftX, y: stackY }}>
+        <div className="absolute inset-y-0 left-0 w-1/2">
           <Stack blocks={LEFT} side="left" reduced={reduced} />
           <Sprite className="pointer-events-auto cursor-pointer" delay={1.45} reduced={reduced} style={{ left: "calc(var(--u) * 0.25)", bottom: "calc(var(--u) * 4)", width: cells(25), height: cells(35) }}>
             <PixelRobot className="size-full" waves watching />
@@ -307,8 +273,8 @@ export function Hero({ dict }: { dict: Dictionary }) {
           <Sprite className="pointer-events-auto" delay={1.55} reduced={reduced} style={{ left: "calc(var(--u) * 3.4)", bottom: "calc(var(--u) * 1)", width: cells(34), height: cells(24) }}>
             <PixelGamepad className="size-full" />
           </Sprite>
-        </motion.div>
-        <motion.div className="absolute inset-y-0 right-0 w-1/2" style={{ x: rightX, y: stackY }}>
+        </div>
+        <div className="absolute inset-y-0 right-0 w-1/2">
           <Stack blocks={RIGHT} side="right" reduced={reduced} />
           <DroneScene reduced={reduced} onImpact={shake} onTopple={launch} />
           <Sprite className="pointer-events-auto" delay={1.6} reduced={reduced} style={{ right: "calc(var(--u) * 3.5)", bottom: "calc(var(--u) * 1.6)", width: cells(38), height: cells(32) }}>
@@ -320,7 +286,7 @@ export function Hero({ dict }: { dict: Dictionary }) {
             </div>
             <Smoke burst={smoke} />
           </Sprite>
-        </motion.div>
+        </div>
       </div>
       </motion.div>
       <div aria-hidden="true" className="absolute inset-x-0 bottom-0 h-px bg-line" />

@@ -250,16 +250,53 @@ html.lenis body {
   overflow: clip;
 }
 
-/* Ambient motion stops for people who ask for less motion. */
+/* Hero headline (hero/HeroTitle.tsx): each letter rises out of its word's mask; a letter with a
+   twin underneath travels on and lands on the twin, like an odometer. Without the animation
+   every letter rests in its final place. */
+.hero-char {
+  animation: hero-char-in 0.55s cubic-bezier(0.65, 0, 0.35, 1) both;
+}
+.hero-char[data-roll] {
+  transform: translateY(-100%);
+  animation-name: hero-char-roll;
+}
+/* The twin is drawn by CSS, so the text itself holds every letter once. */
+.hero-char[data-roll]::after {
+  content: attr(data-roll);
+  position: absolute;
+  inset-inline: 0;
+  top: 100%;
+  padding-bottom: 0.2em;
+}
+@keyframes hero-char-in {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+@keyframes hero-char-roll {
+  from {
+    transform: translateY(200%);
+  }
+  to {
+    transform: translateY(-100%);
+  }
+}
+
+/* Ambient motion and the headline entrance stop for people who ask for less motion. */
 /* Before hydration the system setting decides; afterwards the site's motion policy. */
 @media (prefers-reduced-motion: reduce) {
   html:not([data-motion]) .ambient,
-  html:not([data-motion]) .ambient * {
+  html:not([data-motion]) .ambient *,
+  html:not([data-motion]) .hero-char {
     animation: none !important;
   }
 }
 html[data-motion="reduced"] .ambient,
-html[data-motion="reduced"] .ambient * {
+html[data-motion="reduced"] .ambient *,
+html[data-motion="reduced"] .hero-char {
   animation: none !important;
 }
 
