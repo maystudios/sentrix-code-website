@@ -9,7 +9,7 @@ export const en: Dictionary = {
   meta: {
     title: "Sentrix Code · Games, software, apps and AI on commission",
     description:
-      "Sentrix Code builds games, software, apps and AI solutions on commission for studios, mid-sized companies and enterprises. Based in Monheim am Rhein, Germany.",
+      "Sentrix Code builds software, apps and AI for mid-sized companies, and games on commission. Based in Monheim am Rhein, Germany.",
   },
   anchors: { services: "services", cases: "work", process: "process", faq: "questions", contact: "contact" },
   nav: {
@@ -26,7 +26,7 @@ export const en: Dictionary = {
     headlineA: "Your idea.",
     headlineB: "Our code.",
     subline:
-      "We build games, software, apps and AI on commission. For studios and companies with a concrete project in mind.",
+      "We build software, apps and AI for mid-sized companies. And games on commission, from the first prototype to release.",
     primaryCta: "Start a project",
     secondaryCta: "Explore services",
   },
@@ -53,7 +53,7 @@ export const en: Dictionary = {
     ],
   },
   positioning:
-    "We build on commission. From the first prototype to the application your users rely on every day.",
+    "Now that AI does real work, software decides who keeps up. Large corporations have entire IT departments for that. You've got us. We build your software and stay on after it goes live.",
   services: {
     title: "What would you like to build?",
     items: [

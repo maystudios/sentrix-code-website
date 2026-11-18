@@ -9,7 +9,7 @@ export const de: Dictionary = {
   meta: {
     title: "Sentrix Code · Spiele, Software, Apps und KI im Auftrag",
     description:
-      "Sentrix Code entwickelt Spiele, Software, Apps und KI-Lösungen im Auftrag für Studios, Mittelstand und Unternehmen. Sitz in Monheim am Rhein.",
+      "Sentrix Code entwickelt Software, Apps und KI für den Mittelstand und Spiele im Auftrag. Sitz in Monheim am Rhein.",
   },
   anchors: { services: "leistungen", cases: "praxis", process: "vorgehen", faq: "fragen", contact: "kontakt" },
   nav: {
@@ -26,7 +26,7 @@ export const de: Dictionary = {
     headlineA: "Ihre Idee.",
     headlineB: "Unser Code.",
     subline:
-      "Wir entwickeln Spiele, Software, Apps und KI im Auftrag. Für Studios und Unternehmen, die ein konkretes Vorhaben umsetzen wollen.",
+      "Wir entwickeln Software, Apps und KI für den Mittelstand. Und Spiele im Auftrag, vom ersten Prototyp bis zum Release.",
     primaryCta: "Projekt anfragen",
     secondaryCta: "Leistungen ansehen",
   },
@@ -53,7 +53,7 @@ export const de: Dictionary = {
     ],
   },
   positioning:
-    "Wir entwickeln im Auftrag. Vom ersten Prototyp bis zur Anwendung, die Ihre Nutzer jeden Tag verwenden.",
+    "Seit KI mitarbeitet, entscheidet Software darüber, wer mithält. Konzerne haben dafür ganze IT-Abteilungen. Sie haben uns. Wir bauen Ihre Software und bleiben, wenn sie läuft.",
   services: {
     title: "Was möchten Sie entwickeln?",
     items: [
