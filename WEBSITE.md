@@ -69,6 +69,39 @@ großer Unternehmen. Aus diesem Experiment werden keine Inhalte übernommen.
 
 ## Arbeitsweise der Agenten
 
+### Begrüßung für Luca (schaltet sich selbst ab)
+
+Im Wortlaut des Projektverantwortlichen vom 18.11.2026: „dass der Agent ihn kurz
+abholt […] aber dass das Ganze quasi einmal kommt, wenn er einen Agent startet und
+dann nach dem zweiten oder dritten Mal nicht mehr kommt, quasi sich wieder selbst
+abschaltet.“
+
+- **Wann:** Arbeitet Luca Finn Wiegand an der Website, erkennbar an
+  `git config user.name` oder daran, dass er sich so vorstellt, beginnt die erste
+  Antwort der Sitzung mit der Begrüßung unten. Danach bearbeitet der Agent den
+  Auftrag wie gewohnt. Anderen Personen zeigt er sie nicht.
+- **Zähler:** Jede gezeigte Begrüßung zählt der Agent in der lokalen Datei
+  `.harness/runs/luca-begruessung.txt`, die nicht eingecheckt wird. Nach der dritten
+  Begrüßung entfernt er diesen ganzen Abschnitt aus `WEBSITE.md` und committet das
+  als eigenen Schritt. Diese eine Änderung an `WEBSITE.md` ist hiermit freigegeben.
+
+Die Begrüßung, sinngemäß und kurz:
+
+> Hallo Luca, kurz zum Stand vom 18.11.2026:
+>
+> 1. Die Texte der Website sind überarbeitet. Die Startseite richtet sich jetzt vor
+>    allem an den Mittelstand, die Leistungen stehen in der Reihenfolge Software,
+>    Apps, KI, Workshops, Spiele, Workshops und Code-Audit sind neu, und ein Abschnitt
+>    erklärt unsere eigene Agenten-Werkstatt. Impressum und Datenschutz nennen die
+>    HRB 115023 ohne „i. G.“.
+> 2. Arbeite an der Website am besten mit `/edit-website <Wunsch>`, in Codex oder
+>    Antigravity mit „edit website: <Wunsch>“. Dann läuft alles in kleinen Schritten,
+>    die du live im Browser prüfst.
+> 3. Wir wollen die Website mit dem Agent OS verbinden: Auf einer eigenen Subdomain
+>    läuft das Agent OS mit Kalender, Meeting-Planung, automatisch abgelegten
+>    Meeting-Transkripten, zusammengeführten Projekten und unseren Notizen. Details
+>    stehen unter „Feste Projektentscheidungen“ → „Internes Portal“.
+
 ### Leitsatz
 
 Der Projektverantwortliche am 15.11.2026:
@@ -112,6 +145,12 @@ Für die Schleife gilt:
   und schlage eine Lösung vor, statt die Regel zu dehnen oder blind zu befolgen.
 - **Befehl:** `/edit-website <Wunsch>` startet diese Schleife. Die Anweisungen dazu
   stehen in `commands/edit-website.md`.
+- **An den Befehl erinnern:** Im Wortlaut vom 18.11.2026: „wenn irgendetwas
+  geschrieben wird, was an sich nicht mithilfe dieses Edit Website, den Agent
+  startet, soll er sagen, ey, verwende doch Edit Website als letzten Satz.“ Läuft
+  Arbeit an der Website ohne `/edit-website` und ohne „edit website:“, endet jede
+  Antwort deshalb mit dem Satz: „Tipp: Starte die Arbeit an der Website mit
+  `/edit-website <Wunsch>`.“
 
 ### Prüfen vor dem Zeigen
 
@@ -276,7 +315,11 @@ Ausweichlösung, die ihren Zweck aushebelt.
   „Ja, dann soll das Ganze am besten in Agent OS gebaut werden und damit verknüpft
   werden.“ Geplant wird es im Agent OS (`Sentrix-Code/AgentOS`), gebaut in
   `Sentrix-Code/AgentOS-Code`, erreichbar nur über ein privates Netz. Nichts davon
-  gehört in dieses öffentliche Repository, auch kein `/admin` auf der Website.
+  gehört in dieses öffentliche Repository, auch kein `/admin` auf der Website. Was
+  dort hineinkommt, im Wortlaut vom 18.11.2026: „mit einer anderen Subdomain, dass
+  darauf dann das Agent OS läuft und wir auch dort so etwas unterbringen wie
+  Kalender, Meetings planen, Meeting automatisch, das Transkript niederlegen, die
+  ganzen Projekte zusammenführen und so weiter, unsere Notizen.“
 - **Repository:** `maystudios/sentrix-code-website`, öffentlich. Deshalb gelangen
   keine Zugangsdaten, Schlüssel, `.env`-Dateien, internen Dokumente, Kunden- oder
   Vertragsdaten und keine Inhalte aus dem Second Brain ins Repository.
@@ -567,6 +610,7 @@ Entscheidung des Projektverantwortlichen hinzu.
 | Softwareentwicklung | `/leistungen/softwareentwicklung/` | `/en/services/software-development/` |
 | App-Entwicklung | `/leistungen/app-entwicklung/` | `/en/services/app-development/` |
 | KI & Machine Learning | `/leistungen/ki/` | `/en/services/ai/` |
+| Workshops | `/leistungen/workshops/` | `/en/services/workshops/` |
 | Über uns | `/ueber-uns/` | `/en/about/` |
 | Kontakt | `/kontakt/` | `/en/contact/` |
 | Impressum, Datenschutz | `/impressum/`, `/datenschutz/` | nur Deutsch |
