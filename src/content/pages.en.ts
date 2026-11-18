@@ -298,10 +298,11 @@ export const pagesEn: Pages = {
       sceneAlt: "Pixel scene: a small studio with two desks, the robot waving between them, a river with a bridge outside the window",
     },
     story: {
-      title: "Why we exist",
+      title: "We were writing code before AI could.",
       paragraphs: [
-        "We have worked in studios, start-ups and as freelancers, and kept seeing the same thing: good ideas rarely fail because of the idea, but because nobody builds them properly.",
-        "That is why we founded Sentrix Code. We bring game development, classic software and AI together in one team and take responsibility for the result, not just for hours.",
+        "We have built games with Unreal Engine and C++, along with backends, apps and plugins that other developers buy. We know architecture, databases, servers and security from years of work, not from a prompt.",
+        "Today we work with AI every day, on every project. It makes us faster, but it doesn't make the decisions. We understand every line we ship, so we can tell you honestly where AI helps and where conventional software is the better choice.",
+        "That is why Sentrix Code covers the whole of IT, from advice to servers, APIs and apps. And we stand behind the result, even when a hundred users turn into a hundred thousand.",
       ],
       example: true,
     },

@@ -298,10 +298,11 @@ export const pagesDe: Pages = {
       sceneAlt: "Pixel-Szene: ein kleines Studio mit zwei Schreibtischen, dazwischen winkt der Roboter, im Fenster ein Fluss mit Brücke",
     },
     story: {
-      title: "Warum es uns gibt",
+      title: "Wir haben programmiert, bevor KI es konnte.",
       paragraphs: [
-        "Wir haben in Studios, Start-ups und als Freelancer gearbeitet und dabei immer wieder dasselbe gesehen: Gute Ideen scheitern selten an der Idee, sondern daran, dass niemand sie sauber umsetzt.",
-        "Deshalb haben wir Sentrix Code gegründet. Wir verbinden Spieleentwicklung, klassische Software und KI in einem Team und übernehmen Verantwortung für das Ergebnis, nicht nur für Stunden.",
+        "Wir haben Spiele mit Unreal Engine und C++ gebaut, dazu Backends, Apps und Plugins, die andere Entwickler kaufen. Architektur, Datenbanken, Server und Sicherheit kennen wir aus jahrelanger Arbeit, nicht aus einem Prompt.",
+        "Heute arbeiten wir jeden Tag mit KI, in jedem Projekt. Sie macht uns schneller, aber sie entscheidet nichts. Wir verstehen jede Zeile, die wir ausliefern, und beraten Sie deshalb ehrlich, wo KI hilft und wo klassische Software die bessere Wahl ist.",
+        "Deshalb deckt Sentrix Code die ganze IT ab, von der Beratung über Server und Schnittstellen bis zur App. Und wir stehen für das Ergebnis gerade, auch wenn aus hundert Nutzern hunderttausend werden.",
       ],
       example: true,
     },
