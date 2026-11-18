@@ -271,6 +271,12 @@ Ausweichlösung, die ihren Zweck aushebelt.
   sie auf GitHub Pages, gebaut und veröffentlicht über GitHub Actions
   (`.github/workflows/deploy.yml`) bei jedem Push auf `main`, seit dem 10.10.2026
   unter `https://sentrixcode.com`.
+- **Internes Portal:** Auf demselben Server läuft später ein internes Portal für
+  Firmenunterlagen, Projekte, Notizen und die Agenten. Im Wortlaut vom 18.11.2026:
+  „Ja, dann soll das Ganze am besten in Agent OS gebaut werden und damit verknüpft
+  werden.“ Geplant wird es im Agent OS (`Sentrix-Code/AgentOS`), gebaut in
+  `Sentrix-Code/AgentOS-Code`, erreichbar nur über ein privates Netz. Nichts davon
+  gehört in dieses öffentliche Repository, auch kein `/admin` auf der Website.
 - **Repository:** `maystudios/sentrix-code-website`, öffentlich. Deshalb gelangen
   keine Zugangsdaten, Schlüssel, `.env`-Dateien, internen Dokumente, Kunden- oder
   Vertragsdaten und keine Inhalte aus dem Second Brain ins Repository.
