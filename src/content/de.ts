@@ -315,7 +315,7 @@ export const de: Dictionary = {
         ],
       },
     ],
-    company: "Sentrix Code GmbH i. G.",
+    company: "Sentrix Code GmbH",
     tagline: "Spiele, Software, Apps und KI im Auftrag. Aus Monheim am Rhein.",
   },
   consent: {

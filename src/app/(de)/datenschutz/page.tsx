@@ -4,7 +4,7 @@ import { ConsentSettingsButton } from "@/components/consent/ConsentSettingsButto
 
 export const metadata: Metadata = {
   title: "Datenschutzerklärung · Sentrix Code",
-  description: "Wie die Sentrix Code GmbH i. G. personenbezogene Daten auf dieser Website verarbeitet.",
+  description: "Wie die Sentrix Code GmbH personenbezogene Daten auf dieser Website verarbeitet.",
 };
 
 // Structure and facts from WEBSITE.md, "Rechtliches". Every service named here must match
@@ -32,7 +32,7 @@ const sections: LegalSection[] = [
         <p>
           Verantwortlich für die Datenverarbeitung auf dieser Website im Sinne der Datenschutz-Grundverordnung (DSGVO) ist die
           <br />
-          <strong>Sentrix Code GmbH i. G.</strong>, Krischerstraße 14, 40789 Monheim am Rhein,
+          <strong>Sentrix Code GmbH</strong>, Krischerstraße 14, 40789 Monheim am Rhein,
           <br />
           vertreten durch die Geschäftsführer Luca Finn Wiegand und Sven Fredrik Maibaum.
           <br />
@@ -234,7 +234,7 @@ export default function DatenschutzPage() {
     <LegalPage
       title="Datenschutzerklärung"
       intro="Kurz gesagt: keine Cookies, kein Tracking, keine Drittanbieter im Browser. Hier steht alles im Detail."
-      updated="10.10.2026"
+      updated="18.11.2026"
       sections={sections}
     />
   );

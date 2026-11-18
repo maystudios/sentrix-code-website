@@ -367,7 +367,7 @@ export const pagesEn: Pages = {
     },
     aside: {
       title: "Reach us directly",
-      text: "Sentrix Code GmbH i. G., Krischerstraße 14, 40789 Monheim am Rhein, Germany",
+      text: "Sentrix Code GmbH, Krischerstraße 14, 40789 Monheim am Rhein, Germany",
       response: { text: "We reply within one working day.", example: true },
     },
   },

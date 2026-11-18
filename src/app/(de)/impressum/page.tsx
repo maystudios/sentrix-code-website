@@ -4,10 +4,11 @@ import { LegalPage, type LegalSection } from "@/components/legal/LegalPage";
 
 export const metadata: Metadata = {
   title: "Impressum · Sentrix Code",
-  description: "Impressum der Sentrix Code GmbH i. G., Monheim am Rhein.",
+  description: "Impressum der Sentrix Code GmbH, Monheim am Rhein.",
 };
 
-// Company facts from WEBSITE.md, "Das Unternehmen". Nothing here may be invented.
+// Company facts from WEBSITE.md, "Das Unternehmen"; register number from the company's
+// own documents of November 2026. Nothing here may be invented.
 const sections: LegalSection[] = [
   {
     id: "anbieter",
@@ -16,7 +17,7 @@ const sections: LegalSection[] = [
       <>
         <p>Angaben gemäß § 5 Digitale-Dienste-Gesetz (DDG):</p>
         <p>
-          <strong>Sentrix Code GmbH i. G.</strong> (in Gründung)
+          <strong>Sentrix Code GmbH</strong>
           <br />
           Krischerstraße 14
           <br />
@@ -48,9 +49,11 @@ const sections: LegalSection[] = [
     title: "Registereintrag",
     body: (
       <p>
-        Der Gesellschaftsvertrag wurde am 21.09.2026 notariell beurkundet. Die Eintragung in das Handelsregister beim
-        Amtsgericht Düsseldorf steht aus. Registergericht und Registernummer werden nach der Eintragung hier ergänzt; bis dahin
-        führt die Gesellschaft den Zusatz „i. G.“.
+        Eingetragen im Handelsregister.
+        <br />
+        Registergericht: Amtsgericht Düsseldorf
+        <br />
+        Registernummer: HRB 115023
       </p>
     ),
   },
@@ -122,7 +125,7 @@ export default function ImpressumPage() {
     <LegalPage
       title="Impressum"
       intro="Wer hinter dieser Website steht und wie Sie uns erreichen."
-      updated="10.10.2026"
+      updated="18.11.2026"
       sections={sections}
     />
   );

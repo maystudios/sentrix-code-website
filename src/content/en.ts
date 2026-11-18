@@ -313,7 +313,7 @@ export const en: Dictionary = {
         ],
       },
     ],
-    company: "Sentrix Code GmbH i. G.",
+    company: "Sentrix Code GmbH",
     tagline: "Games, software, apps and AI on commission. From Monheim am Rhein, Germany.",
   },
   consent: {
