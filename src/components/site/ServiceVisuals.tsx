@@ -1,6 +1,6 @@
 "use client";
 
-import { motion, useInView } from "motion/react";
+import { AnimatePresence, motion, useInView } from "motion/react";
 import { useEffect, useRef, useState } from "react";
 import type { IconName, ServiceMockups } from "@/content/types";
 import { ease, spring } from "@/lib/motion";
@@ -149,6 +149,107 @@ export function AiVisual({ mockups }: { mockups: ServiceMockups }) {
       </motion.div>
       <Sprite name="drone" className="ambient right-[5%] top-[6%] w-[14%] animate-bob" delay={0.7} />
       <Sprite name="chip" className="bottom-[5%] left-[6%] w-[11%]" delay={0.9} />
+    </div>
+  );
+}
+
+const TICK_MS = 1100;
+const REST_MS = 2600;
+
+// A workshop day on a board: the agenda ticks off point by point, and once the team
+// tries its own tasks an idea lands on the board as a sticky note. Then the day starts over.
+export function WorkshopVisual({ mockups }: { mockups: ServiceMockups }) {
+  const { title, agenda, note } = mockups.workshop;
+  const ref = useRef<HTMLDivElement>(null);
+  const inView = useInView(ref, { margin: "0px 0px -20% 0px" });
+  const { reduced } = useMotionPolicy();
+  const [done, setDone] = useState(0);
+
+  useEffect(() => {
+    if (!inView) return;
+    const finished = done >= agenda.length;
+    const timer = setTimeout(
+      () => setDone(reduced ? agenda.length : finished ? 0 : done + 1),
+      reduced ? 0 : finished ? REST_MS : TICK_MS,
+    );
+    return () => clearTimeout(timer);
+  }, [inView, reduced, done, agenda.length]);
+
+  return (
+    <div ref={ref} className="relative aspect-video overflow-hidden bg-ocean-950">
+      <Mosaic className="absolute inset-0" from={3} to={6} seed={12} />
+      <motion.div
+        className="absolute left-[7%] top-[11%] w-[62%] rounded-[var(--radius-card)] border border-white/10 bg-base/95 p-3 shadow-[0_24px_60px_-20px_rgba(0,0,0,0.7)] sm:p-4"
+        initial={{ opacity: 0, y: 24 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.7, ease: ease.outExpo }}
+      >
+        <div className="flex items-center justify-between text-[10px] sm:text-xs">
+          <span className="font-medium">{title}</span>
+          <span className="font-mono text-muted">
+            {done}/{agenda.length}
+          </span>
+        </div>
+        <div className="mt-2 h-1 overflow-hidden rounded-full bg-line">
+          <motion.div
+            className="h-full origin-left bg-ocean-400"
+            initial={false}
+            animate={{ scaleX: done / agenda.length }}
+            transition={reduced ? { duration: 0 } : spring.ui}
+          />
+        </div>
+        <ul className="mt-2 space-y-0.5 sm:mt-3">
+          {agenda.map((item, row) => {
+            const checked = row < done;
+            return (
+              <li
+                key={item}
+                className={`flex items-center gap-2 rounded px-1.5 py-1 text-[10px] transition-colors duration-300 sm:px-2 sm:py-1.5 sm:text-xs ${
+                  row === done ? "bg-raised text-fg" : "text-muted"
+                }`}
+              >
+                <span
+                  className={`grid size-3.5 shrink-0 place-items-center rounded-[3px] border transition-colors duration-200 ${
+                    checked ? "border-ocean-400 bg-ocean-400" : "border-line-strong"
+                  }`}
+                >
+                  {checked && (
+                    <svg viewBox="0 0 10 8" className="h-2 w-2.5 text-base" aria-hidden="true">
+                      <motion.path
+                        d="M1 4l3 3 5-6"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="1.8"
+                        initial={reduced ? false : { pathLength: 0 }}
+                        animate={{ pathLength: 1 }}
+                        transition={{ duration: 0.25, ease: ease.outExpo }}
+                      />
+                    </svg>
+                  )}
+                </span>
+                <span className={checked ? "line-through decoration-ocean-400/60" : ""}>{item}</span>
+              </li>
+            );
+          })}
+        </ul>
+      </motion.div>
+      <AnimatePresence>
+        {done >= 3 && (
+          <motion.p
+            key="note"
+            aria-hidden="true"
+            className="absolute right-[6%] top-[20%] w-[25%] bg-ocean-100 p-2 text-[9px] font-medium leading-snug text-ocean-950 shadow-[0_12px_24px_-10px_rgba(0,0,0,0.8)] sm:p-3 sm:text-[11px]"
+            initial={reduced ? false : { opacity: 0, scale: 0.6, rotate: -10, y: -16 }}
+            animate={{ opacity: 1, scale: 1, rotate: 4, y: 0 }}
+            exit={{ opacity: 0, scale: 0.9, transition: { duration: 0.2 } }}
+            transition={spring.playful}
+          >
+            {note}
+          </motion.p>
+        )}
+      </AnimatePresence>
+      <Sprite name="laptop" className="bottom-[6%] right-[8%] w-[17%]" delay={0.4} />
     </div>
   );
 }

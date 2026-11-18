@@ -10,6 +10,7 @@ export const pagesDe: Pages = {
       software: "/leistungen/softwareentwicklung/",
       apps: "/leistungen/app-entwicklung/",
       ai: "/leistungen/ki/",
+      workshop: "/leistungen/workshops/",
     },
     about: "/ueber-uns/",
     contact: "/kontakt/",
@@ -31,69 +32,6 @@ export const pagesDe: Pages = {
   },
   services: [
     {
-      kind: "game",
-      nav: "Spieleentwicklung",
-      menuText: "Prototypen, Gameplay und Multiplayer mit Unreal Engine",
-      icon: "gamepad",
-      meta: {
-        title: "Spieleentwicklung im Auftrag · Sentrix Code",
-        description:
-          "Prototypen, Gameplay-Programmierung, Multiplayer und Werkzeuge mit Unreal Engine und C++. Spieleentwicklung im Auftrag aus Monheim am Rhein.",
-      },
-      hero: {
-        title: "Ihr Spiel, gebaut von Leuten, die selbst Spiele machen.",
-        intro:
-          "Wir entwickeln Spiele und Prototypen im Auftrag, vor allem mit Unreal Engine und C++. Für Studios, die Verstärkung brauchen, und für Unternehmen, die ein Spiel als Produkt, Lernwerkzeug oder für ihr Marketing einsetzen wollen.",
-        scene: "/images/scenes/games-studio",
-        sceneAlt: "Pixel-Szene: der Roboter spielt an einem Schreibtisch mit zwei Monitoren, daneben ein Arcade-Automat",
-      },
-      offer: {
-        title: "Was wir für Ihr Spiel tun",
-        items: [
-          {
-            title: "Prototypen und Vertical Slices",
-            text: "Aus einer Idee wird in wenigen Wochen etwas Spielbares. Damit testen Sie den Spielspaß, überzeugen Publisher oder beantragen Förderung.",
-            icon: "gamepad",
-          },
-          {
-            title: "Gameplay-Programmierung",
-            text: "Mechaniken, Gegner-KI, Fahrzeuge, Kampf und Inventar entstehen als Systeme in C++, die sauber zusammenspielen und sich erweitern lassen.",
-            icon: "code",
-          },
-          {
-            title: "Multiplayer",
-            text: "Koop und Online-Spiel mit Listen-Server oder dedizierten Servern. Wir testen auch unter schlechter Verbindung, nicht nur im Büronetz.",
-            icon: "server",
-          },
-          {
-            title: "Werkzeuge und Pipelines",
-            text: "Editor-Werkzeuge, automatische Tests und Build-Pipelines sorgen dafür, dass Ihr Team schneller Inhalte baut und weniger sucht.",
-            icon: "prototype",
-          },
-        ],
-      },
-      stack: {
-        title: "Womit wir arbeiten",
-        items: ["Unreal Engine 5", "C++", "Blueprints", "Gameplay Ability System", "Steam", "Epic Online Services", "Perforce"],
-      },
-      questions: [
-        {
-          question: "Arbeiten Sie auch mit Unity oder Godot?",
-          answer: "Unser Schwerpunkt ist Unreal Engine. Für kleinere Spiele und Prototypen sprechen wir gern auch über Unity oder Godot.",
-          example: true,
-        },
-        {
-          question: "Können Sie in ein laufendes Projekt einsteigen?",
-          answer: "Ja. Wir arbeiten uns in bestehenden Code ein und übernehmen klar abgegrenzte Systeme oder ganze Bereiche.",
-          example: true,
-        },
-      ],
-      cta: {
-        title: "Erzählen Sie uns von Ihrem Spiel.",
-        text: "Ein Pitch-Dokument, eine Skizze oder nur eine Idee: Wir sagen Ihnen, wie wir es angehen würden.",
-      },
-    },
-    {
       kind: "software",
       nav: "Softwareentwicklung",
       menuText: "Webanwendungen, Portale, Schnittstellen und Backends",
@@ -101,7 +39,7 @@ export const pagesDe: Pages = {
       meta: {
         title: "Softwareentwicklung im Auftrag · Sentrix Code",
         description:
-          "Webanwendungen, Kundenportale, Schnittstellen und Backends, die zu Ihren Abläufen passen. Softwareentwicklung aus Monheim am Rhein.",
+          "Webanwendungen, Kundenportale, Schnittstellen, Backends und Code-Audits, die zu Ihren Abläufen passen. Softwareentwicklung aus Monheim am Rhein.",
       },
       hero: {
         title: "Software, die zu Ihrer Arbeit passt.",
@@ -111,7 +49,7 @@ export const pagesDe: Pages = {
         sceneAlt: "Pixel-Szene: der Roboter prüft mit einem Klemmbrett die Serverschränke",
       },
       offer: {
-        title: "Was wir für Sie bauen",
+        title: "Was wir bauen und prüfen",
         items: [
           {
             title: "Webanwendungen und Portale",
@@ -133,12 +71,16 @@ export const pagesDe: Pages = {
             text: "Gewachsene Altsysteme lösen wir Schritt für Schritt ab, während der laufende Betrieb weitergeht.",
             icon: "prototype",
           },
+          {
+            title: "Code-Audit und Code-Qualität",
+            text: "Wir prüfen bestehende Software, auch solche, die schnell mit KI entstanden ist: Architektur, Datenmodell, Tests und Sicherheit. Sie bekommen konkrete Fundstellen im Code und eine ehrliche Empfehlung, was bleiben kann und was neu muss.",
+            icon: "test",
+          },
         ],
       },
       stack: {
         title: "Womit wir arbeiten",
-        // EXAMPLE: PostgreSQL and Docker are not yet confirmed by the project owner.
-        items: ["TypeScript", "React", "Next.js", "Java", "Python", "PostgreSQL", "Docker"],
+        text: "Mit dem, was zu Ihnen passt. Wir haben Informatik gelernt und haben unsere Lieblingssprachen, aber seit KI mitarbeitet, ist Code ein Material, das sich formen lässt. Entscheidend ist nicht die Sprache, sondern dass Ihr Betrieb produktiver wird. Deshalb überlegen wir gern mit Ihnen gemeinsam, wie sich ein Ablauf einfacher lösen lässt.",
       },
       questions: [
         {
@@ -260,6 +202,11 @@ export const pagesDe: Pages = {
             text: "Wir werten Ihre Daten aus und trainieren eigene Modelle, wenn fertige Lösungen nicht ausreichen.",
             icon: "chip",
           },
+          {
+            title: "Workshops",
+            text: "Ein Tag mit Ihrem Team: was KI heute kann, wie man sie sicher und datenschutzkonform nutzt und welche Aufgaben bei Ihnen zuerst profitieren. Für Geschäftsführung, Fachabteilungen oder Entwickler.",
+            icon: "concept",
+          },
         ],
       },
       stack: {
@@ -282,6 +229,133 @@ export const pagesDe: Pages = {
       cta: {
         title: "Wo würde KI Ihrem Team die meiste Zeit sparen?",
         text: "Nennen Sie uns eine Aufgabe, die sich jede Woche wiederholt. Wir sagen Ihnen, ob KI sie übernehmen kann.",
+      },
+    },
+    {
+      kind: "workshop",
+      nav: "Workshops",
+      menuText: "KI-Workshops für Ihr Team, vor Ort oder remote",
+      icon: "concept",
+      meta: {
+        title: "KI-Workshops für Unternehmen · Sentrix Code",
+        description:
+          "Workshops für Geschäftsführung, Fachabteilungen und Entwickler: KI sicher und datenschutzkonform nutzen, an Ihren echten Aufgaben. Vor Ort oder remote.",
+      },
+      hero: {
+        title: "Workshops, nach denen Ihr Team KI wirklich nutzt.",
+        intro:
+          "Wir kommen zu Ihnen oder schalten uns remote dazu. Statt Folien arbeiten wir mit Ihren echten Aufgaben, damit Ihr Team am Ende weiß, was KI kann, wo ihre Grenzen liegen und wie es sie sicher einsetzt.",
+        scene: "/images/scenes/team",
+        sceneAlt: "Pixel-Szene: ein kleines Studio mit zwei Schreibtischen, dazwischen winkt der Roboter",
+      },
+      offer: {
+        title: "Welche Workshops wir anbieten",
+        // EXAMPLE: the workshop formats are not yet confirmed by the project owner.
+        items: [
+          {
+            title: "KI im Betrieb",
+            text: "Für ganze Teams und Fachabteilungen: was KI heute kann, wie man gute Ergebnisse bekommt und was man ihr besser nicht anvertraut. Mit Übungen an Aufgaben aus Ihrem Alltag.",
+            icon: "idea",
+          },
+          {
+            title: "KI für die Geschäftsführung",
+            text: "Wo KI in Ihrem Unternehmen Zeit und Geld spart, was sie kostet und wie Sie den Einsatz sicher und datenschutzkonform aufsetzen.",
+            icon: "concept",
+          },
+          {
+            title: "KI für Entwickler",
+            text: "Wie man mit KI-Agenten Software baut, die hält: erst die Anforderungen, dann Tests, dann Code, und eine Prüfung durch einen zweiten Agenten. Aus unserer eigenen Werkstatt.",
+            icon: "code",
+          },
+          {
+            title: "Workshop nach Maß",
+            text: "Ein Thema, das Sie gerade beschäftigt, etwa ein bestimmter Ablauf oder ein neues Werkzeug. Wir stellen den Tag passend dazu zusammen.",
+            icon: "prototype",
+          },
+        ],
+      },
+      stack: {
+        title: "Womit wir arbeiten",
+        text: "Mit den Werkzeugen, die Ihr Team nutzen darf. Wir richten uns nach Ihren Regeln zu Datenschutz und IT-Sicherheit, nicht umgekehrt, und zeigen auch, welche Daten in keine KI gehören.",
+      },
+      questions: [
+        {
+          question: "Wie lange dauert ein Workshop?",
+          answer: "Meist einen Tag, vor Ort oder remote. Wer tiefer einsteigen will, kann die Inhalte auch auf mehrere halbe Tage verteilen.",
+          example: true,
+        },
+        {
+          question: "Brauchen die Teilnehmenden Vorkenntnisse?",
+          answer: "Nein. Wir holen alle dort ab, wo sie stehen, und arbeiten mit Aufgaben aus ihrem eigenen Alltag.",
+          example: true,
+        },
+      ],
+      cta: {
+        title: "Was soll Ihr Team nach dem Workshop leichter erledigen?",
+        text: "Schreiben Sie uns, wer teilnimmt und was Sie vorhaben. Wir schlagen Ihnen einen passenden Ablauf vor.",
+      },
+    },
+    {
+      kind: "game",
+      nav: "Spieleentwicklung",
+      menuText: "Prototypen, Gameplay und Multiplayer mit Unreal Engine",
+      icon: "gamepad",
+      meta: {
+        title: "Spieleentwicklung im Auftrag · Sentrix Code",
+        description:
+          "Prototypen, Gameplay-Programmierung, Multiplayer und Werkzeuge mit Unreal Engine und C++. Spieleentwicklung im Auftrag aus Monheim am Rhein.",
+      },
+      hero: {
+        title: "Ihr Spiel, gebaut von Leuten, die selbst Spiele machen.",
+        intro:
+          "Wir entwickeln Spiele und Prototypen im Auftrag, vor allem mit Unreal Engine und C++. Für Studios, die Verstärkung brauchen, und für Unternehmen, die ein Spiel als Produkt, Lernwerkzeug oder für ihr Marketing einsetzen wollen.",
+        scene: "/images/scenes/games-studio",
+        sceneAlt: "Pixel-Szene: der Roboter spielt an einem Schreibtisch mit zwei Monitoren, daneben ein Arcade-Automat",
+      },
+      offer: {
+        title: "Was wir für Ihr Spiel tun",
+        items: [
+          {
+            title: "Prototypen und Vertical Slices",
+            text: "Aus einer Idee wird in wenigen Wochen etwas Spielbares. Damit testen Sie den Spielspaß, überzeugen Publisher oder beantragen Förderung.",
+            icon: "gamepad",
+          },
+          {
+            title: "Gameplay-Programmierung",
+            text: "Mechaniken, Gegner-KI, Fahrzeuge, Kampf und Inventar entstehen als Systeme in C++, die sauber zusammenspielen und sich erweitern lassen.",
+            icon: "code",
+          },
+          {
+            title: "Multiplayer",
+            text: "Koop und Online-Spiel mit Listen-Server oder dedizierten Servern. Wir testen auch unter schlechter Verbindung, nicht nur im Büronetz.",
+            icon: "server",
+          },
+          {
+            title: "Werkzeuge und Pipelines",
+            text: "Editor-Werkzeuge, automatische Tests und Build-Pipelines sorgen dafür, dass Ihr Team schneller Inhalte baut und weniger sucht.",
+            icon: "prototype",
+          },
+        ],
+      },
+      stack: {
+        title: "Womit wir arbeiten",
+        items: ["Unreal Engine 5", "C++", "Blueprints", "Gameplay Ability System", "Steam", "Epic Online Services", "Perforce"],
+      },
+      questions: [
+        {
+          question: "Arbeiten Sie auch mit Unity oder Godot?",
+          answer: "Unser Schwerpunkt ist Unreal Engine. Für kleinere Spiele und Prototypen sprechen wir gern auch über Unity oder Godot.",
+          example: true,
+        },
+        {
+          question: "Können Sie in ein laufendes Projekt einsteigen?",
+          answer: "Ja. Wir arbeiten uns in bestehenden Code ein und übernehmen klar abgegrenzte Systeme oder ganze Bereiche.",
+          example: true,
+        },
+      ],
+      cta: {
+        title: "Erzählen Sie uns von Ihrem Spiel.",
+        text: "Ein Pitch-Dokument, eine Skizze oder nur eine Idee: Wir sagen Ihnen, wie wir es angehen würden.",
       },
     },
   ],
@@ -324,10 +398,6 @@ export const pagesDe: Pages = {
           example: true,
         },
       ],
-    },
-    location: {
-      title: "Monheim am Rhein",
-      text: "Unser Sitz liegt zwischen Köln und Düsseldorf. Wir arbeiten mit Kunden in ganz Deutschland, vor allem remote, und kommen für Workshops gern vorbei.",
     },
     principles: {
       title: "Wie wir arbeiten",

@@ -6,7 +6,7 @@ export type Locale = "de" | "en";
 // confirmed or removed before the site launches on its own domain (WEBSITE.md,
 // "Wahrheit vor Wirkung").
 
-export type ServiceVisualKind = "game" | "software" | "apps" | "ai";
+export type ServiceVisualKind = "game" | "software" | "apps" | "ai" | "workshop";
 
 export type ServiceItem = {
   id: string;
@@ -14,7 +14,6 @@ export type ServiceItem = {
   nav: string;
   title: string;
   text: string;
-  tags: string[];
   cta: string;
   imageAlt: string;
 };
@@ -22,7 +21,8 @@ export type ServiceItem = {
 // Texts shown inside the illustrative UI mock-ups of the service panels.
 // Our own apps (real, from the founders' projects). `screen` and `icon` are optional:
 // apps without published artwork are listed by name and text only.
-export type AppShowcase = { name: string; text: string; icon?: string; screen?: string; screenAlt?: string };
+// `note` is the illustrative push notification the phone shows for the app.
+export type AppShowcase = { name: string; text: string; icon?: string; screen?: string; screenAlt?: string; note?: string };
 
 export type ServiceMockups = {
   codeFile: string;
@@ -30,6 +30,7 @@ export type ServiceMockups = {
   buildPassed: string;
   appNotes: string[];
   aiPrompts: string[];
+  workshop: { title: string; agenda: string[]; note: string };
   example: true;
 };
 
@@ -96,6 +97,8 @@ export type Dictionary = {
   // stay grey and hide their icon until they are hovered.
   statement: { title: string; chips: { label: string; icon: IconName; muted?: true }[] };
   positioning: string;
+  // Our own development infrastructure: every task passes fixed stations (illustrative example).
+  engine: { title: string; text: string; task: string; done: string; stations: { label: string; note: string; icon: IconName }[]; example: true };
   services: { title: string; items: ServiceItem[]; mockups: ServiceMockups; apps: { title: string; items: AppShowcase[] } };
   cases: { title: string; cta: string; items: CaseItem[] };
   process: { title: string; intro: string; steps: ProcessStep[]; prototype: { live: string; build: string; thanks: string; revenue: string; play: string; pause: string } };

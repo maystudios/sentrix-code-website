@@ -20,7 +20,8 @@ export type ServiceDetail = {
   meta: { title: string; description: string };
   hero: { title: string; intro: string; scene: string; sceneAlt: string };
   offer: { title: string; items: { title: string; text: string; icon: IconName }[] };
-  stack: { title: string; items: string[] };
+  // Either a list of tools or, where the tools do not matter, a short statement.
+  stack: { title: string; items: string[] } | { title: string; text: string };
   questions: FaqItem[];
   cta: { title: string; text: string };
 };
@@ -33,7 +34,6 @@ export type AboutPage = {
     title: string;
     people: { name: string; initials: string; role: string; text: string; example: true }[];
   };
-  location: { title: string; text: string };
   principles: { title: string; items: { text: string; icon: IconName }[]; example: true };
 };
 

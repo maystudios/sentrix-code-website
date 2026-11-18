@@ -12,6 +12,7 @@ const ROLE: Record<ServiceVisualKind, CompanionName> = {
   software: "robot-coder",
   apps: "robot-phone",
   ai: "robot-ai",
+  workshop: "robot-coder",
 };
 
 const LABEL = { de: "Roboter ausblenden", en: "Hide the robot" };

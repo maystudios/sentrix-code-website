@@ -11,62 +11,6 @@ import { SiteShell } from "@/components/site/SiteShell";
 import { PageHero } from "./PageHero";
 import { PixelIcon } from "@/components/brand/PixelIcon";
 
-// Rhine between Düsseldorf and Köln as pixel cells on a 24 x 16 grid (schematic, not to scale).
-const RIVER = [
-  [14, 0], [14, 1], [13, 2], [13, 3], [12, 4], [11, 5], [11, 6], [10, 7], [10, 8], [11, 9], [12, 10], [12, 11], [11, 12], [10, 13], [10, 14], [9, 15],
-];
-const CITIES = [
-  { name: "Düsseldorf", x: 16, y: 2 },
-  { name: "Köln", x: 13, y: 14 },
-];
-const HOME = { name: "Monheim am Rhein", x: 12, y: 7 };
-
-function PixelMap() {
-  return (
-    <svg viewBox="0 0 24 16" className="w-full" shapeRendering="crispEdges" aria-hidden="true">
-      {Array.from({ length: 24 * 16 }, (_, index) => (
-        <rect key={index} x={(index % 24) + 0.45} y={Math.floor(index / 24) + 0.45} width={0.1} height={0.1} fill="#2b364a" />
-      ))}
-      {RIVER.map(([x, y], index) => (
-        <motion.rect
-          key={`${x}-${y}`}
-          x={x}
-          y={y}
-          width={2}
-          height={1.02}
-          fill="#0096c7"
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          viewport={{ once: true }}
-          transition={{ delay: index * 0.04 }}
-        />
-      ))}
-      {CITIES.map((city) => (
-        <g key={city.name}>
-          <rect x={city.x} y={city.y} width={1} height={1} fill="#8691a6" />
-          <text x={city.x + 1.6} y={city.y + 0.85} fontSize="0.9" fill="#8691a6" fontFamily="var(--font-mono)">
-            {city.name}
-          </text>
-        </g>
-      ))}
-      <motion.g
-        initial={{ y: -4, opacity: 0 }}
-        whileInView={{ y: 0, opacity: 1 }}
-        viewport={{ once: true }}
-        transition={{ ...spring.playful, delay: 0.8 }}
-      >
-        <g className="ambient animate-bob">
-          <rect x={HOME.x + 2.6} y={HOME.y - 1} width={1.6} height={1.6} fill="#48cae4" />
-          <rect x={HOME.x + 3.1} y={HOME.y + 0.6} width={0.6} height={0.8} fill="#48cae4" />
-        </g>
-        <text x={HOME.x + 4.8} y={HOME.y + 0.2} fontSize="1" fill="#f3f6fa" fontFamily="var(--font-mono)">
-          {HOME.name}
-        </text>
-      </motion.g>
-    </svg>
-  );
-}
-
 export function AboutPage({ dict, alternateHref }: { dict: Dictionary; alternateHref: string }) {
   const { pages } = dict;
   const about = pages.about;
@@ -126,18 +70,6 @@ export function AboutPage({ dict, alternateHref }: { dict: Dictionary; alternate
                 </div>
               </motion.article>
             ))}
-          </div>
-        </div>
-      </section>
-
-      <section className="overflow-x-clip border-b border-line">
-        <div className="mx-auto grid max-w-[1280px] items-center gap-12 px-6 py-24 lg:grid-cols-2">
-          <div>
-            <RevealHeading text={about.location.title} className="text-h2" />
-            <p className="text-body-lg mt-5 max-w-lg text-muted">{about.location.text}</p>
-          </div>
-          <div className="rounded-[var(--radius-card)] border border-line bg-surface p-6">
-            <PixelMap />
           </div>
         </div>
       </section>

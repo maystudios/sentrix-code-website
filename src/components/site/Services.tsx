@@ -4,11 +4,10 @@ import { motion } from "motion/react";
 import { useEffect, useState } from "react";
 import type { AppShowcase as AppShowcaseItem, Dictionary, Locale, ServiceMockups, ServiceVisualKind } from "@/content/types";
 import { ease, spring } from "@/lib/motion";
-import { Arrow } from "@/components/ui/Arrow";
 import { TextLink } from "@/components/ui/TextLink";
 import { TiltPanel } from "@/components/ui/TiltPanel";
 import { Parallax } from "@/components/ui/Parallax";
-import { AiVisual, SoftwareVisual } from "./ServiceVisuals";
+import { AiVisual, SoftwareVisual, WorkshopVisual } from "./ServiceVisuals";
 import { AppShowcase } from "./AppShowcase";
 import { StackGame } from "./StackGame";
 
@@ -22,6 +21,8 @@ export function Visual({ kind, mockups, apps, locale }: { kind: ServiceVisualKin
       return <AppShowcase apps={apps} />;
     case "ai":
       return <AiVisual mockups={mockups} />;
+    case "workshop":
+      return <WorkshopVisual mockups={mockups} />;
   }
 }
 
@@ -65,16 +66,6 @@ export function Services({ dict }: { dict: Dictionary }) {
                     <motion.span layoutId="service-active" className="absolute inset-0 bg-raised" transition={spring.ui} />
                   )}
                   <span className="relative">{item.nav}</span>
-                  {active === item.id && (
-                    <motion.span
-                      className="relative"
-                      initial={{ opacity: 0, x: -6 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      transition={spring.ui}
-                    >
-                      <Arrow className="size-4" />
-                    </motion.span>
-                  )}
                 </a>
               </li>
             ))}
@@ -97,17 +88,7 @@ export function Services({ dict }: { dict: Dictionary }) {
               >
                 <h3 className="text-h3">{item.title}</h3>
                 <p className="mt-4 max-w-md text-muted">{item.text}</p>
-                <ul className="mt-6 flex flex-wrap gap-2">
-                  {item.tags.map((tag) => (
-                    <li
-                      key={tag}
-                      className="rounded-[var(--radius-control)] border border-line px-2.5 py-1 font-mono text-xs text-ocean-300"
-                    >
-                      {tag}
-                    </li>
-                  ))}
-                </ul>
-                <TextLink href={`#${dict.anchors.contact}`} className="mt-8">
+                <TextLink href={`#${dict.anchors.contact}`} className="mt-6">
                   {item.cta}
                 </TextLink>
               </motion.div>

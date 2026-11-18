@@ -85,25 +85,40 @@ export function ServicePage({ dict, kind, alternateHref }: { dict: Dictionary; k
       <section className="border-b border-line">
         <div className="mx-auto max-w-[1280px] px-6 py-20">
           <h2 className="text-sm text-muted">{service.stack.title}</h2>
-          <ul className="mt-6 flex flex-wrap gap-3">
-            {service.stack.items.map((item, index) => (
-              <motion.li
-                key={item}
-                initial={{ opacity: 0, scale: 0.8 }}
-                whileInView={{ opacity: 1, scale: 1 }}
-                viewport={{ once: true }}
-                transition={{ ...spring.playful, delay: index * 0.05 }}
-                whileHover={{ y: -4, transition: spring.ui }}
-                className="rounded-[var(--radius-control)] border border-line-strong bg-surface px-4 py-2.5 font-mono text-sm text-ocean-300"
-              >
-                <span className="text-line-strong">[</span> {item} <span className="text-line-strong">]</span>
-              </motion.li>
-            ))}
-          </ul>
+          {"text" in service.stack ? (
+            <p className="text-body-lg mt-4 max-w-3xl">{service.stack.text}</p>
+          ) : (
+            <ul className="mt-6 flex flex-wrap gap-3">
+              {service.stack.items.map((item, index) => (
+                <motion.li
+                  key={item}
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  whileInView={{ opacity: 1, scale: 1 }}
+                  viewport={{ once: true }}
+                  transition={{ ...spring.playful, delay: index * 0.05 }}
+                  whileHover={{ y: -4, transition: spring.ui }}
+                  className="rounded-[var(--radius-control)] border border-line-strong bg-surface px-4 py-2.5 font-mono text-sm text-ocean-300"
+                >
+                  <span className="text-line-strong">[</span> {item} <span className="text-line-strong">]</span>
+                </motion.li>
+              ))}
+            </ul>
+          )}
         </div>
       </section>
 
       {/* Apps page: our own apps, with screen and icon where they exist. */}
+      {/* Workshops page: a workshop day on the board. */}
+      {kind === "workshop" && (
+        <section className="border-b border-line">
+          <div className="mx-auto max-w-3xl px-6 py-20">
+            <TiltPanel>
+              <Visual kind="workshop" mockups={dict.services.mockups} apps={dict.services.apps.items} locale={dict.locale} />
+            </TiltPanel>
+          </div>
+        </section>
+      )}
+
       {kind === "apps" && (
         <section className="border-b border-line">
           <div className="mx-auto max-w-[1280px] px-6 py-20">

@@ -25,6 +25,7 @@ const SCENES: Record<ServiceVisualKind, string> = {
   software: "/images/scenes/server-room.png",
   apps: "/images/scenes/app-world.png",
   ai: "/images/scenes/ai-lab.png",
+  workshop: "/images/scenes/team.png",
 };
 
 // Header with Mistral-style mega menus: hover or keyboard opens a panel, items carry
@@ -33,7 +34,7 @@ export function Header({ dict, alternateHref, isHome = false }: HeaderProps) {
   const { pages } = dict;
   const anchor = (id: string) => (isHome ? `#${id}` : `${pages.routes.home}#${id}`);
   const [menu, setMenu] = useState<MenuKey | null>(null);
-  const [preview, setPreview] = useState<ServiceVisualKind>("game");
+  const [preview, setPreview] = useState<ServiceVisualKind>(pages.services[0].kind);
   const [hovered, setHovered] = useState<string | null>(null);
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -66,7 +67,7 @@ export function Header({ dict, alternateHref, isHome = false }: HeaderProps) {
   const topItems: ({ key: MenuKey; label: string } | { href: string; label: string })[] = [
     { key: "services", label: pages.menu.services },
     { href: anchor(dict.anchors.cases), label: dict.nav.cases },
-    { href: anchor(dict.anchors.process), label: dict.nav.process },
+    { href: pages.routes.about, label: pages.menu.about },
     { key: "company", label: pages.menu.company },
   ];
 
@@ -77,6 +78,16 @@ export function Header({ dict, alternateHref, isHome = false }: HeaderProps) {
     { label: dict.faq.title.replace(/\.$/, ""), href: anchor(dict.anchors.faq) },
     { label: dict.nav.contact, href: pages.routes.contact },
   ];
+
+  const menuServices = pages.services.map((service) => ({
+    key: service.kind,
+    nav: service.nav,
+    text: service.menuText,
+    icon: service.icon,
+    href: pages.routes.services[service.kind],
+    scene: SCENES[service.kind],
+  }));
+  const previewItem = menuServices.find((item) => item.key === preview) ?? menuServices[0];
 
   const solid = scrolled || menu !== null || mobileOpen;
 
@@ -114,7 +125,7 @@ export function Header({ dict, alternateHref, isHome = false }: HeaderProps) {
                 </>
               );
               const className =
-                "relative flex items-center gap-1.5 border-r border-line px-5 text-sm text-muted transition-colors duration-150 hover:text-fg focus-visible:text-fg";
+                "relative flex items-center gap-1.5 whitespace-nowrap border-r border-line px-5 text-sm text-muted transition-colors duration-150 hover:text-fg focus-visible:text-fg";
               if ("key" in item) {
                 const expanded = menu === item.key;
                 return (
@@ -218,46 +229,46 @@ export function Header({ dict, alternateHref, isHome = false }: HeaderProps) {
               {menu === "services" ? (
                 <>
                   <ul className="grid grid-cols-2 gap-1">
-                    {pages.services.map((service, index) => (
+                    {menuServices.map((service, index) => (
                       <motion.li
-                        key={service.kind}
+                        key={service.key}
                         initial={{ opacity: 0, y: 8 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ ...spring.ui, delay: index * stagger }}
                       >
                         <Link
-                          href={pages.routes.services[service.kind]}
-                          onMouseEnter={() => setPreview(service.kind)}
-                          onFocus={() => setPreview(service.kind)}
+                          href={service.href}
+                          onMouseEnter={() => setPreview(service.key)}
+                          onFocus={() => setPreview(service.key)}
                           onClick={() => setMenu(null)}
                           className={`group flex items-start gap-3 rounded-[var(--radius-card)] border p-3 transition-colors duration-150 ${
-                            preview === service.kind ? "border-line-strong bg-surface" : "border-transparent hover:bg-surface"
+                            preview === service.key ? "border-line-strong bg-surface" : "border-transparent hover:bg-surface"
                           }`}
                         >
                           <motion.span
                             className="block shrink-0"
-                            animate={preview === service.kind ? { rotate: [0, -8, 6, 0], y: -2 } : { rotate: 0, y: 0 }}
+                            animate={preview === service.key ? { rotate: [0, -8, 6, 0], y: -2 } : { rotate: 0, y: 0 }}
                             transition={{ duration: 0.45 }}
                           >
                             <PixelIcon name={service.icon} px={3} />
                           </motion.span>
                           <span>
                             <span className="block font-medium">{service.nav}</span>
-                            <span className="mt-0.5 block text-sm text-muted">{service.menuText}</span>
+                            <span className="mt-0.5 block text-sm text-muted">{service.text}</span>
                           </span>
                         </Link>
                       </motion.li>
                     ))}
                   </ul>
                   <Link
-                    href={pages.routes.services[preview]}
+                    href={previewItem.href}
                     onClick={() => setMenu(null)}
                     className="group relative overflow-hidden rounded-[var(--radius-card)] border border-line"
                   >
                     <AnimatePresence mode="popLayout" initial={false}>
                       <motion.img
-                        key={preview}
-                        src={asset(SCENES[preview])}
+                        key={previewItem.key}
+                        src={asset(previewItem.scene)}
                         alt=""
                         initial={{ opacity: 0, y: 8 }}
                         animate={{ opacity: 1, y: 0 }}
@@ -267,7 +278,7 @@ export function Header({ dict, alternateHref, isHome = false }: HeaderProps) {
                       />
                     </AnimatePresence>
                     <span className="absolute inset-x-0 bottom-0 flex items-center justify-between bg-gradient-to-t from-base/95 to-transparent p-4 pt-10 text-sm">
-                      <span className="font-medium">{pages.services.find((service) => service.kind === preview)?.nav}</span>
+                      <span className="font-medium">{previewItem.nav}</span>
                       <span className="text-ocean-300 transition-transform duration-200 group-hover:translate-x-1">
                         {pages.menu.previewCta} ›
                       </span>
@@ -325,15 +336,15 @@ export function Header({ dict, alternateHref, isHome = false }: HeaderProps) {
             className="max-h-[calc(100svh-3.5rem)] overflow-y-auto border-t border-line md:hidden"
           >
             <p className="px-5 pb-1 pt-4 text-xs text-muted">{pages.menu.services}</p>
-            {pages.services.map((service, index) => (
+            {menuServices.map((service, index) => (
               <motion.div
-                key={service.kind}
+                key={service.key}
                 initial={{ opacity: 0, x: -12 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ ...spring.ui, delay: index * stagger }}
               >
                 <Link
-                  href={pages.routes.services[service.kind]}
+                  href={service.href}
                   onClick={() => setMobileOpen(false)}
                   className="flex items-center gap-3 border-b border-line px-5 py-3"
                 >
@@ -348,7 +359,7 @@ export function Header({ dict, alternateHref, isHome = false }: HeaderProps) {
                 key={link.href}
                 initial={{ opacity: 0, x: -12 }}
                 animate={{ opacity: 1, x: 0 }}
-                transition={{ ...spring.ui, delay: (index + 4) * stagger }}
+                transition={{ ...spring.ui, delay: (index + menuServices.length) * stagger }}
               >
                 <Link href={link.href} onClick={() => setMobileOpen(false)} className="flex h-12 items-center border-b border-line px-5">
                   {link.label}

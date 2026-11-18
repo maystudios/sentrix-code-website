@@ -1,6 +1,7 @@
 import type { Dictionary } from "@/content/types";
 import { Cases } from "./Cases";
 import { ContactCta } from "./ContactCta";
+import { Engine } from "./Engine";
 import { Faq } from "./Faq";
 import { Hero } from "./Hero";
 import { Positioning } from "./Positioning";
@@ -23,6 +24,7 @@ export function HomePage({ dict, alternateHref }: { dict: Dictionary; alternateH
       <Services dict={dict} />
       <Cases dict={dict} />
       <ElasticLine />
+      <Engine dict={dict} />
       <Process dict={dict} />
       <Faq dict={dict} />
       <ContactCta dict={dict} />

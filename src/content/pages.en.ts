@@ -10,6 +10,7 @@ export const pagesEn: Pages = {
       software: "/en/services/software-development/",
       apps: "/en/services/app-development/",
       ai: "/en/services/ai/",
+      workshop: "/en/services/workshops/",
     },
     about: "/en/about/",
     contact: "/en/contact/",
@@ -31,69 +32,6 @@ export const pagesEn: Pages = {
   },
   services: [
     {
-      kind: "game",
-      nav: "Game development",
-      menuText: "Prototypes, gameplay and multiplayer in Unreal Engine",
-      icon: "gamepad",
-      meta: {
-        title: "Game development on commission · Sentrix Code",
-        description:
-          "Prototypes, gameplay programming, multiplayer and tools with Unreal Engine and C++. Game development on commission from Monheim am Rhein, Germany.",
-      },
-      hero: {
-        title: "Your game, built by people who make games themselves.",
-        intro:
-          "We develop games and prototypes on commission, mostly with Unreal Engine and C++. For studios that need extra hands, and for companies that want a game as a product, a learning tool or for marketing.",
-        scene: "/images/scenes/games-studio",
-        sceneAlt: "Pixel scene: the robot plays at a desk with two monitors, an arcade cabinet next to it",
-      },
-      offer: {
-        title: "What we do for your game",
-        items: [
-          {
-            title: "Prototypes and vertical slices",
-            text: "An idea becomes something playable within a few weeks. Use it to test the fun, win over publishers or apply for funding.",
-            icon: "gamepad",
-          },
-          {
-            title: "Gameplay programming",
-            text: "Mechanics, enemy AI, vehicles, combat and inventory are built as C++ systems that work together cleanly and stay extensible.",
-            icon: "code",
-          },
-          {
-            title: "Multiplayer",
-            text: "Co-op and online play with listen servers or dedicated servers. We test on bad connections too, not just on the office network.",
-            icon: "server",
-          },
-          {
-            title: "Tools and pipelines",
-            text: "Editor tools, automated tests and build pipelines help your team build content faster and search less.",
-            icon: "prototype",
-          },
-        ],
-      },
-      stack: {
-        title: "What we work with",
-        items: ["Unreal Engine 5", "C++", "Blueprints", "Gameplay Ability System", "Steam", "Epic Online Services", "Perforce"],
-      },
-      questions: [
-        {
-          question: "Do you also work with Unity or Godot?",
-          answer: "Our focus is Unreal Engine. For smaller games and prototypes we are happy to talk about Unity or Godot as well.",
-          example: true,
-        },
-        {
-          question: "Can you join a project that is already running?",
-          answer: "Yes. We get to know the existing code and take over clearly defined systems or whole areas.",
-          example: true,
-        },
-      ],
-      cta: {
-        title: "Tell us about your game.",
-        text: "A pitch deck, a sketch or just an idea: we will tell you how we would approach it.",
-      },
-    },
-    {
       kind: "software",
       nav: "Software development",
       menuText: "Web applications, portals, integrations and backends",
@@ -101,7 +39,7 @@ export const pagesEn: Pages = {
       meta: {
         title: "Software development on commission · Sentrix Code",
         description:
-          "Web applications, customer portals, integrations and backends that fit the way you work. Software development from Monheim am Rhein, Germany.",
+          "Web applications, customer portals, integrations, backends and code audits that fit the way you work. Software development from Monheim am Rhein, Germany.",
       },
       hero: {
         title: "Software that fits the way you work.",
@@ -111,7 +49,7 @@ export const pagesEn: Pages = {
         sceneAlt: "Pixel scene: the robot checks the server racks with a clipboard",
       },
       offer: {
-        title: "What we build for you",
+        title: "What we build and review",
         items: [
           {
             title: "Web applications and portals",
@@ -133,12 +71,16 @@ export const pagesEn: Pages = {
             text: "We replace grown legacy systems step by step while daily operations carry on.",
             icon: "prototype",
           },
+          {
+            title: "Code audit and code quality",
+            text: "We review existing software, including software that was put together quickly with AI: architecture, data model, tests and security. You get concrete findings in the code and an honest recommendation on what can stay and what needs rebuilding.",
+            icon: "test",
+          },
         ],
       },
       stack: {
         title: "What we work with",
-        // EXAMPLE: PostgreSQL and Docker are not yet confirmed by the project owner.
-        items: ["TypeScript", "React", "Next.js", "Java", "Python", "PostgreSQL", "Docker"],
+        text: "Whatever suits you. We learned computer science and have our favourite languages, but now that AI does real work, code has become a material you can shape. What matters is not the language but making your business more productive. That is why we like to work out with you how a workflow could be simpler.",
       },
       questions: [
         {
@@ -260,6 +202,11 @@ export const pagesEn: Pages = {
             text: "We analyse your data and train our own models when ready-made solutions are not enough.",
             icon: "chip",
           },
+          {
+            title: "Workshops",
+            text: "A day with your team: what AI can do today, how to use it safely and in line with data protection rules, and which of your tasks benefit first. For management, specialist departments or developers.",
+            icon: "concept",
+          },
         ],
       },
       stack: {
@@ -282,6 +229,133 @@ export const pagesEn: Pages = {
       cta: {
         title: "Where would AI save your team the most time?",
         text: "Name a task that comes back every week. We will tell you whether AI can take it over.",
+      },
+    },
+    {
+      kind: "workshop",
+      nav: "Workshops",
+      menuText: "AI workshops for your team, on site or remote",
+      icon: "concept",
+      meta: {
+        title: "AI workshops for companies · Sentrix Code",
+        description:
+          "Workshops for management, specialist teams and developers: using AI safely and in line with data protection rules, on your real tasks. On site or remote.",
+      },
+      hero: {
+        title: "Workshops after which your team actually uses AI.",
+        intro:
+          "We come to you or join remotely. Instead of slides we work on your real tasks, so that by the end your team knows what AI can do, where its limits are and how to use it safely.",
+        scene: "/images/scenes/team",
+        sceneAlt: "Pixel scene: a small studio with two desks and the robot waving between them",
+      },
+      offer: {
+        title: "The workshops we offer",
+        // EXAMPLE: the workshop formats are not yet confirmed by the project owner.
+        items: [
+          {
+            title: "AI at work",
+            text: "For whole teams and departments: what AI can do today, how to get good results and what you had better not entrust to it. With exercises on tasks from your daily work.",
+            icon: "idea",
+          },
+          {
+            title: "AI for management",
+            text: "Where AI saves your company time and money, what it costs and how to set it up safely and in line with data protection rules.",
+            icon: "concept",
+          },
+          {
+            title: "AI for developers",
+            text: "How to build software with AI agents that holds up: requirements first, then tests, then code, and a review by a second agent. Straight from our own engine room.",
+            icon: "code",
+          },
+          {
+            title: "Tailored workshop",
+            text: "A topic that is on your mind right now, such as a particular workflow or a new tool. We put the day together around it.",
+            icon: "prototype",
+          },
+        ],
+      },
+      stack: {
+        title: "What we work with",
+        text: "With the tools your team is allowed to use. We follow your data protection and IT security rules, not the other way round, and we also show which data belongs in no AI at all.",
+      },
+      questions: [
+        {
+          question: "How long does a workshop take?",
+          answer: "Usually one day, on site or remote. If you want to go deeper, the content can also be spread over several half days.",
+          example: true,
+        },
+        {
+          question: "Do participants need prior knowledge?",
+          answer: "No. We meet everyone where they are and work with tasks from their own daily work.",
+          example: true,
+        },
+      ],
+      cta: {
+        title: "What should your team find easier after the workshop?",
+        text: "Tell us who is taking part and what you have in mind. We will suggest a suitable plan.",
+      },
+    },
+    {
+      kind: "game",
+      nav: "Game development",
+      menuText: "Prototypes, gameplay and multiplayer in Unreal Engine",
+      icon: "gamepad",
+      meta: {
+        title: "Game development on commission · Sentrix Code",
+        description:
+          "Prototypes, gameplay programming, multiplayer and tools with Unreal Engine and C++. Game development on commission from Monheim am Rhein, Germany.",
+      },
+      hero: {
+        title: "Your game, built by people who make games themselves.",
+        intro:
+          "We develop games and prototypes on commission, mostly with Unreal Engine and C++. For studios that need extra hands, and for companies that want a game as a product, a learning tool or for marketing.",
+        scene: "/images/scenes/games-studio",
+        sceneAlt: "Pixel scene: the robot plays at a desk with two monitors, an arcade cabinet next to it",
+      },
+      offer: {
+        title: "What we do for your game",
+        items: [
+          {
+            title: "Prototypes and vertical slices",
+            text: "An idea becomes something playable within a few weeks. Use it to test the fun, win over publishers or apply for funding.",
+            icon: "gamepad",
+          },
+          {
+            title: "Gameplay programming",
+            text: "Mechanics, enemy AI, vehicles, combat and inventory are built as C++ systems that work together cleanly and stay extensible.",
+            icon: "code",
+          },
+          {
+            title: "Multiplayer",
+            text: "Co-op and online play with listen servers or dedicated servers. We test on bad connections too, not just on the office network.",
+            icon: "server",
+          },
+          {
+            title: "Tools and pipelines",
+            text: "Editor tools, automated tests and build pipelines help your team build content faster and search less.",
+            icon: "prototype",
+          },
+        ],
+      },
+      stack: {
+        title: "What we work with",
+        items: ["Unreal Engine 5", "C++", "Blueprints", "Gameplay Ability System", "Steam", "Epic Online Services", "Perforce"],
+      },
+      questions: [
+        {
+          question: "Do you also work with Unity or Godot?",
+          answer: "Our focus is Unreal Engine. For smaller games and prototypes we are happy to talk about Unity or Godot as well.",
+          example: true,
+        },
+        {
+          question: "Can you join a project that is already running?",
+          answer: "Yes. We get to know the existing code and take over clearly defined systems or whole areas.",
+          example: true,
+        },
+      ],
+      cta: {
+        title: "Tell us about your game.",
+        text: "A pitch deck, a sketch or just an idea: we will tell you how we would approach it.",
       },
     },
   ],
@@ -324,10 +398,6 @@ export const pagesEn: Pages = {
           example: true,
         },
       ],
-    },
-    location: {
-      title: "Monheim am Rhein",
-      text: "We are based between Cologne and Düsseldorf. We work with clients across Germany, mostly remotely, and are happy to come by for workshops.",
     },
     principles: {
       title: "How we work",
