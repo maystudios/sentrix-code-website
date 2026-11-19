@@ -16,7 +16,15 @@ import { ElasticLine } from "@/components/ui/ElasticLine";
 export function HomePage({ dict, alternateHref }: { dict: Dictionary; alternateHref: string }) {
   return (
     <SiteShell dict={dict} alternateHref={alternateHref} isHome>
-      <Hero dict={dict} />
+      <Hero
+        copy={{
+          headlineA: dict.hero.headlineA,
+          headlineB: dict.hero.headlineB,
+          subline: dict.hero.subline,
+          primary: { label: dict.hero.primaryCta, href: dict.pages.routes.contact },
+          secondary: { label: dict.hero.secondaryCta, href: `#${dict.anchors.services}` },
+        }}
+      />
       <TechStrip dict={dict} />
       <Statement dict={dict} />
       <Positioning text={dict.positioning} />

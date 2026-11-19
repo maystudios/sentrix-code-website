@@ -14,6 +14,7 @@ import { TextLink } from "@/components/ui/TextLink";
 import { ContactCta } from "@/components/site/ContactCta";
 import { SiteShell } from "@/components/site/SiteShell";
 import { PageHero } from "./PageHero";
+import { Hero } from "@/components/site/Hero";
 import { PixelIcon } from "@/components/brand/PixelIcon";
 import { ReferenceFigure, ReferenceLinks } from "@/components/site/ReferenceFigure";
 
@@ -26,25 +27,38 @@ export function ServicePage({ dict, kind, alternateHref }: { dict: Dictionary; k
 
   return (
     <SiteShell dict={dict} alternateHref={alternateHref}>
-      <PageHero
-        breadcrumb={[
-          { label: "Sentrix Code", href: pages.routes.home },
-          { label: pages.menu.services, href: `${pages.routes.home}#${dict.anchors.services}` },
-          { label: service.nav },
-        ]}
-        title={service.hero.title}
-        intro={service.hero.intro}
-        scene={service.hero.scene}
-        sceneAlt={service.hero.sceneAlt}
-        actions={
-          <>
-            <Button href={pages.routes.contact}>{dict.nav.cta}</Button>
-            <Button href={`${pages.routes.home}#${dict.anchors.cases}`} variant="secondary">
-              {dict.nav.cases}
-            </Button>
-          </>
-        }
-      />
+      {service.stage ? (
+        <Hero
+          scene="games"
+          copy={{
+            headlineA: service.stage.headlineA,
+            headlineB: service.stage.headlineB,
+            subline: service.stage.subline,
+            primary: { label: service.stage.primaryCta, href: pages.routes.contact },
+            secondary: { label: service.stage.secondaryCta, href: `#${service.stage.anchor}` },
+          }}
+        />
+      ) : (
+        <PageHero
+          breadcrumb={[
+            { label: "Sentrix Code", href: pages.routes.home },
+            { label: pages.menu.services, href: `${pages.routes.home}#${dict.anchors.services}` },
+            { label: service.nav },
+          ]}
+          title={service.hero.title}
+          intro={service.hero.intro}
+          scene={service.hero.scene}
+          sceneAlt={service.hero.sceneAlt}
+          actions={
+            <>
+              <Button href={pages.routes.contact}>{dict.nav.cta}</Button>
+              <Button href={`${pages.routes.home}#${dict.anchors.cases}`} variant="secondary">
+                {dict.nav.cases}
+              </Button>
+            </>
+          }
+        />
+      )}
 
       {/* What we deliver: sticky title, rows that react to the pointer. */}
       <section className="border-b border-line">
@@ -159,7 +173,7 @@ export function ServicePage({ dict, kind, alternateHref }: { dict: Dictionary; k
 
       {/* Practice: real references with their own images, or an example with a live demo. */}
       {cases.map((example, index) => (
-        <section key={example.tab} className="border-b border-line">
+        <section key={example.tab} id={index === 0 ? service.stage?.anchor : undefined} className="border-b border-line">
           <div className="mx-auto grid max-w-[1280px] lg:grid-cols-[1.1fr_1fr]">
             <div className="px-6 py-20 lg:pr-12">
               <p className="text-sm text-muted">{example.client}</p>

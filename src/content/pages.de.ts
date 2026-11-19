@@ -312,6 +312,15 @@ export const pagesDe: Pages = {
         scene: "/images/scenes/games-studio",
         sceneAlt: "Pixel-Szene: der Roboter spielt an einem Schreibtisch mit zwei Monitoren, daneben ein Arcade-Automat",
       },
+      stage: {
+        headlineA: "Spiele entwickeln",
+        headlineB: "mit Ihrem Studio.",
+        subline:
+          "Wir programmieren Gameplay, Multiplayer und Werkzeuge mit Unreal Engine und C++, als Verstärkung in Ihrem Team oder als eigenes Arbeitspaket. Mitgearbeitet haben wir an Heistline und Mr. Dork 3.",
+        primaryCta: "Spielprojekt besprechen",
+        secondaryCta: "Referenzen ansehen",
+        anchor: "referenzen",
+      },
       offer: {
         title: "Was wir für Ihr Spiel tun",
         items: [

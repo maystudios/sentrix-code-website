@@ -19,6 +19,9 @@ export type ServiceDetail = {
   icon: IconName;
   meta: { title: string; description: string };
   hero: { title: string; intro: string; scene: string; sceneAlt: string };
+  // A full-height hero like the home page's, in place of the page hero. Used by the game
+  // development page, which is the entry point for studios. `anchor` is the references section.
+  stage?: { headlineA: string; headlineB: string; subline: string; primaryCta: string; secondaryCta: string; anchor: string };
   offer: { title: string; items: { title: string; text: string; icon: IconName }[] };
   // Either a list of tools or, where the tools do not matter, a short statement.
   stack: { title: string; items: string[] } | { title: string; text: string };

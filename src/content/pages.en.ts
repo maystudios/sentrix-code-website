@@ -312,6 +312,15 @@ export const pagesEn: Pages = {
         scene: "/images/scenes/games-studio",
         sceneAlt: "Pixel scene: the robot plays at a desk with two monitors, an arcade cabinet next to it",
       },
+      stage: {
+        headlineA: "Building games",
+        headlineB: "with your studio.",
+        subline:
+          "We program gameplay, multiplayer and tools in Unreal Engine and C++, as extra hands inside your team or as a work package of our own. We worked on Heistline and Mr. Dork 3.",
+        primaryCta: "Talk about your game",
+        secondaryCta: "See the references",
+        anchor: "references",
+      },
       offer: {
         title: "What we do for your game",
         items: [

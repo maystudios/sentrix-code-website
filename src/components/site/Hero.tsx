@@ -1,12 +1,11 @@
 "use client";
 
 import { motion, useAnimate, useScroll, useTransform } from "motion/react";
-import { useCallback, useEffect, useRef, type ReactNode } from "react";
-import type { Dictionary } from "@/content/types";
+import { useCallback, useEffect, useRef, useState, type ReactNode } from "react";
 import { duration, ease, spring } from "@/lib/motion";
 import { useMotionPolicy } from "@/components/motion/MotionPolicy";
 import { AnimatedPictogram } from "@/components/brand/AnimatedPictogram";
-import { PixelCloud, PixelLaptop, PixelRobot, PixelSparkle } from "@/components/brand/PixelCharacters";
+import { PixelCloud, PixelGamepad, PixelLaptop, PixelRobot, PixelRocket, PixelSparkle } from "@/components/brand/PixelCharacters";
 import { BlockShape, LiveBlock, type Shape } from "./hero/LiveBlock";
 import { DroneScene } from "./hero/DroneScene";
 import { HeroSegment } from "./hero/HeroTitle";
@@ -42,6 +41,21 @@ const RIGHT: Block[] = [
   { shape: "square", edge: 3.8, floor: 0, w: 1.6, h: 1.6, color: "var(--color-ocean-600)", delay: 0.64, tilt: 13, fixed: true },
   { shape: "x", edge: 5.75, floor: 0, w: 1.2, h: 1.2, color: "var(--color-ocean-400)", delay: 0.82, tilt: -30 },
 ];
+
+// The games hero has no drone: a plain tower stands at the edge and carries the rocket.
+const GAMES_RIGHT: Block[] = [
+  { shape: "square", edge: 0, floor: 0, w: 2, h: 2, color: "var(--color-ocean-900)", delay: 0.22, tilt: 11, fixed: true },
+  { shape: "square", edge: 0, floor: 2, w: 2, h: 2, color: "var(--color-ocean-700)", delay: 0.54, tilt: -9, fixed: true },
+  ...RIGHT,
+];
+
+export type HeroCopy = {
+  headlineA: string;
+  headlineB: string;
+  subline: string;
+  primary: { label: string; href: string };
+  secondary: { label: string; href: string };
+};
 
 // Blocks drop in with gravity, straighten on the way and land flush with a jelly squash;
 // a block landing on another jolts it. Free blocks can be grabbed and thrown afterwards,
@@ -113,8 +127,12 @@ const SPARKLES = [
   { className: "right-[18%] top-[70%]", delay: 0.9 },
 ];
 
-export function Hero({ dict }: { dict: Dictionary }) {
+// One hero frame for both worlds: the business scene (drone and laptop) on the home page,
+// the games scene (rocket and gamepad) on the game development page.
+export function Hero({ copy, scene = "business" }: { copy: HeroCopy; scene?: "business" | "games" }) {
   const { reduced } = useMotionPolicy();
+  // Games scene: the rocket's engine roars while the pointer rests on the rocket or the main button.
+  const [revving, setRevving] = useState(false);
   // Scroll depth: as the hero scrolls away, the sky lags furthest, the blocks a little and
   // the text runs slightly ahead.
   const hero = useRef<HTMLElement>(null);
@@ -157,12 +175,12 @@ export function Hero({ dict }: { dict: Dictionary }) {
         style={reduced ? undefined : { y: textDepth, opacity: textFade }}
       >
         <h1 className="text-display flex max-w-5xl flex-wrap items-center justify-center gap-x-[0.28em]">
-          <span className="sr-only">{`${dict.hero.headlineA} ${dict.hero.headlineB}`}</span>
-          <HeroSegment text={dict.hero.headlineA} start={0.05} />
+          <span className="sr-only">{`${copy.headlineA} ${copy.headlineB}`}</span>
+          <HeroSegment text={copy.headlineA} start={0.05} />
           <span className="inline-flex h-[0.62em] items-center px-[0.06em]" aria-hidden="true">
             <AnimatedPictogram mode="intro" idle delay={0.22} className="h-full w-auto" />
           </span>
-          <HeroSegment text={dict.hero.headlineB} start={0.3} />
+          <HeroSegment text={copy.headlineB} start={0.3} />
         </h1>
 
         <motion.p
@@ -171,7 +189,7 @@ export function Hero({ dict }: { dict: Dictionary }) {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: duration.slow, ease: ease.outExpo, delay: 0.3 }}
         >
-          {dict.hero.subline}
+          {copy.subline}
         </motion.p>
 
         <motion.div
@@ -180,16 +198,18 @@ export function Hero({ dict }: { dict: Dictionary }) {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: duration.slow, ease: ease.outExpo, delay: 0.4 }}
         >
-          <Button href={dict.pages.routes.contact}>{dict.hero.primaryCta}</Button>
-          <Button href={`#${dict.anchors.services}`} variant="secondary">
-            {dict.hero.secondaryCta}
+          <Button href={copy.primary.href} onHoverChange={scene === "games" ? setRevving : undefined}>
+            {copy.primary.label}
+          </Button>
+          <Button href={copy.secondary.href} variant="secondary">
+            {copy.secondary.label}
           </Button>
         </motion.div>
 
         {/* Scroll cue: three pixel chevrons that light up in turn, as in the reference. */}
         <motion.a
-          href={`#${dict.anchors.services}`}
-          aria-label={dict.hero.secondaryCta}
+          href={copy.secondary.href}
+          aria-label={copy.secondary.label}
           className="mt-14 flex flex-col items-center gap-0.5 p-3 text-ocean-400"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -212,13 +232,25 @@ export function Hero({ dict }: { dict: Dictionary }) {
             <PixelRobot className="size-full" waves watching />
           </Sprite>
         </div>
-        <div className="absolute inset-y-0 right-0 w-1/2">
-          <Stack blocks={RIGHT} side="right" reduced={reduced} />
-          <DroneScene reduced={reduced} onImpact={shake} />
-          <Sprite className="pointer-events-auto" delay={1.6} reduced={reduced} style={{ right: "calc(var(--u) * 3.5)", bottom: "calc(var(--u) * 1.6)", width: cells(38), height: cells(32) }}>
-            <PixelLaptop className="size-full" />
-          </Sprite>
-        </div>
+        {scene === "games" ? (
+          <div className="absolute inset-y-0 right-0 w-1/2">
+            <Stack blocks={GAMES_RIGHT} side="right" reduced={reduced} />
+            <Sprite className="pointer-events-auto" delay={1.3} reduced={reduced} style={{ right: "calc(var(--u) * 0.34)", bottom: "calc(var(--u) * 4)", width: cells(22), height: cells(35) }}>
+              <PixelRocket className="size-full" engine={revving ? "roar" : "idle"} />
+            </Sprite>
+            <Sprite className="pointer-events-auto" delay={1.6} reduced={reduced} style={{ right: "calc(var(--u) * 3.6)", bottom: "calc(var(--u) * 1.6)", width: cells(34), height: cells(24) }}>
+              <PixelGamepad className="size-full" />
+            </Sprite>
+          </div>
+        ) : (
+          <div className="absolute inset-y-0 right-0 w-1/2">
+            <Stack blocks={RIGHT} side="right" reduced={reduced} />
+            <DroneScene reduced={reduced} onImpact={shake} />
+            <Sprite className="pointer-events-auto" delay={1.6} reduced={reduced} style={{ right: "calc(var(--u) * 3.5)", bottom: "calc(var(--u) * 1.6)", width: cells(38), height: cells(32) }}>
+              <PixelLaptop className="size-full" />
+            </Sprite>
+          </div>
+        )}
       </div>
       </motion.div>
       <div aria-hidden="true" className="absolute inset-x-0 bottom-0 h-px bg-line" />
