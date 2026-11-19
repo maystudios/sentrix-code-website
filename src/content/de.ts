@@ -23,10 +23,10 @@ export const de: Dictionary = {
     switchLanguage: { label: "English version", href: "/en/", short: "EN" },
   },
   hero: {
-    headlineA: "Ihre Idee.",
-    headlineB: "Unser Code.",
+    headlineA: "Software und KI",
+    headlineB: "für den Mittelstand.",
     subline:
-      "Wir entwickeln Software, Apps und KI für den Mittelstand. Und Spiele im Auftrag, vom ersten Prototyp bis zum Release.",
+      "Wir bauen Anwendungen, Apps und KI-Assistenten für Ihre Abläufe, binden sie an ERP und Shop an und halten sie sicher und aktuell.",
     primaryCta: "Projekt anfragen",
     secondaryCta: "Leistungen ansehen",
   },
