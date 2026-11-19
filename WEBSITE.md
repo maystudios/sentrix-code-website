@@ -270,9 +270,10 @@ Sentrix Code bietet an:
 4. Machine Learning und Künstliche Intelligenz, einschließlich Beratung, wie
    Unternehmen KI besser einbinden
 
-Wie die vier Bereiche gewichtet und auf der Website angeordnet werden, ist noch
-offen. Im Wortlaut: „Müssen wir gucken, wie wir was unterbringen und diese
-Bereiche hier.“
+Gewichtung, entschieden am 19.11.2026: Die Website zeigt Sentrix Code als
+Entwicklungspartner für den Mittelstand mit Software, Apps und KI. Spiele sind ein
+eigener, klar getrennter zweiter Bereich weiter unten. Im Wortlaut des
+Projektverantwortlichen zu diesem Vorschlag: „Ja, eher so Weg A, genau.“
 
 ### Zielgruppe
 
@@ -793,7 +794,6 @@ Projektverantwortliche die Rechtstexte.
   Werktags“, „Das erste Gespräch kostet Sie nichts“, Etappen alle zwei Wochen und
   Python in der Technologieleiste.
 - Website-Prinzipien in Rangfolge, jeweils mit „Deshalb“ und „Deshalb nicht“.
-- Gewichtung und Anordnung der vier Leistungsbereiche.
 - Tonalität bestätigen: Die Texte sprechen Besucher derzeit mit „Sie“ an.
 - URL-Struktur bestätigen: Deutsch unter `/`, Englisch unter `/en/`, Rechtstexte
   nur auf Deutsch.
