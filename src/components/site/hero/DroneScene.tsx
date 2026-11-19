@@ -82,7 +82,7 @@ function DroppedBlock({ drop, onLand, register }: { drop: Drop; onLand: (drop: D
   );
 }
 
-export function DroneScene({ reduced, onImpact, onTopple }: { reduced: boolean; onImpact: () => void; onTopple: () => void }) {
+export function DroneScene({ reduced, onImpact }: { reduced: boolean; onImpact: () => void }) {
   const [droneScope, animateDrone] = useAnimate<HTMLDivElement>();
   const [towerScope, animateTower] = useAnimate<HTMLDivElement>();
   const unitRef = useRef<HTMLSpanElement>(null);
@@ -145,13 +145,12 @@ export function DroneScene({ reduced, onImpact, onTopple }: { reduced: boolean; 
         ["tower-0", { centre: { x: -px, y: -px }, pivot: { x: 0, y: 0 }, start: 0.36, alpha: 8, release: 0.95 }],
       ];
       // Grit flies where the pieces scrape over their edges; the crash outside the picture
-      // shakes the scene and startles the rocket.
+      // shakes the scene.
       setCrumbs((value) => value + 1);
       window.setTimeout(() => setCrumbs((value) => value + 1), 380);
       window.setTimeout(() => {
         if (cancelled) return;
         onImpact();
-        onTopple();
       }, 620);
       const runs = plans.map(([key, plan]) => {
         const element = pieces.current.get(key);
@@ -215,7 +214,7 @@ export function DroneScene({ reduced, onImpact, onTopple }: { reduced: boolean; 
     return () => {
       cancelled = true;
     };
-  }, [reduced, onImpact, onTopple, animateDrone, droneScope, animateTower, towerScope]);
+  }, [reduced, onImpact, animateDrone, droneScope, animateTower, towerScope]);
 
   return (
     <>
